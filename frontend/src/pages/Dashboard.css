@@ -1,0 +1,14 @@
+.dashboard {
+    display: flex;
+}
+
+
+.main {
+    flex: 1;
+}
+
+.content {
+    flex: 1;
+    background-color: #ac9f9f;
+    padding: 20px;
+}

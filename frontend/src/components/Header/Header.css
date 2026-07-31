@@ -1,0 +1,12 @@
+.header {
+    height: 70px;
+    background-color: #fff;
+}
+
+.header p.page-title {
+    font-size: 14px;
+}
+
+.header h1 {
+    font-size: 28px;
+}
