@@ -40,7 +40,7 @@ const Sidebar = () => {
         <a href="#" className="active">
           <FaHome />
                     {!collapsed &&
-          <span>Dashboard</span> }
+          <span>Tela inicial</span> }
         </a>
 
         <a href="#">
@@ -77,13 +77,12 @@ const Sidebar = () => {
         <div className="profile">
           <div
           className="profile-image">
-
           </div>
-            U
+
           <div
           className="profile-info">
             <h4>nome de usuario</h4>
-            <p>email real de user</p>
+            <p>email@real.user</p>
           </div>
         </div>
 

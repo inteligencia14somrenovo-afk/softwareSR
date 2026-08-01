@@ -1,7 +1,7 @@
 .sidebar {
     width: 230px;
     height: 100vh;
-    background-color: black;
+    background-color: rgb(24, 23, 23);
     transition: 0.3s;
     overflow: hidden;
     display: flex;
@@ -10,6 +10,7 @@
 
 .sidebar.collapsed  {
     width: 80px;
+    background-color: black;
 }
 
 .sidebar.collapsed a {
