@@ -1,16 +1,30 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { MdDarkMode, MdNotifications } from 'react-icons/md';
 import { FaCalendarAlt } from "@react-icons/all-files/fa/FaCalendarAlt";
 import { FaUserGraduate } from "@react-icons/all-files/fa/FaUserGraduate";
 import { FaDrum } from "@react-icons/all-files/fa/FaDrum";
 import { FaBook } from "@react-icons/all-files/fa/FaBook";
 
+
 import "./Header.css";
 
 const Header = () => {
 
-  const [showNotifications, setShowNotifications] = useState(false);
 
+  const location = useLocation();
+
+  const titles = {
+    "/": "Tela Inicial",
+    "/alunos": "Alunos",
+    "/bandas": "Bandas",
+    "/presenca": "Presença",
+    "/planos-de-aula": "Planos de Aula",
+    "/relatorio": "Relatórios",
+    "/config": "Configuração",
+  };
+
+  const [showNotifications, setShowNotifications] = useState(false);
   const horaAtual = new Date().getHours();
 
     let saudacao;
@@ -37,7 +51,7 @@ const Header = () => {
     <header className="header">
 
       <div className="header-left">
-        <p className="page-title">Dashboard</p>
+        <p className="page-title">{titles[location.pathname] || "Dashboard"}</p>
 
         <h1>{saudacao}, {usuario} !</h1>
 

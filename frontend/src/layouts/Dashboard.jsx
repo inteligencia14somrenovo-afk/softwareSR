@@ -1,16 +1,14 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import "./Dashboard.css";
 import Sidebar from '../components/Sidebar/Sidebar';
 import Header from '../components/Header/Header';
-import TelaInicial from '../pages/TelaInicial/TelaInicial';
+
 
 const Dashboard = () => {
   
-  
-  
+
   return (
-
-
 
     <div className="dashboard">
         <Sidebar />
@@ -19,7 +17,7 @@ const Dashboard = () => {
          <Header />
 
     <div className="content">
-        <TelaInicial />
+        <Outlet />
          </div>
      </div>
     </div>

@@ -10,6 +10,7 @@ import "./Sidebar.css";
 import logo from "../../assets/logo.png";
 import { useState } from "react";
 import { MdMenu, MdMenuOpen, MdGroups } from "react-icons/md";
+import { NavLink } from "react-router-dom";
 
 
 const Sidebar = () => {
@@ -38,47 +39,47 @@ const Sidebar = () => {
       </div>
 
       <nav>
-        <a href="#" className="active">
+        <NavLink to="/">
           <FaHome />
                     {!collapsed &&
           <span>Tela inicial</span> }
-        </a>
+        </NavLink>
 
-        <a href="#">
+        <NavLink to="/alunos">
           <FaUserGraduate />
            {!collapsed &&
           <span>Alunos</span> }
-        </a>
+        </NavLink>
 
-         <a href="#">
+         <NavLink to="/bandas">
           <FaDrum />
            {!collapsed &&
           <span>Bandas</span> }
-        </a>
+        </NavLink>
 
-        <a href="#">
+        <NavLink to="/presenca">
           <FaClipboardCheck />
            {!collapsed &&
           <span>Presença</span> }
-        </a>
+        </NavLink>
 
-        <a href="#">
+        <NavLink to="/planos-de-aula">
           <FaBook />
            {!collapsed &&
           <span>Planos de aula</span> }
-        </a>
+        </NavLink>
 
-        <a href="#">
+        <NavLink to="/relatorio">
           <FaChartBar />
            {!collapsed &&
           <span>Relatório</span> }
-        </a>
+        </NavLink>
 
-        <a href="#">
+        <NavLink to="/config">
           <FaCog />
            {!collapsed &&
           <span>Configuração</span> }
-        </a>
+        </NavLink>
 
       </nav>
 
