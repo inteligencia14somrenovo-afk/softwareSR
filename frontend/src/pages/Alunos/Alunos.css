@@ -1,0 +1,141 @@
+.alunos {
+    padding: 25px;
+}
+
+
+/* Cabeçalho */
+
+.alunos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.alunos-header h1 {
+    font-size: 28px;
+}
+
+
+.alunos-header button {
+    background-color: #d60000;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+
+/* Busca e filtros */
+
+.alunos-tools {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+
+.alunos-tools input,
+.alunos-tools select {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: white;
+}
+
+
+.alunos-tools input {
+    flex: 1;
+}
+
+
+/* Cards */
+
+.cards-alunos {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+
+.card-aluno {
+    background: white;
+    padding: 25px;
+    height: 260px;
+    border-radius: 18px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+    z-index: 1;
+}
+
+
+/* Cores suaves dos instrumentos */
+
+.card-aluno::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    border-radius: 22px;
+    background: var(--cor-instrumento);
+    filter: blur(15px);
+    opacity: 0.6;
+    z-index: -1;
+}
+
+.card-aluno.violao {
+    --cor-instrumento: #ffd966;
+}
+
+.card-aluno.guitarra {
+    --cor-instrumento: #f6b26b;
+}
+
+.card-aluno.bateria {
+    --cor-instrumento: #93c47d;
+}
+
+.card-aluno.piano {
+    --cor-instrumento: #c9b6ff;
+}
+
+
+
+.card-aluno:hover {
+    transform: translateY(-5px);
+}
+
+
+.aluno-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+
+.aluno-info h2 {
+    font-size: 18px;
+}
+
+
+.foto-aluno {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+}
+
+
+.card-aluno p {
+    margin: 10px 0;
+    color: #555;
+}
+
