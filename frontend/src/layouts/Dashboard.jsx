@@ -2,6 +2,7 @@ import React from 'react';
 import "./Dashboard.css";
 import Sidebar from '../components/Sidebar/Sidebar';
 import Header from '../components/Header/Header';
+import TelaInicial from '../pages/TelaInicial/TelaInicial';
 
 const Dashboard = () => {
   
@@ -15,13 +16,10 @@ const Dashboard = () => {
         <Sidebar />
 
     <div className="main">
-        
          <Header />
-         
-         <div className="content">
-            <p>
-                Conteudo da pagina...
-            </p>
+
+    <div className="content">
+        <TelaInicial />
          </div>
      </div>
     </div>
@@ -29,4 +27,4 @@ const Dashboard = () => {
 }
 
 
-export default Dashboard
+export default Dashboard;

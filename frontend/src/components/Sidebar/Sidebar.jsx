@@ -4,11 +4,12 @@ import { FaClipboardCheck } from "@react-icons/all-files/fa/FaClipboardCheck";
 import { FaBook } from "@react-icons/all-files/fa/FaBook";
 import { FaChartBar } from "@react-icons/all-files/fa/FaChartBar";
 import { FaCog } from "@react-icons/all-files/fa/FaCog";
+import { FaDrum } from "@react-icons/all-files/fa/FaDrum";
 
 import "./Sidebar.css";
 import logo from "../../assets/logo.png";
 import { useState } from "react";
-import { MdMenu, MdMenuOpen } from "react-icons/md";
+import { MdMenu, MdMenuOpen, MdGroups } from "react-icons/md";
 
 
 const Sidebar = () => {
@@ -49,6 +50,12 @@ const Sidebar = () => {
           <span>Alunos</span> }
         </a>
 
+         <a href="#">
+          <FaDrum />
+           {!collapsed &&
+          <span>Bandas</span> }
+        </a>
+
         <a href="#">
           <FaClipboardCheck />
            {!collapsed &&
@@ -72,6 +79,7 @@ const Sidebar = () => {
            {!collapsed &&
           <span>Configuração</span> }
         </a>
+
       </nav>
 
         <div className="profile">

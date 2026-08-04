@@ -87,7 +87,8 @@ nav a {
 }
 
 .sidebar a.active {
-    background-color: #aa0505;
+    
+    background: linear-gradient(90deg, #8f0000, #c20d0d);
     font-weight: bold;
 }
 

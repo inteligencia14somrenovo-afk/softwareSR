@@ -1,6 +1,4 @@
-import Login from "./components/Login/Login";
-import Dashboard from "./pages/Dashboard";
-import Sidebar from "./components/Sidebar/Sidebar";
+import Dashboard from "./layouts/Dashboard";
 import "./App.css";
 
 function App() {
