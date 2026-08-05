@@ -1,28 +1,41 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet } from "react-router-dom";
+
+import Sidebar from "../components/Sidebar/Sidebar";
+import Header from "../components/Header/Header";
+
 import "./Dashboard.css";
-import Sidebar from '../components/Sidebar/Sidebar';
-import Header from '../components/Header/Header';
 
 
 const Dashboard = () => {
-  
+
 
   return (
 
     <div className="dashboard">
-        <Sidebar />
 
-    <div className="main">
-         <Header />
+      <Sidebar />
 
-    <div className="content">
-        <Outlet />
-         </div>
-     </div>
+
+      <div className="main">
+
+        <Header />
+
+
+        <div className="content">
+
+          <Outlet />
+
+        </div>
+
+
+      </div>
+
+
     </div>
-  )
-}
+
+  );
+
+};
 
 
 export default Dashboard;

@@ -1,142 +1,241 @@
 .sidebar {
     width: 230px;
-    height: 100vh;
+    height: 100dvh;
     background-color: rgb(24, 23, 23);
-    transition: 0.3s;
+    transition: width .3s ease;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
 }
 
-.sidebar.collapsed  {
+
+/* SIDEBAR COMPACTA */
+
+.sidebar.collapsed {
     width: 80px;
     background-color: black;
 }
 
-.sidebar.collapsed a {
-    justify-content: center;
-    gap: 0;
-    padding: 40px 0;
-}
 
-.sidebar.collapsed .logo-menu{
-    justify-content: center;
-}
+/* LOGO E MENU */
 
 .logo-menu {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 15px;
     padding: 15px;
     overflow: hidden;
 }
+
+
+.sidebar.collapsed .logo-menu {
+    justify-content: center;
+}
+
 
 .logo {
     width: 160px;
 }
 
+
+.menu-icon,
+.menu-icon-2 {
+    color: white;
+    cursor: pointer;
+}
+
+
 .menu-icon {
     font-size: 36px;
-    color: #fff;
-    cursor: pointer;
-    justify-content: center;
 }
+
 
 .menu-icon-2 {
     font-size: 22px;
-    color: #fff;
-    cursor: pointer;
-    justify-content: center;
 }
 
-.sidebar.collapsed span {
-    display: none;
+
+/* LINKS */
+
+nav {
+    flex: 1;
 }
 
-nav a {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.sidebar h2 {
-    color: #222;
-    -webkit-text-stroke: 1px #fff;
-    font-size: 24px;
-    font-weight: 600;
-    text-align: center;
-    margin-top: 8px;
-    margin-bottom: 10px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #333;
-}
 
 .sidebar a {
+
     display: flex;
     align-items: center;
-    gap: 10px;
+
+    gap: 15px;
+
     padding: 25px 12px;
+
     color: white;
     text-decoration: none;
+
     border-radius: 8px;
-    transition: 0.3s;
+
+    transition: .3s;
+
 }
+
 
 .sidebar a:hover {
     background-color: #7e0b0b;
 }
 
+
 .sidebar a.active {
-    
+
     background: linear-gradient(90deg, #8f0000, #c20d0d);
+
     font-weight: bold;
+
 }
+
+
+/* ÍCONES CENTRALIZADOS QUANDO FECHADO */
+
+.sidebar.collapsed a {
+
+    justify-content: center;
+    gap: 0;
+}
+
+
+.sidebar.collapsed span {
+
+    display: none;
+
+}
+
+
+/* PERFIL */
 
 .profile {
+
     display: flex;
+
     align-items: center;
+
     gap: 12px;
+
     padding: 15px;
+
     margin-top: auto;
+
     border-top: 1px solid #333;
+
 }
+
 
 .profile-image {
+
     width: 45px;
     height: 45px;
+
     border-radius: 50%;
+
     background: #aa0505;
-    color: white;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-weight: bold;
-    font-size: 18px;
 }
+
 
 .profile-info h4 {
+
     color: white;
+
     font-size: 15px;
+
     margin: 0;
+
 }
+
 
 .profile-info p {
+
     color: #bdbdbd;
+
     font-size: 12px;
+
     margin: 2px 0 0;
+
 }
 
-.sidebar.collapsed .profile-info {
-    display: none;
-}
 
 .sidebar.collapsed .profile {
+
     justify-content: center;
+
     padding: 20px 0;
+
 }
 
-.sidebar.collapsed .profile-image {
-    margin-left: 8px;
+
+.sidebar.collapsed .profile-info {
+
+    display: none;
+
+}
+
+
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 768px) {
+
+
+    .sidebar {
+
+        width: 80px;
+
+        height: 100dvh;
+
+    }
+
+
+    .sidebar .logo {
+
+        display: none;
+
+    }
+
+
+    .sidebar span {
+
+        display: none;
+
+    }
+
+
+    .sidebar a {
+
+        justify-content: center;
+
+        gap: 0;
+
+        padding: 25px 0;
+
+    }
+
+
+    .sidebar .profile-info {
+
+        display: none;
+
+    }
+
+
+    .sidebar .profile {
+
+        justify-content: center;
+
+        padding: 20px 0;
+
+    }
+
+
 }

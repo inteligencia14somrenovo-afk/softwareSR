@@ -6,97 +6,125 @@ import { FaChartBar } from "@react-icons/all-files/fa/FaChartBar";
 import { FaCog } from "@react-icons/all-files/fa/FaCog";
 import { FaDrum } from "@react-icons/all-files/fa/FaDrum";
 
-import "./Sidebar.css";
-import logo from "../../assets/logo.png";
-import { useState } from "react";
-import { MdMenu, MdMenuOpen, MdGroups } from "react-icons/md";
+import { MdMenu, MdMenuOpen } from "react-icons/md";
 import { NavLink } from "react-router-dom";
+import { useState } from "react";
+
+import logo from "../../assets/logo.png";
+import "./Sidebar.css";
 
 
 const Sidebar = () => {
+
   const [collapsed, setCollapsed] = useState(false);
 
+
   return (
+
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
 
       <div className="logo-menu">
-       {!collapsed && ( 
-        <img src={logo} alt="Som Renovo" className="logo" />
-                   )}
-        
+
+        {!collapsed && (
+          <img 
+            src={logo} 
+            alt="Som Renovo" 
+            className="logo" 
+          />
+        )}
+
+
         {collapsed ? (
+
           <MdMenu
-          className="menu-icon-2"
-          onClick={() =>
-            setCollapsed(false)}
-            />
-          ) : (
-        <MdMenuOpen 
-          className="menu-icon"
-          onClick={() => setCollapsed(true)}
-        />
-          )}
+            className="menu-icon-2"
+            onClick={() => setCollapsed(false)}
+          />
+
+        ) : (
+
+          <MdMenuOpen
+            className="menu-icon"
+            onClick={() => setCollapsed(true)}
+          />
+
+        )}
+
       </div>
 
+
       <nav>
+
         <NavLink to="/">
           <FaHome />
-                    {!collapsed &&
-          <span>Tela inicial</span> }
+          {!collapsed && <span>Tela inicial</span>}
         </NavLink>
+
 
         <NavLink to="/alunos">
           <FaUserGraduate />
-           {!collapsed &&
-          <span>Alunos</span> }
+          {!collapsed && <span>Alunos</span>}
         </NavLink>
 
-         <NavLink to="/bandas">
+
+        <NavLink to="/bandas">
           <FaDrum />
-           {!collapsed &&
-          <span>Bandas</span> }
+          {!collapsed && <span>Bandas</span>}
         </NavLink>
+
 
         <NavLink to="/presenca">
           <FaClipboardCheck />
-           {!collapsed &&
-          <span>Presença</span> }
+          {!collapsed && <span>Presença</span>}
         </NavLink>
+
 
         <NavLink to="/planos-de-aula">
           <FaBook />
-           {!collapsed &&
-          <span>Planos de aula</span> }
+          {!collapsed && <span>Planos de aula</span>}
         </NavLink>
+
 
         <NavLink to="/relatorio">
           <FaChartBar />
-           {!collapsed &&
-          <span>Relatório</span> }
+          {!collapsed && <span>Relatório</span>}
         </NavLink>
+
 
         <NavLink to="/config">
           <FaCog />
-           {!collapsed &&
-          <span>Configuração</span> }
+          {!collapsed && <span>Configuração</span>}
         </NavLink>
+
 
       </nav>
 
-        <div className="profile">
-          <div
-          className="profile-image">
-          </div>
 
-          <div
-          className="profile-info">
-            <h4>nome de usuario</h4>
-            <p>email@real.user</p>
-          </div>
+      <div className="profile">
+
+        <div className="profile-image">
         </div>
 
+
+        {!collapsed && (
+
+          <div className="profile-info">
+
+            <h4>nome de usuario</h4>
+            <p>email@real.user</p>
+
+          </div>
+
+        )}
+
+      </div>
+
+
     </aside>
-  )
-}
+
+  );
+
+};
+
 
 export default Sidebar;
