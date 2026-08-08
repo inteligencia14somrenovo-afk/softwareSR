@@ -1,342 +1,620 @@
 .alunos {
-
     padding: 25px;
-
     width: 100%;
-
     max-width: 100%;
-
 }
 
 
-
-/* Cabeçalho */
+/* =========================
+   CABEÇALHO
+========================= */
 
 .alunos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
 
+.alunos-header h1 {
+    font-size: 28px;
+}
+
+
+/* =========================
+   BUSCA E FILTROS
+========================= */
+
+.alunos-tools {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.alunos-tools input,
+.alunos-tools select {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #333;
+    min-width: 0;
+}
+
+.alunos-tools input {
+    flex: 1;
+}
+
+.alunos-tools select {
+    cursor: pointer;
+}
+
+
+/* =========================
+   CARDS
+========================= */
+
+.cards-alunos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(250px, 1fr));
+    gap: 22px;
+}
+
+
+/* =========================
+   CARD - ESTILO IDENTIDADE
+========================= */
+
+.card-aluno {
+    background: #fff;
+
+    min-height: 175px;
+
+    padding: 20px;
+
+    border-radius: 16px;
+
+    border: 1px solid var(--cor-instrumento);
+
+    box-shadow:
+        0 0 5px var(--cor-instrumento),
+        0 5px 15px rgba(0, 0, 0, 0.06);
+
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* LED */
+
+.card-aluno:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 0 10px var(--cor-instrumento),
+        0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================
+   CORES DOS INSTRUMENTOS
+========================= */
+
+.card-aluno.violao {
+    --cor-instrumento: #f5b800;
+}
+
+.card-aluno.guitarra {
+    --cor-instrumento: #f57e00;
+}
+
+.card-aluno.ukulele {
+    --cor-instrumento: #c9b6ff;
+}
+
+.card-aluno.violino {
+    --cor-instrumento: #a0522d;
+}
+
+.card-aluno.piano {
+    --cor-instrumento: #4706fa;
+}
+
+.card-aluno.teclado {
+    --cor-instrumento: #787879;
+}
+
+.card-aluno.canto {
+    --cor-instrumento: #0747f7;
+}
+
+.card-aluno.bateria {
+    --cor-instrumento: #53fd04;
+}
+
+
+/* =========================
+   TOPO DO CARD
+========================= */
+
+.card-top {
     display: flex;
 
     justify-content: space-between;
 
-    align-items: center;
+    align-items: flex-start;
 
     gap: 15px;
 
-    margin-bottom: 25px;
-
+    margin-bottom: 12px;
 }
 
 
-
-.alunos-header h1 {
-
-    font-size: 28px;
-
+.card-identificacao {
+    min-width: 0;
 }
 
 
+.card-identificacao h2 {
+    font-size: 19px;
 
-.alunos-header button {
+    margin: 5px 0 0;
 
-    background-color: #d60000;
+    white-space: nowrap;
 
-    color: white;
+    overflow: hidden;
 
-    border: none;
-
-    padding: 12px 20px;
-
-    border-radius: 8px;
-
-    cursor: pointer;
-
-    font-size: 15px;
-
+    text-overflow: ellipsis;
 }
 
 
-
-/* Busca e filtros */
-
-.alunos-tools {
-
-    display: flex;
-
-    gap: 15px;
-
-    margin-bottom: 30px;
-
-}
-
-
-
-.alunos-tools input,
-.alunos-tools select {
-
-    padding: 12px;
-
-    border-radius: 8px;
-
-    border: 1px solid #ddd;
-
-    background: white;
-
-}
-
-
-
-.alunos-tools input {
-
-    flex: 1;
-
-}
-
-
-
-/* Cards */
-
-.cards-alunos {
-
-    display: grid;
-
-    grid-template-columns: repeat(4, 1fr);
-
-    gap: 20px;
-
-}
-
-
-
-.card-aluno {
-
-    background: white;
-
-    padding: 25px;
-
-    min-height: 260px;
-
-    border-radius: 18px;
-
-    box-shadow: 0 5px 15px rgba(0,0,0,.08);
-
-    cursor: pointer;
-
-    transition: .3s;
-
-    position: relative;
-
-    z-index: 1;
-
-}
-
-
-
-.card-aluno::before {
-
-    content: "";
-
-    position: absolute;
-
-    inset: -8px;
-
-    border-radius: 22px;
-
-    background: var(--cor-instrumento);
-
-    filter: blur(15px);
-
-    opacity: .6;
-
-    z-index: -1;
-
-}
-
-
-
-.card-aluno.violao {
-
-    --cor-instrumento:#ffd966;
-
-}
-
-
-.card-aluno.guitarra {
-
-    --cor-instrumento:#f6b26b;
-
-}
-
-
-.card-aluno.bateria {
-
-    --cor-instrumento:#93c47d;
-
-}
-
-
-.card-aluno.piano {
-
-    --cor-instrumento:#c9b6ff;
-
-}
-
-
-
-.card-aluno:hover {
-
-    transform: translateY(-5px);
-
-}
-
-
-
-.aluno-info {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    margin-bottom: 20px;
-
-}
-
-
-
-.aluno-info h2 {
-
-    font-size: 18px;
-
-}
-
-
+/* =========================
+   FOTO
+========================= */
 
 .foto-aluno {
-
-    width: 50px;
-
-    height: 50px;
+    width: 55px;
+    height: 55px;
 
     border-radius: 50%;
 
-    background:#eee;
+    background: #eee;
 
-    display:flex;
+    display: flex;
 
-    justify-content:center;
+    justify-content: center;
 
-    align-items:center;
+    align-items: center;
 
-    font-size:25px;
+    font-size: 27px;
 
-    flex-shrink:0;
+    flex-shrink: 0;
 
+    overflow: hidden;
+
+    border: 2px solid var(--cor-instrumento);
 }
 
 
+.foto-aluno img {
+    width: 100%;
+    height: 100%;
 
-.card-aluno p {
-
-    margin:10px 0;
-
-    color:#555;
-
+    object-fit: cover;
 }
 
 
+/* =========================
+   INFORMAÇÕES
+========================= */
 
-/* TABLET */
+.card-info {
+    display: flex;
 
-@media(max-width:1000px){
+    flex-direction: column;
 
+    gap: 5px;
+
+    margin-top: 3px;
+}
+
+
+.card-info p {
+    margin: 0;
+
+    font-size: 14px;
+
+    color: #444;
+}
+
+
+.card-info span {
+    font-size: 11px;
+
+    color: #999;
+
+    text-transform: uppercase;
+
+    display: inline-block;
+
+    width: 82px;
+
+    font-weight: 600;
+}
+
+
+/* =========================
+   BOTÃO MAIS
+========================= */
+
+.card-more {
+    border: none;
+
+    background: transparent;
+
+    color: #666;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    padding: 4px 0;
+
+    margin-top: auto;
+
+    align-self: flex-end;
+
+    transition: 0.2s;
+}
+
+
+.card-more:hover {
+    color: #111;
+
+    transform: translateX(2px);
+}
+
+
+/* =========================
+   SEM RESULTADOS
+========================= */
+
+.no-results {
+    text-align: center;
+
+    padding: 50px 20px;
+
+    background: #fff;
+
+    border-radius: 15px;
+
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+}
+
+.no-results h3 {
+    margin-bottom: 8px;
+}
+
+.no-results p {
+    color: #777;
+}
+
+
+/* =========================
+   MODAL - DETALHES
+========================= */
+
+.aluno-detalhes {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+
+/* CABEÇALHO */
+
+.detalhes-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding-bottom: 15px;
+
+    border-bottom: 1px solid #eee;
+}
+
+
+.detalhes-foto {
+    width: 70px;
+    height: 70px;
+
+    border-radius: 50%;
+
+    background: #eee;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    font-size: 32px;
+
+    overflow: hidden;
+
+    flex-shrink: 0;
+}
+
+
+.detalhes-foto img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+.detalhes-header h2 {
+    margin: 0 0 7px;
+
+    font-size: 22px;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.status-badge {
+    display: inline-block;
+
+    padding: 4px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+.status-ativo {
+    background: #dcfce7;
+
+    color: #16803c;
+}
+
+
+.status-viajando {
+    background: #fff3cd;
+
+    color: #9a6700;
+}
+
+
+.status-faltas {
+    background: #ffe1e1;
+
+    color: #c00000;
+}
+
+
+/* =========================
+   SEÇÕES
+========================= */
+
+.detalhes-section {
+    border-top: 1px solid #eee;
+
+    padding-top: 15px;
+}
+
+
+.detalhes-section h3 {
+    font-size: 15px;
+
+    margin-bottom: 12px;
+}
+
+
+.detalhes-section p {
+    margin: 8px 0;
+
+    color: #555;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   RESPONSÁVEIS
+========================= */
+
+.responsavel-placeholder {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 15px;
+
+    background: #f7f7f7;
+
+    border-radius: 10px;
+
+    color: #777;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   AÇÕES
+========================= */
+
+.detalhes-actions {
+    display: flex;
+
+    gap: 10px;
+
+    padding-top: 5px;
+}
+
+
+.btn-excluir {
+    border: none;
+
+    background: #ffe5e5;
+
+    color: #c00000;
+
+    border-radius: 8px;
+
+    padding: 10px 15px;
+
+    cursor: pointer;
+}
+
+
+.btn-excluir:hover {
+    background: #ffcaca;
+}
+
+
+/* =========================
+   SELECTS E INPUTS DO MODAL
+========================= */
+
+.modal input,
+.modal select {
+    width: 100%;
+
+    padding: 12px;
+
+    margin-top: 10px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #222;
+
+    font-size: 16px;
+}
+
+
+.modal select option {
+    color: #222;
+
+    background: #fff;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1000px) {
 
     .cards-alunos {
-
-        grid-template-columns:repeat(2,1fr);
-
+        grid-template-columns: repeat(2, 1fr);
     }
-
 
 }
 
 
+/* =========================
+   CELULAR
+========================= */
 
-/* CELULAR */
-
-@media(max-width:768px){
-
+@media (max-width: 768px) {
 
     .alunos {
-
-        padding:10px;
-
+        padding: 10px;
     }
-
 
 
     .alunos-header {
+        flex-direction: column;
 
-        flex-direction:column;
-
-        align-items:flex-start;
-
+        align-items: flex-start;
     }
-
-
-
-    .alunos-header h1 {
-
-        font-size:24px;
-
-    }
-
 
 
     .alunos-header button {
-
-        width:100%;
-
+        width: 100%;
     }
-
 
 
     .alunos-tools {
+        flex-direction: column;
 
-        flex-direction:column;
-
-        gap:10px;
-
+        gap: 10px;
     }
-
 
 
     .alunos-tools input,
     .alunos-tools select {
-
-        width:100%;
-
+        width: 100%;
     }
-
 
 
     .cards-alunos {
+        grid-template-columns: 1fr;
 
-        grid-template-columns:1fr;
-
-        gap:15px;
-
+        gap: 15px;
     }
-
 
 
     .card-aluno {
+        min-height: 170px;
 
-        min-height:220px;
-
-        padding:20px;
-
+        padding: 18px;
     }
 
+
+    .card-identificacao h2 {
+        font-size: 17px;
+    }
+
+
+    .foto-aluno {
+        width: 50px;
+        height: 50px;
+    }
+
+
+    .card-info p {
+        font-size: 13px;
+    }
+
+
+    .card-info span {
+        width: 75px;
+    }
+
+
+    .detalhes-actions {
+        flex-direction: column;
+    }
+
+
+    .btn-excluir {
+        width: 100%;
+    }
 
 }
