@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 import Button from "../../components/UI/Button/Button";
 import Modal from "../../components/UI/Modal/Modal";
 
+import { nomesInstrumentos } from "./utils/instrumentos";
+
+import AlunoCard from "./components/AlunoCard";
+import AlunoDetalhes from "./components/AlunosDetalhes";
+import Responsaveis from "./components/Responsaveis";
+
 import "./Alunos.css";
 
 
@@ -20,7 +26,7 @@ function Alunos() {
 
 
   // =========================
-  // FORMULÁRIO
+  // FORMULÁRIO ALUNO
   // =========================
 
   const [novoAluno, setNovoAluno] = useState({
@@ -54,7 +60,8 @@ function Alunos() {
         foto: "",
         cor: "violao",
         aniversario: "15/06/2011",
-        status: "ativo"
+        status: "ativo",
+        responsaveis: []
       },
 
       {
@@ -66,7 +73,8 @@ function Alunos() {
         foto: "",
         cor: "piano",
         aniversario: "22/03/2006",
-        status: "ativo"
+        status: "ativo",
+        responsaveis: []
       },
 
       {
@@ -78,7 +86,8 @@ function Alunos() {
         foto: "",
         cor: "guitarra",
         aniversario: "08/11/2013",
-        status: "viajando"
+        status: "viajando",
+        responsaveis: []
       },
 
       {
@@ -90,9 +99,11 @@ function Alunos() {
         foto: "",
         cor: "bateria",
         aniversario: "30/01/2012",
-        status: "faltas"
+        status: "faltas",
+        responsaveis: []
       }
     ];
+
   });
 
 
@@ -121,24 +132,6 @@ function Alunos() {
 
 
   // =========================
-  // NOMES DOS INSTRUMENTOS
-  // =========================
-
-  const nomesInstrumentos = {
-
-    violao: "Violão",
-    guitarra: "Guitarra",
-    ukulele: "Ukulele",
-    violino: "Violino",
-    piano: "Piano",
-    teclado: "Teclado",
-    canto: "Canto",
-    bateria: "Bateria"
-
-  };
-
-
-  // =========================
   // ABRIR NOVO ALUNO
   // =========================
 
@@ -160,7 +153,91 @@ function Alunos() {
 
 
   // =========================
-  // SALVAR / EDITAR
+// RESPONSÁVEIS
+// =========================
+
+const adicionarResponsavel = (responsavel) => {
+
+  if (!alunoSelecionado) {
+    return;
+  }
+
+  setAlunos((alunosAtuais) => {
+
+    const alunosAtualizados = alunosAtuais.map((aluno) => {
+
+      if (aluno.id !== alunoSelecionado.id) {
+        return aluno;
+      }
+
+      return {
+        ...aluno,
+        responsaveis: [
+          ...(aluno.responsaveis || []),
+          responsavel
+        ]
+      };
+
+    });
+
+    const alunoAtualizado = alunosAtualizados.find(
+      (aluno) => aluno.id === alunoSelecionado.id
+    );
+
+    setAlunoSelecionado(alunoAtualizado);
+
+    return alunosAtualizados;
+
+  });
+};
+
+
+const excluirResponsavel = (responsavelId) => {
+
+  if (!alunoSelecionado) {
+    return;
+  }
+
+  const confirmar = window.confirm(
+    "Deseja realmente excluir este responsável?"
+  );
+
+  if (!confirmar) {
+    return;
+  }
+
+  setAlunos((alunosAtuais) => {
+
+    const alunosAtualizados = alunosAtuais.map((aluno) => {
+
+      if (aluno.id !== alunoSelecionado.id) {
+        return aluno;
+      }
+
+      return {
+        ...aluno,
+
+        responsaveis: (aluno.responsaveis || []).filter(
+          (responsavel) =>
+            responsavel.id !== responsavelId
+        )
+      };
+
+    });
+
+    const alunoAtualizado = alunosAtualizados.find(
+      (aluno) => aluno.id === alunoSelecionado.id
+    );
+
+    setAlunoSelecionado(alunoAtualizado);
+
+    return alunosAtualizados;
+
+  });
+};
+
+  // =========================
+  // SALVAR / EDITAR ALUNO
   // =========================
 
   const salvarAluno = () => {
@@ -197,7 +274,7 @@ function Alunos() {
 
             nome: novoAluno.nome,
 
-            nascimento: Number(novoAluno.nascimento),
+            nascimento: novoAluno.nascimento,
 
             foto: novoAluno.foto || aluno.foto || "",
 
@@ -205,9 +282,7 @@ function Alunos() {
 
             unidade: novoAluno.unidade,
 
-            cor: novoAluno.instrumento,
-
-            responsaveis: []
+            cor: novoAluno.instrumento
 
           };
 
@@ -227,7 +302,7 @@ function Alunos() {
 
         nome: novoAluno.nome,
 
-        nascimento: (novoAluno.nascimento),
+        nascimento: novoAluno.nascimento,
 
         instrumento: novoAluno.instrumento,
 
@@ -262,7 +337,6 @@ function Alunos() {
       unidade: ""
     });
 
-
     setAlunoEditando(null);
 
     setShowModal(false);
@@ -284,7 +358,9 @@ function Alunos() {
 
       nome: aluno.nome,
 
-      idade: aluno.idade,
+      nascimento: aluno.nascimento || "",
+
+      foto: aluno.foto || "",
 
       instrumento: aluno.instrumento,
 
@@ -308,6 +384,11 @@ function Alunos() {
     );
 
 
+    if (!aluno) {
+      return;
+    }
+
+
     const confirmar = window.confirm(
       `Deseja realmente excluir ${aluno.nome}?`
     );
@@ -324,8 +405,9 @@ function Alunos() {
       )
     );
 
-
     setShowDetalhes(false);
+
+    setAlunoSelecionado(null);
 
   };
 
@@ -343,51 +425,76 @@ function Alunos() {
   };
 
 
-
- // =========================
-  // CALCULO IDADE
+  // =========================
+  // CALCULAR IDADE
   // =========================
 
   const calcularIdade = (nascimento) => {
 
-  if (!nascimento) {
-    return "";
-  }
-  const hoje = new Date();
-  const datanascimento = new Date(nascimento);
+    if (!nascimento) {
+      return "";
+    }
 
-  let idade =
-    hoje.getFullYear() -
-    datanascimento.getFullYear();
 
-  const mes =
-   hoje.getMonth() -
-   datanascimento.getMonth();
+    const hoje = new Date();
 
-   if (
-    mes < 0 ||
-    (mes === 0 &&
-      hoje.getDate() < 
-      datanascimento.getDate()
-    ) 
-   ) { idade--; }
+    const dataNascimento = new Date(nascimento);
 
-   return idade;
-};
 
-const formatarAniversario = (nascimento) => {
+    let idade =
+      hoje.getFullYear() -
+      dataNascimento.getFullYear();
 
-  if (!nascimento) {
-    return "";
-  }
 
-  const data = new Date(`${nascimento}T00:00:00`);
+    const mes =
+      hoje.getMonth() -
+      dataNascimento.getMonth();
 
-  return data.toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "long"
-  });
-};
+
+    if (
+      mes < 0 ||
+      (
+        mes === 0 &&
+        hoje.getDate() < dataNascimento.getDate()
+      )
+    ) {
+
+      idade--;
+
+    }
+
+
+    return idade;
+
+  };
+
+
+  // =========================
+  // FORMATAR ANIVERSÁRIO
+  // =========================
+
+  const formatarAniversario = (nascimento) => {
+
+    if (!nascimento) {
+      return "";
+    }
+
+
+    const data = new Date(
+      `${nascimento}T00:00:00`
+    );
+
+
+    return data.toLocaleDateString(
+      "pt-BR",
+      {
+        day: "2-digit",
+        month: "long"
+      }
+    );
+
+  };
+
 
   // =========================
   // FILTRAGEM
@@ -433,7 +540,9 @@ const formatarAniversario = (nascimento) => {
     const correspondeIdade =
 
       !filtroIdade ||
-      String(aluno.idade) === filtroIdade;
+      String(
+        calcularIdade(aluno.nascimento)
+      ) === filtroIdade;
 
 
     return (
@@ -460,24 +569,33 @@ const formatarAniversario = (nascimento) => {
     if (status === "viajando") {
 
       return {
+
         texto: "Viajando",
+
         classe: "status-viajando"
+
       };
 
     }
+
 
     if (status === "faltas") {
 
       return {
+
         texto: "Muitas faltas",
+
         classe: "status-faltas"
+
       };
 
     }
 
+
     return {
 
       texto: "Ativo",
+
       classe: "status-ativo"
 
     };
@@ -498,7 +616,10 @@ const formatarAniversario = (nascimento) => {
 
       <div className="alunos-header">
 
-        <h1>Alunos</h1>
+        <h1>
+          Alunos
+        </h1>
+
 
         <Button onClick={abrirNovoAluno}>
 
@@ -512,6 +633,7 @@ const formatarAniversario = (nascimento) => {
       {/* FILTROS */}
 
       <div className="alunos-tools">
+
 
         <input
 
@@ -571,7 +693,10 @@ const formatarAniversario = (nascimento) => {
             Todos os instrumentos
           </option>
 
-          {Object.entries(nomesInstrumentos).map(
+
+          {Object.entries(
+            nomesInstrumentos
+          ).map(
             ([valor, nome]) => (
 
               <option
@@ -601,6 +726,7 @@ const formatarAniversario = (nascimento) => {
             Todas as idades
           </option>
 
+
           {Array.from(
             { length: 19 },
             (_, i) => i + 12
@@ -626,106 +752,25 @@ const formatarAniversario = (nascimento) => {
 
         {alunosFiltrados.map((aluno) => (
 
-          <div
-
-            className={`card-aluno ${aluno.cor}`}
+          <AlunoCard
 
             key={aluno.id}
 
-          >
+            aluno={aluno}
 
-            {/* NOME + FOTO */}
+            nomesInstrumentos={
+              nomesInstrumentos
+            }
 
-            <div className="card-top">
+            calcularIdade={
+              calcularIdade
+            }
 
-              <div className="card-identificacao">
+            abrirDetalhes={
+              abrirDetalhes
+            }
 
-                <h2>
-                  {aluno.nome}
-                </h2>
-
-              </div>
-
-
-              <div className="foto-aluno">
-
-                {aluno.foto ? (
-
-                  <img
-                    src={aluno.foto}
-                    alt={aluno.nome}
-                  />
-
-                ) : (
-
-                  "👤"
-
-                )}
-
-              </div>
-
-            </div>
-
-
-            {/* INFORMAÇÕES */}
-
-            <div className="card-info">
-
-              <p>
-
-                <span>
-                  Instrumento
-                </span>
-
-                {nomesInstrumentos[aluno.instrumento] ||
-                  aluno.instrumento}
-
-              </p>
-
-
-              <p>
-
-                <span>
-                  Idade
-                </span>
-
-                {calcularIdade(aluno.nascimento)} anos
-
-              </p>
-
-
-              <p>
-
-                <span>
-                  Local
-                </span>
-
-                📍 {aluno.unidade}
-
-              </p>
-
-            </div>
-
-
-            {/* MAIS */}
-
-            <button
-
-              className="card-more"
-
-              type="button"
-
-              onClick={() =>
-                abrirDetalhes(aluno)
-              }
-
-            >
-
-              ⋮ Mais
-
-            </button>
-
-          </div>
+          />
 
         ))}
 
@@ -760,6 +805,7 @@ const formatarAniversario = (nascimento) => {
           onClose={() => {
 
             setShowModal(false);
+
             setAlunoEditando(null);
 
           }}
@@ -779,7 +825,7 @@ const formatarAniversario = (nascimento) => {
 
             type="text"
 
-            placeholder="Nome"
+            placeholder="Nome completo"
 
             value={novoAluno.nome}
 
@@ -797,7 +843,6 @@ const formatarAniversario = (nascimento) => {
 
             type="date"
 
-
             value={novoAluno.nascimento}
 
             onChange={(e) =>
@@ -809,23 +854,46 @@ const formatarAniversario = (nascimento) => {
 
           />
 
-            <input
+
+          <input
+
             type="file"
+
             accept="image/*"
+
             onChange={(e) => {
-              const arquivo = e.target.files[0];
 
-              if (!arquivo) return;
+              const arquivo =
+                e.target.files[0];
 
-              const leitor = new FileReader();
-              leitor.onloadend = () =>{
+
+              if (!arquivo) {
+                return;
+              }
+
+
+              const leitor =
+                new FileReader();
+
+
+              leitor.onloadend = () => {
+
                 setNovoAluno({
-                  ...novoAluno, foto: leitor.result
+
+                  ...novoAluno,
+
+                  foto: leitor.result
+
                 });
+
               };
 
+
               leitor.readAsDataURL(arquivo);
-            }} />
+
+            }}
+
+          />
 
 
           <select
@@ -845,7 +913,10 @@ const formatarAniversario = (nascimento) => {
               Selecione o Instrumento
             </option>
 
-            {Object.entries(nomesInstrumentos).map(
+
+            {Object.entries(
+              nomesInstrumentos
+            ).map(
               ([valor, nome]) => (
 
                 <option
@@ -878,13 +949,16 @@ const formatarAniversario = (nascimento) => {
               Selecione a Unidade
             </option>
 
+
             <option value="Porto velho">
               Porto Velho
             </option>
 
+
             <option value="Ji parana 1">
               Ji-Paraná 1
             </option>
+
 
             <option value="Ji parana 2">
               Ji-Paraná 2
@@ -908,153 +982,60 @@ const formatarAniversario = (nascimento) => {
 
       {/* MODAL DETALHES */}
 
-      {showDetalhes && alunoSelecionado && (
+      {showDetalhes &&
+        alunoSelecionado && (
 
-        <Modal
+          <AlunoDetalhes
 
-          onClose={() => {
-            setShowDetalhes(false);
-            setAlunoSelecionado(null);
-          }}
+            aluno={alunoSelecionado}
 
-        >
+            nomesInstrumentos={
+              nomesInstrumentos
+            }
 
-          <div className="aluno-detalhes">
+            calcularIdade={
+              calcularIdade
+            }
 
-            <div className="detalhes-header">
+            formatarAniversario={
+              formatarAniversario
+            }
 
-              <div className="detalhes-foto">
+            statusAluno={
+              statusAluno
+            }
 
-                {alunoSelecionado.foto ? (
+            onClose={() => {
 
-                  <img
-                    src={alunoSelecionado.foto}
-                    alt={alunoSelecionado.nome}
-                  />
+              setShowDetalhes(false);
 
-                ) : (
+              setAlunoSelecionado(null);
 
-                  "👤"
+            }}
 
-                )}
+            onEditar={() =>
 
-              </div>
+              editarAluno(
+                alunoSelecionado
+              )
 
+            }
 
-              <div>
+            onExcluir={() =>
 
-                <h2>
-                  {alunoSelecionado.nome}
-                </h2>
+              excluirAluno(
+                alunoSelecionado.id
+              )
 
-                <span
-                  className={
-                    `status-badge ${
-                      statusAluno(
-                        alunoSelecionado.status
-                      ).classe
-                    }`
-                  }
-                >
-
-                  {
-                    statusAluno(
-                      alunoSelecionado.status
-                    ).texto
-                  }
-
-                </span>
-
-              </div>
-
-            </div>
+            }
 
 
-            <div className="detalhes-section">
+            onAdicionarResponsavel={adicionarResponsavel}
+            onExcluirResponsavel={excluirResponsavel}
 
-              <h3>
-                Informações do aluno
-              </h3>
+          />
 
-              <p>
-                🎸 <strong>Instrumento:</strong>{" "}
-                {
-                  nomesInstrumentos[
-                    alunoSelecionado.instrumento
-                  ]
-                }
-              </p>
-
-              <p>
-                🎂 <strong>Idade:</strong>{" "}
-                {calcularIdade(alunoSelecionado.nascimento)} anos
-              </p>
-
-              <p>
-                📍 <strong>Unidade:</strong>{" "}
-                {alunoSelecionado.unidade}
-              </p>
-
-              <p>
-                🎉 <strong>Aniversário:</strong>{" "}
-                {formatarAniversario(alunoSelecionado.nascimento) ||
-                  "Não informado"}
-              </p>
-
-            </div>
-
-
-            <div className="detalhes-section">
-
-              <h3>
-                Responsáveis
-              </h3>
-
-              <div className="responsavel-placeholder">
-
-                👨‍👩‍👧
-
-                <span>
-                  Responsáveis serão cadastrados aqui.
-                </span>
-
-              </div>
-
-            </div>
-
-
-            <div className="detalhes-actions">
-
-              <Button
-                onClick={() =>
-                  editarAluno(alunoSelecionado)
-                }
-              >
-                ✏️ Editar
-              </Button>
-
-
-              <button
-
-                className="btn-excluir"
-
-                onClick={() =>
-                  excluirAluno(
-                    alunoSelecionado.id
-                  )
-                }
-
-              >
-                🗑️ Excluir
-              </button>
-
-            </div>
-
-          </div>
-
-        </Modal>
-
-      )}
+        )}
 
     </div>
 

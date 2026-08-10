@@ -618,3 +618,200 @@
     }
 
 }
+
+/* =================================
+   RESPONSÁVEIS
+================================= */
+
+.responsaveis-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+/* CARD DO RESPONSÁVEL */
+
+.responsavel-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 12px;
+
+    background: #f8f8f8;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 10px;
+}
+
+
+/* FOTO */
+
+.responsavel-foto {
+    width: 55px;
+    height: 55px;
+
+    flex-shrink: 0;
+
+    border-radius: 8px;
+
+    overflow: hidden;
+
+    background: #ddd;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+}
+
+
+.responsavel-foto img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* DADOS */
+
+.responsavel-dados {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.responsavel-dados strong {
+    font-size: 15px;
+    color: #222;
+}
+
+
+.responsavel-dados span {
+    font-size: 13px;
+    color: #666;
+}
+
+
+/* BOTÃO ADICIONAR */
+
+.btn-adicionar-responsavel {
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px dashed #bbb;
+
+    border-radius: 8px;
+
+    background: #fafafa;
+
+    color: #555;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+
+.btn-adicionar-responsavel:hover {
+    background: #f1f1f1;
+    border-color: #999;
+}
+
+
+/* FORMULÁRIO */
+
+.responsavel-form {
+    padding: 15px;
+
+    background: #fafafa;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.responsavel-form h4 {
+    margin: 0 0 5px;
+
+    font-size: 15px;
+
+    color: #333;
+}
+
+
+.responsavel-form input {
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: #222;
+}
+
+
+.responsavel-form input:focus {
+    outline: none;
+
+    border-color: #aa0505;
+
+    box-shadow: 0 0 0 2px rgba(170, 5, 5, .08);
+}
+
+
+/* BOTÕES DO FORMULÁRIO */
+
+.responsavel-form-acoes {
+    display: flex;
+    gap: 10px;
+}
+
+
+.responsavel-form-acoes button {
+    flex: 1;
+
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+}
+
+
+.responsavel-form-acoes button:first-child {
+    background: #aa0505;
+    color: white;
+}
+
+
+.responsavel-form-acoes button:last-child {
+    background: #e5e5e5;
+    color: #333;
+}
+
+
+.responsavel-form-acoes button:hover {
+    opacity: .9;
+}
