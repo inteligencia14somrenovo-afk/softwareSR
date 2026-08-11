@@ -1,8 +1,43 @@
-import React from "react";
+import { useEffect, useState } from "react";
 
 import "./TelaInicial.css";
 
 function TelaInicial() {
+
+    const [totalAlunos, setTotalAlunos] = useState(0);
+
+    useEffect(() => {
+
+        const atualizarAlunos = () => {
+
+            const alunosSalvos =
+                localStorage.getItem("alunos");
+
+            const alunos =
+                alunosSalvos
+                    ? JSON.parse(alunosSalvos)
+                    : [];
+
+            setTotalAlunos(alunos.length);
+
+        };
+
+        atualizarAlunos();
+
+        window.addEventListener(
+            "alunosAtualizados",
+            atualizarAlunos
+        );
+
+        return () => {
+            window.removeEventListener(
+                "alunosAtualizados",
+                atualizarAlunos
+            );
+        };
+
+    }, []);
+
     return (
         <div className="tela-inicial">
 
@@ -12,8 +47,9 @@ function TelaInicial() {
             </div>
 
             <div className="cards">
+
                 <div className="card">
-                    <h2>42</h2>
+                    <h2>{totalAlunos}</h2>
                     <p>Alunos</p>
                 </div>
 
@@ -31,6 +67,7 @@ function TelaInicial() {
                     <h2>2</h2>
                     <p>Faltas</p>
                 </div>
+
             </div>
 
             <div className="section">

@@ -1,15 +1,11 @@
 import { useState } from "react";
 
-
-function Responsaveis({
-  aluno,
-  alunos,
-  setAlunos,
-  setAlunoSelecionado
-}) {
-
+function Responsaveis({ aluno, onAdicionar, onExcluir, onEditar}) {
   const [showForm, setShowForm] = useState(false);
 
+  const [responsavelSelecionado, setResponsavelSelecionado] = useState(null);
+  const [menuAberto, setMenuAberto] = useState(null);
+  const [responsavelEditando, setResponsavelEditando] = useState(null);
 
   const [novoResponsavel, setNovoResponsavel] = useState({
     nome: "",
@@ -17,257 +13,155 @@ function Responsaveis({
     foto: ""
   });
 
-
-  // =========================
-  // ADICIONAR
-  // =========================
-
   const salvar = () => {
-
     if (
       !novoResponsavel.nome.trim() ||
       !novoResponsavel.telefone.trim()
     ) {
-
-      alert(
-        "Preencha o nome e o telefone do responsável."
-      );
-
+      alert("Preencha o nome e o telefone do responsável.");
       return;
     }
-
 
     const responsavel = {
-
       id: Date.now(),
-
-      nome: novoResponsavel.nome,
-
-      telefone: novoResponsavel.telefone,
-
+      nome: novoResponsavel.nome.trim(),
+      telefone: novoResponsavel.telefone.trim(),
       foto: novoResponsavel.foto || ""
-
     };
 
-
-    const alunosAtualizados = alunos.map(
-      (item) => {
-
-        if (item.id !== aluno.id) {
-          return item;
-        }
-
-
-        return {
-
-          ...item,
-
-          responsaveis: [
-
-            ...(item.responsaveis || []),
-
-            responsavel
-
-          ]
-
-        };
-
-      }
-    );
-
-
-    setAlunos(alunosAtualizados);
-
-
-    const alunoAtualizado =
-      alunosAtualizados.find(
-        (item) => item.id === aluno.id
-      );
-
-
-    setAlunoSelecionado(alunoAtualizado);
-
-
-    setNovoResponsavel({
-
-      nome: "",
-
-      telefone: "",
-
-      foto: ""
-
-    });
-
-
-    setShowForm(false);
-
-  };
-
-
-  // =========================
-  // EXCLUIR
-  // =========================
-
-  const excluir = (responsavelId) => {
-
-    const confirmar = window.confirm(
-      "Deseja realmente excluir este responsável?"
-    );
-
-
-    if (!confirmar) {
-      return;
+        if (responsavelEditando) {
+      onEditar({
+        ...responsavelEditando,
+        nome: novoResponsavel.nome.trim(),
+        telefone: novoResponsavel.telefone.trim(),
+        foto: novoResponsavel.foto || ""
+      });
+    } else {
+      onAdicionar(responsavel);
     }
 
-
-    const alunosAtualizados = alunos.map(
-      (item) => {
-
-        if (item.id !== aluno.id) {
-          return item;
-        }
-
-
-        return {
-
-          ...item,
-
-          responsaveis:
-            (item.responsaveis || []).filter(
-              (responsavel) =>
-                responsavel.id !== responsavelId
-            )
-
-        };
-
-      }
-    );
-
-
-    setAlunos(alunosAtualizados);
-
-
-    const alunoAtualizado =
-      alunosAtualizados.find(
-        (item) => item.id === aluno.id
-      );
-
-
-    setAlunoSelecionado(alunoAtualizado);
-
-  };
-
-
-  // =========================
-  // CANCELAR
-  // =========================
-
-  const cancelar = () => {
-
-    setShowForm(false);
-
-
     setNovoResponsavel({
-
       nome: "",
-
       telefone: "",
-
       foto: ""
-
     });
 
+    setResponsavelEditando(null);
+    
+    setShowForm(false);
   };
 
+  const cancelar = () => {
+    setShowForm(false);
 
-  // =========================
-  // RENDER
-  // =========================
+    setResponsavelEditando(null);
+
+    setNovoResponsavel({
+      nome: "",
+      telefone: "",
+      foto: ""
+    });
+  };
+
+  
 
   return (
-
     <div className="responsaveis-lista">
 
-
-      {(aluno.responsaveis || []).map(
-        (responsavel) => (
-
+      <div className="responsaveis-scroll">
+        {(aluno.responsaveis || []).map((responsavel) => (
           <div
             className="responsavel-card"
             key={responsavel.id}
+            onClick={() => setResponsavelSelecionado(responsavel)}
           >
-
             <div className="responsavel-foto">
-
               {responsavel.foto ? (
-
                 <img
                   src={responsavel.foto}
                   alt={responsavel.nome}
                 />
-
               ) : (
-
                 "👤"
-
               )}
-
             </div>
-
 
             <div className="responsavel-dados">
-
-              <strong>
-                {responsavel.nome}
-              </strong>
-
-
-              <span>
-                📱 {responsavel.telefone}
-              </span>
-
+              <strong>{responsavel.nome}</strong>
+              <span>📱 {responsavel.telefone}</span>
             </div>
 
+            <div className="responsavel-menu-container">
+        <button
+          type="button"
+          className="responsavel-menu"
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuAberto(
+              menuAberto === responsavel.id
+                ? null
+                : responsavel.id
+            );
+          }}
+        >
+          ⋮
+        </button>
+
+        {menuAberto === responsavel.id && (
+          <div
+            className="responsavel-menu-opcoes"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                setResponsavelEditando(responsavel);
+                setNovoResponsavel({
+                  nome: responsavel.nome,
+                  telefone: responsavel.telefone,
+                  foto: responsavel.foto || ""
+                });
+                setMenuAberto(null);
+                setShowForm(true);
+              }}
+            >
+              ✏️ Editar
+            </button>
 
             <button
               type="button"
-              className="responsavel-menu"
-              onClick={() =>
-                excluir(responsavel.id)
-              }
+              className="opcao-excluir"
+              onClick={() => {
+                setMenuAberto(null);
+                onExcluir(responsavel.id);
+              }}
             >
-              ⋮
+              🗑️ Excluir
             </button>
-
           </div>
-
-        )
-      )}
-
+        )}
+      </div>
+          </div>
+        ))}
+      </div>
 
       {!showForm && (
-
         <button
           type="button"
           className="btn-adicionar-responsavel"
-          onClick={() =>
-            setShowForm(true)
-          }
+          onClick={() => setShowForm(true)}
         >
           + Adicionar responsável
         </button>
-
       )}
 
-
       {showForm && (
-
         <div className="responsavel-form">
-
           <h4>
-            Novo responsável
+            {responsavelEditando
+            ? "Editar responsável"
+            : "Novo responsável" }
           </h4>
-
 
           <input
             type="text"
@@ -281,7 +175,6 @@ function Responsaveis({
             }
           />
 
-
           <input
             type="tel"
             placeholder="Telefone"
@@ -294,53 +187,36 @@ function Responsaveis({
             }
           />
 
-
           <input
             type="file"
             accept="image/*"
             onChange={(e) => {
+              const arquivo = e.target.files[0];
 
-              const arquivo =
-                e.target.files[0];
+              if (!arquivo) return;
 
-
-              if (!arquivo) {
-                return;
-              }
-
-
-              const leitor =
-                new FileReader();
-
+              const leitor = new FileReader();
 
               leitor.onloadend = () => {
-
                 setNovoResponsavel({
-
                   ...novoResponsavel,
-
                   foto: leitor.result
-
                 });
-
               };
 
-
               leitor.readAsDataURL(arquivo);
-
             }}
           />
 
-
           <div className="responsavel-form-acoes">
-
             <button
               type="button"
               onClick={salvar}
             >
-              Salvar responsável
+              {responsavelEditando
+              ? "Salvar alterações"
+              : "Salvar responsável"}
             </button>
-
 
             <button
               type="button"
@@ -348,18 +224,48 @@ function Responsaveis({
             >
               Cancelar
             </button>
-
           </div>
-
         </div>
-
       )}
 
+      {responsavelSelecionado && (
+          <div
+            className="responsavel-overlay"
+            onClick={() => setResponsavelSelecionado(null)}
+          >
+            <div
+              className="responsavel-detalhes"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="responsavel-fechar"
+                onClick={() => setResponsavelSelecionado(null)}
+              >
+                ×
+              </button>
+
+              <div className="responsavel-foto-grande">
+                {responsavelSelecionado.foto ? (
+                  <img
+                    src={responsavelSelecionado.foto}
+                    alt={responsavelSelecionado.nome}
+                  />
+                ) : (
+                  "👤"
+                )}
+              </div>
+
+              <h3>{responsavelSelecionado.nome}</h3>
+
+              <p>
+                📱 {responsavelSelecionado.telefone}
+              </p>
+            </div>
+          </div>
+        )}
     </div>
-
   );
-
 }
-
 
 export default Responsaveis;

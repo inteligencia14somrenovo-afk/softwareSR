@@ -117,6 +117,10 @@ function Alunos() {
       "alunos",
       JSON.stringify(alunos)
     );
+    window.dispatchEvent(
+      new
+      Event("alunosAtualizados")
+    );
 
   }, [alunos]);
 
@@ -220,6 +224,44 @@ const excluirResponsavel = (responsavelId) => {
         responsaveis: (aluno.responsaveis || []).filter(
           (responsavel) =>
             responsavel.id !== responsavelId
+        )
+      };
+
+    });
+
+    const alunoAtualizado = alunosAtualizados.find(
+      (aluno) => aluno.id === alunoSelecionado.id
+    );
+
+    setAlunoSelecionado(alunoAtualizado);
+
+    return alunosAtualizados;
+
+  });
+};
+
+const editarResponsavel = (responsavelAtualizado) => {
+
+  if (!alunoSelecionado) {
+    return;
+  }
+
+  setAlunos((alunosAtuais) => {
+
+    const alunosAtualizados = alunosAtuais.map((aluno) => {
+
+      if (aluno.id !== alunoSelecionado.id) {
+        return aluno;
+      }
+
+      return {
+        ...aluno,
+
+        responsaveis: (aluno.responsaveis || []).map(
+          (responsavel) =>
+            responsavel.id === responsavelAtualizado.id
+              ? responsavelAtualizado
+              : responsavel
         )
       };
 
@@ -569,11 +611,8 @@ const excluirResponsavel = (responsavelId) => {
     if (status === "viajando") {
 
       return {
-
         texto: "Viajando",
-
         classe: "status-viajando"
-
       };
 
     }
@@ -582,22 +621,16 @@ const excluirResponsavel = (responsavelId) => {
     if (status === "faltas") {
 
       return {
-
         texto: "Muitas faltas",
-
         classe: "status-faltas"
-
       };
 
     }
 
 
     return {
-
       texto: "Ativo",
-
       classe: "status-ativo"
-
     };
 
   };
@@ -636,13 +669,9 @@ const excluirResponsavel = (responsavelId) => {
 
 
         <input
-
           type="text"
-
           placeholder="🔍 Pesquisar aluno..."
-
           value={pesquisa}
-
           onChange={(e) =>
             setPesquisa(e.target.value)
           }
@@ -680,9 +709,7 @@ const excluirResponsavel = (responsavelId) => {
 
 
         <select
-
           value={filtroInstrumento}
-
           onChange={(e) =>
             setFiltroInstrumento(e.target.value)
           }
@@ -713,9 +740,7 @@ const excluirResponsavel = (responsavelId) => {
 
 
         <select
-
           value={filtroIdade}
-
           onChange={(e) =>
             setFiltroIdade(e.target.value)
           }
@@ -753,19 +778,14 @@ const excluirResponsavel = (responsavelId) => {
         {alunosFiltrados.map((aluno) => (
 
           <AlunoCard
-
             key={aluno.id}
-
             aluno={aluno}
-
             nomesInstrumentos={
               nomesInstrumentos
             }
-
             calcularIdade={
               calcularIdade
             }
-
             abrirDetalhes={
               abrirDetalhes
             }
@@ -790,7 +810,6 @@ const excluirResponsavel = (responsavelId) => {
           <p>
             Tente alterar sua pesquisa ou os filtros.
           </p>
-
         </div>
 
       )}
@@ -801,34 +820,24 @@ const excluirResponsavel = (responsavelId) => {
       {showModal && (
 
         <Modal
-
           onClose={() => {
-
             setShowModal(false);
-
             setAlunoEditando(null);
-
           }}
 
         >
 
           <h2>
-
             {alunoEditando
               ? "Editar Aluno"
               : "Novo Aluno"}
-
           </h2>
 
 
           <input
-
             type="text"
-
             placeholder="Nome completo"
-
             value={novoAluno.nome}
-
             onChange={(e) =>
               setNovoAluno({
                 ...novoAluno,
@@ -840,11 +849,8 @@ const excluirResponsavel = (responsavelId) => {
 
 
           <input
-
             type="date"
-
             value={novoAluno.nascimento}
-
             onChange={(e) =>
               setNovoAluno({
                 ...novoAluno,
@@ -856,11 +862,8 @@ const excluirResponsavel = (responsavelId) => {
 
 
           <input
-
             type="file"
-
             accept="image/*"
-
             onChange={(e) => {
 
               const arquivo =
@@ -877,29 +880,19 @@ const excluirResponsavel = (responsavelId) => {
 
 
               leitor.onloadend = () => {
-
                 setNovoAluno({
-
                   ...novoAluno,
-
                   foto: leitor.result
-
                 });
-
               };
-
-
               leitor.readAsDataURL(arquivo);
-
             }}
 
           />
 
 
           <select
-
             value={novoAluno.instrumento}
-
             onChange={(e) =>
               setNovoAluno({
                 ...novoAluno,
@@ -925,24 +918,19 @@ const excluirResponsavel = (responsavelId) => {
                 >
                   {nome}
                 </option>
-
               )
             )}
-
           </select>
 
 
           <select
-
             value={novoAluno.unidade}
-
             onChange={(e) =>
               setNovoAluno({
                 ...novoAluno,
                 unidade: e.target.value
               })
             }
-
           >
 
             <option value="">
@@ -968,15 +956,11 @@ const excluirResponsavel = (responsavelId) => {
 
 
           <Button onClick={salvarAluno}>
-
             {alunoEditando
               ? "Salvar Alterações"
               : "Salvar Aluno"}
-
           </Button>
-
         </Modal>
-
       )}
 
 
@@ -1029,19 +1013,16 @@ const excluirResponsavel = (responsavelId) => {
 
             }
 
-
             onAdicionarResponsavel={adicionarResponsavel}
             onExcluirResponsavel={excluirResponsavel}
-
+            onEditarResponsavel={editarResponsavel}
           />
 
-        )}
 
+        )}
     </div>
 
   );
-
 }
-
 
 export default Alunos;

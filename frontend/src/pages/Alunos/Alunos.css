@@ -627,15 +627,40 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    width: 100%;
 }
 
+.responsaveis-scroll {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 2px 8px;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+}
 
-/* CARD DO RESPONSÁVEL */
+.responsaveis-scroll::-webkit-scrollbar {
+    height: 5px;
+}
+
+.responsaveis-scroll::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 10px;
+}
+
+/* =========================
+   CARD DO RESPONSÁVEL
+========================= */
 
 .responsavel-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    position: relative;
+
+    flex: 0 0 calc((100% - 24px) / 3);
+
+    min-width: 0;
+    min-height: 125px;
 
     padding: 12px;
 
@@ -644,14 +669,34 @@
     border: 1px solid #e5e5e5;
 
     border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 8px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
+.responsavel-card:hover {
+    background: #f1f1f1;
+    border-color: #ccc;
+    transform: translateY(-2px);
+}
 
-/* FOTO */
+/* =========================
+   FOTO
+========================= */
 
 .responsavel-foto {
-    width: 55px;
-    height: 55px;
+    width: 52px;
+    height: 52px;
 
     flex-shrink: 0;
 
@@ -665,9 +710,8 @@
     align-items: center;
     justify-content: center;
 
-    font-size: 25px;
+    font-size: 24px;
 }
-
 
 .responsavel-foto img {
     width: 100%;
@@ -676,30 +720,137 @@
     object-fit: cover;
 }
 
-
-/* DADOS */
+/* =========================
+   DADOS
+========================= */
 
 .responsavel-dados {
     display: flex;
     flex-direction: column;
+    gap: 4px;
 
-    gap: 5px;
+    min-width: 0;
+    width: 100%;
+
+    padding-right: 20px;
 }
 
-
 .responsavel-dados strong {
-    font-size: 15px;
+    font-size: 14px;
+    color: #222;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.responsavel-dados span {
+    font-size: 12px;
+    color: #666;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =========================
+   MENU ⋮
+========================= */
+
+.responsavel-menu-container {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.responsavel-menu {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #666;
+
+    font-size: 18px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    padding: 0;
+
+    transition: 0.2s;
+}
+
+.responsavel-menu:hover {
+    background: #e8e8e8;
     color: #222;
 }
 
+/* OPÇÕES DO MENU */
 
-.responsavel-dados span {
-    font-size: 13px;
-    color: #666;
+.responsavel-menu-opcoes {
+    position: absolute;
+
+    top: 32px;
+    right: 0;
+
+    min-width: 135px;
+
+    padding: 5px;
+
+    background: #fff;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 8px;
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+
+    z-index: 20;
 }
 
+.responsavel-menu-opcoes button {
+    width: 100%;
 
-/* BOTÃO ADICIONAR */
+    padding: 9px 10px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #333;
+
+    text-align: left;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+}
+
+.responsavel-menu-opcoes button:hover {
+    background: #f2f2f2;
+}
+
+.responsavel-menu-opcoes .opcao-excluir {
+    color: #c00000;
+}
+
+.responsavel-menu-opcoes .opcao-excluir:hover {
+    background: #fff0f0;
+}
+
+/* =========================
+   BOTÃO ADICIONAR
+========================= */
 
 .btn-adicionar-responsavel {
     width: 100%;
@@ -716,17 +867,19 @@
 
     cursor: pointer;
 
-    transition: .2s;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
 }
-
 
 .btn-adicionar-responsavel:hover {
     background: #f1f1f1;
     border-color: #999;
 }
 
-
-/* FORMULÁRIO */
+/* =========================
+   FORMULÁRIO
+========================= */
 
 .responsavel-form {
     padding: 15px;
@@ -743,7 +896,6 @@
     gap: 10px;
 }
 
-
 .responsavel-form h4 {
     margin: 0 0 5px;
 
@@ -751,7 +903,6 @@
 
     color: #333;
 }
-
 
 .responsavel-form input {
     width: 100%;
@@ -765,25 +916,26 @@
     background: #fff;
 
     color: #222;
-}
 
+    font-size: 14px;
+}
 
 .responsavel-form input:focus {
     outline: none;
 
     border-color: #aa0505;
 
-    box-shadow: 0 0 0 2px rgba(170, 5, 5, .08);
+    box-shadow: 0 0 0 2px rgba(170, 5, 5, 0.08);
 }
 
-
-/* BOTÕES DO FORMULÁRIO */
+/* =========================
+   BOTÕES DO FORMULÁRIO
+========================= */
 
 .responsavel-form-acoes {
     display: flex;
     gap: 10px;
 }
-
 
 .responsavel-form-acoes button {
     flex: 1;
@@ -797,21 +949,216 @@
     cursor: pointer;
 
     font-weight: 600;
-}
 
+    transition: opacity 0.2s ease;
+}
 
 .responsavel-form-acoes button:first-child {
     background: #aa0505;
     color: white;
 }
 
-
 .responsavel-form-acoes button:last-child {
     background: #e5e5e5;
     color: #333;
 }
 
-
 .responsavel-form-acoes button:hover {
-    opacity: .9;
+    opacity: 0.9;
+}
+
+/* =========================
+   DETALHES DO RESPONSÁVEL
+========================= */
+
+.responsavel-overlay {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
+
+    padding: 20px;
+}
+
+.responsavel-detalhes {
+    position: relative;
+
+    width: 100%;
+    max-width: 360px;
+
+    background: #fff;
+
+    border-radius: 16px;
+
+    padding: 25px;
+
+    text-align: center;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+
+    animation: abrirResponsavel 0.2s ease;
+}
+
+@keyframes abrirResponsavel {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* =========================
+   FOTO GRANDE
+========================= */
+
+.responsavel-foto-grande {
+    width: 180px;
+    height: 180px;
+
+    margin: 0 auto 18px;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    background: #eee;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 70px;
+}
+
+.responsavel-foto-grande img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+/* =========================
+   NOME
+========================= */
+
+.responsavel-detalhes h3 {
+    margin: 0 0 8px;
+
+    font-size: 21px;
+
+    color: #222;
+
+    word-break: break-word;
+}
+
+/* =========================
+   TELEFONE
+========================= */
+
+.responsavel-detalhes p {
+    margin: 0;
+
+    color: #555;
+
+    font-size: 16px;
+}
+
+/* =========================
+   FECHAR
+========================= */
+
+.responsavel-fechar {
+    position: absolute;
+
+    top: 10px;
+    right: 10px;
+
+    width: 32px;
+    height: 32px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #eee;
+
+    color: #555;
+
+    font-size: 24px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.responsavel-fechar:hover {
+    background: #ddd;
+    color: #222;
+}
+
+/* =========================
+   RESPONSÁVEIS - CELULAR
+========================= */
+
+@media (max-width: 768px) {
+
+    .responsaveis-scroll {
+        gap: 10px;
+    }
+
+    .responsavel-card {
+        flex: 0 0 180px;
+
+        min-height: 120px;
+
+        padding: 11px;
+    }
+
+    .responsavel-foto {
+        width: 48px;
+        height: 48px;
+    }
+
+    .responsavel-dados strong {
+        font-size: 13px;
+    }
+
+    .responsavel-dados span {
+        font-size: 11px;
+    }
+
+    .responsavel-form {
+        padding: 12px;
+    }
+
+    .responsavel-form-acoes {
+        flex-direction: column;
+    }
+
+    .responsavel-form-acoes button {
+        width: 100%;
+    }
+
+    .responsavel-detalhes {
+        max-width: 320px;
+        padding: 22px;
+    }
+
+    .responsavel-foto-grande {
+        width: 150px;
+        height: 150px;
+    }
+
 }

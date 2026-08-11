@@ -12,7 +12,8 @@ function AlunoDetalhes({
   onEditar,
   onExcluir,
   onAdicionarResponsavel,
-  onExcluirResponsavel
+  onExcluirResponsavel,
+  onEditarResponsavel
 }) {
 
   if (!aluno) {
@@ -115,6 +116,9 @@ function AlunoDetalhes({
       
             <Responsaveis
                 aluno={aluno}
+                onAdicionar={onAdicionarResponsavel}
+                onExcluir={onExcluirResponsavel}
+                onEditar={onEditarResponsavel}
             />
             
         </div>
