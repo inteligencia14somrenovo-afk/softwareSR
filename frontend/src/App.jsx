@@ -4,7 +4,7 @@ import Dashboard from "./layouts/Dashboard";
 import TelaInicial from "./pages/TelaInicial/TelaInicial";
 import Alunos from "./pages/Alunos/Alunos";
 import Bandas from "./pages/Bandas/Bandas";
-import Presença from "./pages/Presença/Presença";
+import Presenca from "./pages/Presenca/Presenca";
 import PlanosDeAula from "./pages/PlanosDeAula/PlanosDeAula";
 import Relatorio from "./pages/Relatorio/Relatorio";
 import Configuração from "./pages/Configuração/Configuração";
@@ -20,7 +20,7 @@ function App() {
       <Route index element={<TelaInicial />} />
       <Route path="alunos" element={<Alunos />} />
       <Route path="bandas" element={<Bandas />} />
-      <Route path="presenca" element={<Presença />} />
+      <Route path="presenca" element={<Presenca />} />
       <Route path="planos-de-aula" element={<PlanosDeAula />} />
       <Route path="relatorio" element={<Relatorio />} />
       <Route path="config" element={<Configuração />} />

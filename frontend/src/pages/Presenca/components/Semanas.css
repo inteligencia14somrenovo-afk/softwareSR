@@ -1,0 +1,44 @@
+.mes-controle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.mes-controle strong {
+    font-size: 16px;
+    text-transform: capitalize;
+}
+
+.mes-controle button {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.mes-controle button:hover {
+    border-color: #aa0505;
+    color: #aa0505;
+}
+
+.concluir-mes {
+    margin-bottom: 15px;
+    padding: 9px 14px;
+    border: 1px solid #aa0505;
+    background: #fff;
+    color: #aa0505;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.concluir-mes:hover {
+    background: #aa0505;
+    color: #fff;
+}

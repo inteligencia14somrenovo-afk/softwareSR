@@ -1,0 +1,952 @@
+/* =========================
+   PRESENÇA
+========================= */
+
+.presenca {
+    width: 100%;
+    padding: 25px;
+}
+
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+.presenca-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 25px;
+}
+
+.presenca-header h1 {
+    margin: 0 0 5px;
+    font-size: 28px;
+}
+
+.presenca-header p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+
+/* =========================
+   ABAS DOS DIAS
+========================= */
+
+.presenca-abas {
+    display: flex;
+    gap: 6px;
+
+    border-bottom: 1px solid #ddd;
+
+    margin-bottom: 20px;
+
+    overflow-x: auto;
+}
+
+
+/* ABA */
+
+.presenca-abas .aba {
+    border: none;
+
+    background: transparent;
+
+    padding: 12px 18px;
+
+    cursor: pointer;
+
+    color: #777;
+
+    border-bottom: 3px solid transparent;
+
+    white-space: nowrap;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 3px;
+
+    transition: 0.2s;
+}
+
+
+/* NOME */
+
+.presenca-abas .aba span {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* DATA */
+
+.presenca-abas .aba small {
+    font-size: 11px;
+    color: #999;
+}
+
+
+/* HOVER */
+
+.presenca-abas .aba:hover {
+    color: #222;
+    background: #f7f7f7;
+}
+
+
+/* ABA ATIVA */
+
+.presenca-abas .aba.ativa {
+    color: #aa0505;
+
+    border-bottom-color: #aa0505;
+}
+
+.presenca-abas .aba.ativa small {
+    color: #aa0505;
+}
+
+
+/* =========================
+   CABEÇALHO DO DIA
+========================= */
+
+.presenca-dia {
+    background: #fff;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+
+.presenca-dia-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 18px 20px;
+
+    background: #fafafa;
+
+    border-bottom: 1px solid #eee;
+}
+
+
+.presenca-dia-header h2 {
+    margin: 0 0 4px;
+
+    font-size: 19px;
+}
+
+
+.presenca-dia-header p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 13px;
+}
+
+
+.presenca-dia-header > span {
+    background: #eee;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    color: #666;
+
+    font-weight: 600;
+}
+
+
+/* =========================
+   LISTA
+========================= */
+
+.presenca-lista {
+    width: 100%;
+}
+
+
+/* =========================
+   REGISTRO
+========================= */
+
+.registro-presenca {
+    display: grid;
+
+    grid-template-columns: 80px 1fr auto;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 15px 20px;
+
+    border-bottom: 1px solid #eee;
+
+    min-height: 65px;
+
+    transition: background 0.15s;
+}
+
+
+.registro-presenca:last-child {
+    border-bottom: none;
+}
+
+
+.registro-presenca:hover {
+    background: #fafafa;
+}
+
+
+/* =========================
+   HORÁRIO
+========================= */
+
+.registro-horario {
+    font-size: 15px;
+
+    color: #444;
+}
+
+
+.registro-horario strong {
+    font-weight: 600;
+}
+
+
+/* =========================
+   ALUNO
+========================= */
+
+.registro-aluno {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+    min-width: 0;
+}
+
+
+.registro-aluno strong {
+    font-size: 15px;
+
+    color: #222;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+.registro-aluno span {
+    font-size: 12px;
+
+    color: #888;
+}
+
+
+/* =========================
+   BOTÕES
+========================= */
+
+.registro-acoes {
+    display: flex;
+
+    gap: 8px;
+}
+
+
+/* BOTÃO BASE */
+
+.registro-acoes button {
+    border: 1px solid #ddd;
+
+    background: #fff;
+
+    padding: 8px 12px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+
+/* PRESENTE */
+
+.registro-acoes .presente {
+    color: #16803c;
+}
+
+
+.registro-acoes .presente:hover {
+    background: #dcfce7;
+
+    border-color: #b7ebc6;
+}
+
+
+.registro-acoes .presente.ativo {
+    background: #dcfce7;
+
+    border-color: #16803c;
+
+    color: #16803c;
+}
+
+
+/* FALTA */
+
+.registro-acoes .falta {
+    color: #c00000;
+}
+
+
+.registro-acoes .falta:hover {
+    background: #ffe5e5;
+
+    border-color: #ffbcbc;
+}
+
+
+.registro-acoes .falta.ativo {
+    background: #ffe5e5;
+
+    border-color: #c00000;
+
+    color: #c00000;
+}
+
+
+/* =========================
+   SEM AULAS
+========================= */
+
+.presenca-vazia {
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: #888;
+}
+
+
+.presenca-vazia p {
+    margin: 0;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 800px) {
+
+    .presenca {
+        padding: 15px;
+    }
+
+
+    .registro-presenca {
+        grid-template-columns: 65px 1fr;
+
+        gap: 10px 15px;
+    }
+
+
+    .registro-acoes {
+        grid-column: 2;
+
+        width: 100%;
+    }
+
+
+    .registro-acoes button {
+        flex: 1;
+    }
+
+}
+
+
+/* =========================
+   CELULAR
+========================= */
+
+@media (max-width: 600px) {
+
+    .presenca {
+        padding: 10px;
+    }
+
+
+    .presenca-header h1 {
+        font-size: 24px;
+    }
+
+
+    .presenca-abas {
+        gap: 0;
+    }
+
+
+    .presenca-abas .aba {
+        padding: 10px 14px;
+    }
+
+
+    .presenca-abas .aba span {
+        font-size: 13px;
+    }
+
+
+    .presenca-dia-header {
+        padding: 15px;
+    }
+
+
+    .presenca-dia-header h2 {
+        font-size: 17px;
+    }
+
+
+    .registro-presenca {
+        padding: 14px;
+
+        grid-template-columns: 55px 1fr;
+
+        gap: 8px 12px;
+    }
+
+
+    .registro-horario {
+        font-size: 14px;
+    }
+
+
+    .registro-aluno strong {
+        font-size: 14px;
+    }
+
+
+    .registro-acoes {
+        grid-column: 1 / -1;
+
+        display: flex;
+
+        gap: 8px;
+
+        margin-top: 3px;
+    }
+
+
+    .registro-acoes button {
+        padding: 9px 8px;
+
+        font-size: 12px;
+    }
+
+}
+
+/* =========================
+   BOTÃO CONFIGURAR HORÁRIO
+========================= */
+
+.presenca-header > button {
+    border: none;
+
+    background: #aa0505;
+
+    color: #fff;
+
+    padding: 10px 16px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+.presenca-header > button:hover {
+    background: #8f0404;
+}
+
+
+/* =========================
+   FORMULÁRIO DE HORÁRIO
+========================= */
+
+.presenca-form {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 18px 20px;
+
+    margin-bottom: 20px;
+
+    background: #fafafa;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 10px;
+
+    flex-wrap: wrap;
+}
+
+
+.presenca-form h2 {
+    width: 100%;
+
+    margin: 0 0 5px;
+
+    font-size: 17px;
+}
+
+
+.presenca-form select,
+.presenca-form input {
+    border: 1px solid #ddd;
+
+    background: #fff;
+
+    padding: 9px 11px;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+
+    outline: none;
+}
+
+
+.presenca-form select:focus,
+.presenca-form input:focus {
+    border-color: #aa0505;
+}
+
+
+/* BOTÕES DO FORMULÁRIO */
+
+.presenca-form > div {
+    display: flex;
+
+    gap: 8px;
+}
+
+
+.presenca-form button {
+    border: none;
+
+    padding: 9px 14px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+
+/* SALVAR */
+
+.presenca-form button:first-child {
+    background: #aa0505;
+
+    color: #fff;
+}
+
+
+.presenca-form button:first-child:hover {
+    background: #8f0404;
+}
+
+
+/* CANCELAR */
+
+.presenca-form button:last-child {
+    background: #eee;
+
+    color: #555;
+}
+
+
+.presenca-form button:last-child:hover {
+    background: #ddd;
+}
+
+
+/* =========================
+   RESPONSIVO DO FORMULÁRIO
+========================= */
+
+@media (max-width: 600px) {
+
+    .presenca-header {
+        align-items: flex-start;
+
+        gap: 12px;
+    }
+
+
+    .presenca-header > button {
+        padding: 9px 12px;
+
+        font-size: 12px;
+
+        white-space: nowrap;
+    }
+
+
+    .presenca-form {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+
+    .presenca-form select,
+    .presenca-form input {
+        width: 100%;
+
+        box-sizing: border-box;
+    }
+
+
+    .presenca-form > div {
+        width: 100%;
+    }
+
+
+    .presenca-form > div button {
+        flex: 1;
+    }
+
+}
+
+/* =========================
+   BOTÃO EXCLUIR
+========================= */
+
+.registro-acoes .botao-excluir {
+    width: 36px;
+    height: 36px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #ddd;
+
+    background: #fff;
+
+    color: #999;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.registro-acoes .botao-excluir:hover {
+    background : #d34e4e;
+
+    border-color: #ffbcbc;
+
+    color: #c00000;
+}
+
+/* =========================
+   SEMANAS
+========================= */
+
+.presenca-semanas {
+    display: flex;
+
+    gap: 8px;
+
+    margin-bottom: 15px;
+
+    overflow-x: auto;
+}
+
+
+.presenca-semanas .semana {
+    border: 1px solid #ddd;
+
+    background: #fff;
+
+    padding: 10px 16px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 3px;
+
+    white-space: nowrap;
+
+    transition: 0.2s;
+
+    color: #777;
+}
+
+
+.presenca-semanas .semana span {
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+
+.presenca-semanas .semana small {
+    font-size: 11px;
+
+    color: #999;
+}
+
+
+.presenca-semanas .semana:hover {
+    background: #f7f7f7;
+}
+
+
+.presenca-semanas .semana.ativa {
+    background: #aa0505;
+
+    border-color: #aa0505;
+
+    color: #fff;
+}
+
+
+.presenca-semanas .semana.ativa small {
+    color: #eee;
+}
+
+/* =========================
+   ABA DESABILITADA
+========================= */
+
+.presenca-abas .aba.desabilitada {
+    color: #ccc;
+    cursor: not-allowed;
+    background: transparent;
+    border-bottom-color: transparent;
+}
+
+.presenca-abas .aba.desabilitada small {
+    color: #ccc;
+}
+
+.presenca-abas .aba.desabilitada:hover {
+    background: transparent;
+    color: #ccc;
+}
+
+.presenca-semanas .semana em {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    font-style: normal;
+    color: #16803c;
+    font-weight: 600;
+}
+
+/* =========================
+   SEMANAS
+========================= */
+
+.presenca-semanas {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    overflow-x: auto;
+}
+
+.presenca-semanas .semana {
+    min-width: 120px;
+
+    border: 1px solid #ddd;
+    background: #fff;
+
+    border-radius: 8px;
+
+    padding: 10px 12px;
+
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 3px;
+
+    transition: 0.2s;
+}
+
+.presenca-semanas .semana:hover {
+    background: #f7f7f7;
+}
+
+.presenca-semanas .semana span {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.presenca-semanas .semana small {
+    font-size: 11px;
+    color: #999;
+}
+
+.presenca-semanas .semana em {
+    font-size: 10px;
+    color: #16803c;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.presenca-semanas .semana.ativa {
+    color: #aa0505;
+    border-color: #aa0505;
+    background: #fff5f5;
+}
+
+.presenca-semanas .semana.ativa small {
+    color: #aa0505;
+}
+
+
+/* =========================
+   CONTROLE DA SEMANA
+========================= */
+
+.semana-controle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 15px;
+
+    padding: 10px 14px;
+
+    background: #fafafa;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 8px;
+}
+
+.semana-controle span {
+    font-size: 13px;
+    color: #777;
+    font-weight: 600;
+}
+
+.semana-controle button {
+    border: 1px solid #ddd;
+
+    background: #fff;
+
+    color: #555;
+
+    padding: 7px 12px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+.semana-controle button:hover {
+    color: #aa0505;
+    border-color: #aa0505;
+}
+
+
+/* =========================
+   DIAS FORA DO MÊS
+========================= */
+
+.presenca-abas .aba.desabilitada {
+    color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.presenca-abas .aba.desabilitada small {
+    color: #ccc;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .presenca-semanas {
+        gap: 5px;
+    }
+
+    .presenca-semanas .semana {
+        min-width: 105px;
+        padding: 9px;
+    }
+
+    .semana-controle {
+        gap: 10px;
+    }
+
+}
