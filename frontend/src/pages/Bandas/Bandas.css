@@ -1,0 +1,543 @@
+.bandas {
+    width: 100%;
+    padding: 25px;
+}
+
+.bandas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.bandas-header h1 {
+    margin: 0 0 5px;
+    font-size: 28px;
+}
+
+.bandas-header p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.btn-nova-banda {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: none;
+    background: #aa0505;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-nova-banda:hover {
+    background: #8f0404;
+}
+
+.bandas-resumo {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.resumo-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+}
+
+.resumo-card > svg {
+    font-size: 25px;
+    color: #aa0505;
+}
+
+.resumo-card div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.resumo-card strong {
+    font-size: 22px;
+}
+
+.resumo-card span {
+    font-size: 12px;
+    color: #777;
+}
+
+.bandas-ferramentas {
+    margin-bottom: 15px;
+}
+
+.bandas-ferramentas input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 13px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+}
+
+.bandas-ferramentas input:focus {
+    border-color: #aa0505;
+}
+
+.bandas-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.banda-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    transition: .2s;
+}
+
+.banda-card:hover {
+    border-color: #ccc;
+    box-shadow: 0 3px 10px rgba(0,0,0,.04);
+}
+
+.banda-icone {
+    width: 55px;
+    height: 55px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff5f5;
+    color: #aa0505;
+    border-radius: 10px;
+    font-size: 25px;
+}
+
+.banda-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.banda-titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.banda-titulo h2 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.status.ativa {
+    color: #16803c;
+    background: #dcfce7;
+}
+
+.status.inativa {
+    color: #777;
+    background: #eee;
+}
+
+.banda-estilo {
+    display: block;
+    margin-top: 3px;
+    color: #aa0505;
+    font-size: 12px;
+}
+
+.banda-info p {
+    margin: 7px 0;
+    color: #777;
+    font-size: 13px;
+}
+
+.banda-detalhes {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    color: #777;
+    font-size: 11px;
+}
+
+.banda-detalhes span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.banda-acoes {
+    display: flex;
+    gap: 6px;
+}
+
+.banda-acoes button {
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 7px;
+    cursor: pointer;
+    color: #777;
+}
+
+.banda-acoes button:hover {
+    color: #aa0505;
+    border-color: #aa0505;
+}
+
+.banda-acoes .excluir:hover {
+    color: #c00000;
+    background: #fff0f0;
+}
+
+.bandas-vazia {
+    padding: 60px 20px;
+    text-align: center;
+    color: #888;
+    border: 1px dashed #ddd;
+    border-radius: 10px;
+}
+
+.bandas-vazia svg {
+    font-size: 35px;
+    color: #aa0505;
+}
+
+.bandas-vazia h2 {
+    margin: 10px 0 5px;
+    font-size: 17px;
+    color: #555;
+}
+
+.bandas-vazia p {
+    margin: 0;
+    font-size: 13px;
+}
+
+.banda-form-container {
+    margin-bottom: 20px;
+}
+
+.banda-form {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+}
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.form-header h2 {
+    margin: 0 0 4px;
+    font-size: 18px;
+}
+
+.form-header p {
+    margin: 0;
+    color: #777;
+    font-size: 12px;
+}
+
+.form-header button {
+    border: none;
+    background: transparent;
+    font-size: 25px;
+    color: #888;
+    cursor: pointer;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.form-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: #555;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    outline: none;
+    font: inherit;
+    font-weight: 400;
+}
+
+.form-grid textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.form-grid input:focus,
+.form-grid select:focus,
+.form-grid textarea:focus {
+    border-color: #aa0505;
+}
+
+.campo-descricao {
+    grid-column: 1 / -1;
+}
+
+.form-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.form-acoes button {
+    padding: 9px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.btn-cancelar {
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #555;
+}
+
+.btn-salvar {
+    border: none;
+    background: #aa0505;
+    color: #fff;
+}
+
+@media (max-width: 700px) {
+    .bandas {
+        padding: 15px;
+    }
+
+    .bandas-header {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .bandas-header h1 {
+        font-size: 24px;
+    }
+
+    .btn-nova-banda {
+        padding: 9px 12px;
+        white-space: nowrap;
+    }
+
+    .bandas-resumo {
+        grid-template-columns: 1fr;
+    }
+
+    .banda-card {
+        align-items: flex-start;
+    }
+
+    .banda-acoes {
+        flex-direction: column;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .campo-descricao {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 450px) {
+    .banda-card {
+        flex-wrap: wrap;
+    }
+
+    .banda-info {
+        width: calc(100% - 73px);
+    }
+
+    .banda-acoes {
+        width: 100%;
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+
+    .form-acoes {
+        flex-direction: column;
+    }
+
+    .form-acoes button {
+        width: 100%;
+    }
+}
+
+/* =========================
+   DETALHES DA BANDA
+========================= */
+
+.banda-detalhes-painel {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #eee;
+}
+
+.banda-detalhes-painel h3 {
+    margin: 14px 0 8px;
+    font-size: 14px;
+    color: #444;
+}
+
+.banda-detalhes-painel > p {
+    margin: 6px 0;
+    color: #999;
+    font-size: 12px;
+}
+
+.integrante,
+.ensaio {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.integrante span,
+.ensaio span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+}
+
+.integrante small,
+.ensaio small {
+    color: #999;
+    font-size: 11px;
+}
+
+.integrante button,
+.ensaio button {
+    margin-left: auto;
+    border: none;
+    background: transparent;
+    color: #999;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.integrante button:hover,
+.ensaio button:hover {
+    color: #c00000;
+}
+
+.adicionar-integrante {
+    display: flex;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+.adicionar-integrante select,
+.adicionar-integrante input {
+    padding: 8px 9px;
+    border: 1px solid #ddd;
+    border-radius: 7px;
+    outline: none;
+    font-size: 12px;
+}
+
+.adicionar-integrante select {
+    flex: 1;
+}
+
+.adicionar-integrante input {
+    width: 130px;
+}
+
+.adicionar-integrante select:focus,
+.adicionar-integrante input:focus {
+    border-color: #aa0505;
+}
+
+.adicionar-integrante button,
+.btn-ensaio {
+    border: none;
+    background: #aa0505;
+    color: #fff;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.adicionar-integrante button {
+    width: 34px;
+}
+
+.adicionar-integrante button:hover,
+.btn-ensaio:hover {
+    background: #8f0404;
+}
+
+.btn-ensaio {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    margin-top: 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+    .adicionar-integrante {
+        flex-wrap: wrap;
+    }
+
+    .adicionar-integrante select,
+    .adicionar-integrante input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .adicionar-integrante button {
+        width: 100%;
+        height: 34px;
+    }
+}
