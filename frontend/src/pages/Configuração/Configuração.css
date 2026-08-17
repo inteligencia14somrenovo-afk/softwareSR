@@ -1,0 +1,562 @@
+.configuracao-page {
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+
+  padding: 35px 40px 50px;
+
+  background: #f5f5f5;
+
+  overflow-y: auto;
+}
+
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+.configuracao-header {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto 30px;
+}
+
+.configuracao-header h1 {
+  margin: 0;
+
+  font-size: 30px;
+  font-weight: 700;
+
+  color: #222;
+}
+
+.configuracao-header p {
+  margin: 8px 0 0;
+
+  font-size: 15px;
+
+  color: #777;
+}
+
+
+/* =========================
+   CARDS
+========================= */
+
+.configuracao-card {
+  width: 100%;
+  max-width: 1100px;
+
+  box-sizing: border-box;
+
+  margin: 0 auto 25px;
+
+  padding: 30px;
+
+  background: #fff;
+
+  border: 1px solid #e8e8e8;
+
+  border-radius: 16px;
+
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+
+/* =========================
+   TÍTULO DO CARD
+========================= */
+
+.card-title {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  margin-bottom: 30px;
+}
+
+.card-icon {
+  width: 45px;
+  height: 45px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #fff0f0;
+
+  font-size: 21px;
+}
+
+.card-title h2 {
+  margin: 0;
+
+  font-size: 20px;
+
+  color: #222;
+}
+
+.card-title p {
+  margin: 5px 0 0;
+
+  font-size: 14px;
+
+  color: #777;
+}
+
+
+/* =========================
+   FOTO DO PERFIL
+========================= */
+
+.perfil-foto-area {
+  display: flex;
+  align-items: center;
+
+  gap: 25px;
+
+  margin-bottom: 30px;
+
+  padding-bottom: 25px;
+
+  border-bottom: 1px solid #eee;
+}
+
+.perfil-foto {
+  width: 100px;
+  height: 100px;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #d40808;
+
+  color: #fff;
+
+  font-size: 38px;
+  font-weight: 600;
+}
+
+.perfil-foto img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.perfil-foto span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+}
+
+.foto-info {
+  flex: 1;
+}
+
+.foto-info strong {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #333;
+
+  font-size: 15px;
+}
+
+.foto-info p {
+  margin: 0 0 12px;
+
+  color: #888;
+
+  font-size: 13px;
+}
+
+.foto-info input {
+  width: 100%;
+  max-width: 500px;
+
+  box-sizing: border-box;
+
+  padding: 11px 14px;
+
+  border: 1px solid #ddd;
+
+  border-radius: 8px;
+
+  outline: none;
+
+  font-size: 14px;
+
+  transition: 0.2s;
+}
+
+.foto-info input:focus {
+  border-color: #d40808;
+}
+
+
+/* =========================
+   CAMPOS
+========================= */
+
+.campo-configuracao {
+  margin-bottom: 25px;
+}
+
+.campo-configuracao label {
+  display: block;
+
+  margin-bottom: 9px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #333;
+}
+
+.campo-configuracao > input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 13px 15px;
+
+  border: 1px solid #ddd;
+
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #fff;
+
+  color: #222;
+
+  font-size: 15px;
+
+  transition: 0.2s;
+}
+
+.campo-configuracao > input:focus {
+  border-color: #d40808;
+}
+
+.campo-configuracao > input[readonly] {
+  background: #f7f7f7;
+
+  color: #777;
+
+  cursor: not-allowed;
+}
+
+.campo-configuracao small {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #888;
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   INSTRUMENTOS
+========================= */
+
+.instrumentos-config-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  gap: 10px;
+}
+
+.instrumento-config {
+  min-height: 45px;
+
+  padding: 10px 12px;
+
+  border: 1px solid #ddd;
+
+  border-radius: 9px;
+
+  background: #fff;
+
+  color: #444;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.instrumento-config:hover {
+  border-color: #d40808;
+
+  color: #d40808;
+}
+
+.instrumento-config.selecionado {
+  border-color: #d40808;
+
+  background: #d40808;
+
+  color: #fff;
+}
+
+
+/* =========================
+   MENSAGENS
+========================= */
+
+.mensagem-erro {
+  padding: 12px 15px;
+
+  margin-bottom: 20px;
+
+  border-radius: 8px;
+
+  background: #ffe5e5;
+
+  color: #a00000;
+
+  font-size: 14px;
+}
+
+.mensagem-sucesso {
+  padding: 12px 15px;
+
+  margin-bottom: 20px;
+
+  border-radius: 8px;
+
+  background: #e7f7ec;
+
+  color: #18743a;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   AÇÕES
+========================= */
+
+.configuracao-acoes {
+  display: flex;
+
+  justify-content: flex-end;
+
+  padding-top: 5px;
+}
+
+.btn-salvar {
+  min-width: 190px;
+
+  height: 45px;
+
+  padding: 0 22px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #d40808;
+
+  color: #fff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.btn-salvar:hover {
+  background: #a70707;
+}
+
+.btn-salvar:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================
+   CONTA
+========================= */
+
+.conta-info {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 15px;
+
+  border-radius: 9px;
+
+  background: #f8f8f8;
+
+  color: #555;
+
+  font-size: 14px;
+}
+
+.conta-status {
+  color: #16833d;
+
+  font-weight: 600;
+}
+
+
+/* =========================
+   PREFERÊNCIAS / FUTURO
+========================= */
+
+.configuracao-futura {
+  opacity: 0.85;
+}
+
+.em-breve {
+  padding: 20px;
+
+  border-radius: 10px;
+
+  background: #f8f8f8;
+
+  color: #888;
+
+  text-align: center;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 900px) {
+
+  .configuracao-page {
+    padding: 30px 25px 40px;
+  }
+
+  .configuracao-card {
+    padding: 25px;
+  }
+
+  .instrumentos-config-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+}
+
+
+/* =========================
+   CELULAR
+========================= */
+
+@media (max-width: 600px) {
+
+  .configuracao-page {
+    padding: 20px 15px 35px;
+  }
+
+  .configuracao-header h1 {
+    font-size: 25px;
+  }
+
+  .configuracao-card {
+    padding: 20px;
+
+    border-radius: 13px;
+  }
+
+  .card-title {
+    gap: 12px;
+
+    margin-bottom: 25px;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+
+    font-size: 18px;
+  }
+
+  .card-title h2 {
+    font-size: 18px;
+  }
+
+  .perfil-foto-area {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 15px;
+  }
+
+  .foto-info {
+    width: 100%;
+  }
+
+  .foto-info input {
+    max-width: none;
+  }
+
+  .instrumentos-config-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .configuracao-acoes {
+    justify-content: stretch;
+  }
+
+  .btn-salvar {
+    width: 100%;
+  }
+
+  .conta-info {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 8px;
+  }
+
+}
+
+
+/* =========================
+   CELULAR PEQUENO
+========================= */
+
+@media (max-width: 380px) {
+
+  .instrumentos-config-grid {
+    grid-template-columns: 1fr;
+  }
+
+}

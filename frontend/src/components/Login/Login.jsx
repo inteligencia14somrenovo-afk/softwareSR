@@ -33,8 +33,8 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    // Será implementado quando configurarmos o backend + Google OAuth
-    console.log("Login com Google");
+    window.location.href = "http://localhost:3000/auth/google";
+
   };
 
   return (

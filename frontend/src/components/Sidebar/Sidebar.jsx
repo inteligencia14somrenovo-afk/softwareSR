@@ -9,6 +9,7 @@ import { FaDrum } from "@react-icons/all-files/fa/FaDrum";
 import { MdMenu, MdMenuOpen } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 import logo from "../../assets/logo.png";
 import "./Sidebar.css";
@@ -17,6 +18,8 @@ import "./Sidebar.css";
 const Sidebar = () => {
 
   const [collapsed, setCollapsed] = useState(false);
+
+  const { professor } = useAuth();
 
 
   return (
@@ -102,22 +105,38 @@ const Sidebar = () => {
 
       <div className="profile">
 
-        <div className="profile-image">
-        </div>
+  <div className="profile-image">
+    {professor?.foto_url ? (
+      <img
+        src={professor.foto_url}
+        alt={professor.nome}
+      />
+    ) : (
+      <span>
+        {professor?.nome
+          ? professor.nome.charAt(0).toUpperCase()
+          : "?"}
+      </span>
+    )}
+  </div>
 
+  {!collapsed && (
 
-        {!collapsed && (
+    <div className="profile-info">
 
-          <div className="profile-info">
+      <h4>
+        {professor?.nome || "Professor"}
+      </h4>
 
-            <h4>nome de usuario</h4>
-            <p>email@real.user</p>
+      <p>
+        {professor?.email || ""}
+      </p>
 
-          </div>
+    </div>
 
-        )}
+  )}
 
-      </div>
+</div>
 
 
     </aside>

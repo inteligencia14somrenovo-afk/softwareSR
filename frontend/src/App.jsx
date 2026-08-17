@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 
 import Login from "./components/Login/Login";
 import Dashboard from "./layouts/Dashboard";
@@ -9,25 +10,59 @@ import Presenca from "./pages/Presenca/Presenca";
 import PlanosDeAula from "./pages/PlanosDeAula/PlanosDeAula";
 import Relatorio from "./pages/Relatorio/Relatorio";
 import Configuração from "./pages/Configuração/Configuração";
+import ConfigurarPerfil from "./pages/ConfigurarPerfil/ConfigurarPerfil";
+import ProfileSetupRoute from "./components/ProfileSetupRoute/ProfileSetupRoute";
+
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 import "./App.css";
 
 function App() {
   return (
     <BrowserRouter>
-    <Routes>
-    <Route path="/"
-    element={<Login />}>
-      <Route index element={<TelaInicial />} />
-      <Route path="alunos" element={<Alunos />} />
-      <Route path="bandas" element={<Bandas />} />
-      <Route path="presenca" element={<Presenca />} />
-      <Route path="planos-de-aula" element={<PlanosDeAula />} />
-      <Route path="relatorio" element={<Relatorio />} />
-      <Route path="config" element={<Configuração />} />
+      <Routes>
+
+        {/* LOGIN */}
+        <Route path="/login" element={<Login />} />
+
+        {/* PRIMEIRO ACESSO */}
+
+         <Route 
+            path="/configurar-perfil" 
+            element={
+           <ProfileSetupRoute>
+             <ConfigurarPerfil />
+           </ProfileSetupRoute>}/>
+
+        {/* ÁREA DO SISTEMA */}
+        <Route path="/" element={<ProtectedRoute> <Dashboard /> </ProtectedRoute>}>
+
+          <Route index element={<TelaInicial />} />
+
+          <Route path="alunos" element={<Alunos />} />
+
+          <Route path="bandas" element={<Bandas />} />
+
+          <Route path="presenca" element={<Presenca />} />
+
+          <Route
+            path="planos-de-aula"
+            element={<PlanosDeAula />}
+          />
+
+          <Route
+            path="relatorio"
+            element={<Relatorio />}
+          />
+
+          <Route
+            path="config"
+            element={<Configuração />}
+          />
 
 
         </Route>
+
       </Routes>
     </BrowserRouter>
   );
