@@ -43,7 +43,7 @@ function TelaInicial() {
 
             <div className="welcome">
                 <h1>Olá, Professor! 👋</h1>
-                <p>Bem-vindo ao sistema da Escola de Música.</p>
+                <p>Bem-vindo(a) ao sistema da Escola de Música Som Renovo.</p>
             </div>
 
             <div className="cards">

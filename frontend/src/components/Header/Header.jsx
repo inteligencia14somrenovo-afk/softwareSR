@@ -8,12 +8,16 @@ import { FaUserGraduate } from "@react-icons/all-files/fa/FaUserGraduate";
 import { FaDrum } from "@react-icons/all-files/fa/FaDrum";
 import { FaBook } from "@react-icons/all-files/fa/FaBook";
 
+import { useAuth } from "../../context/AuthContext";
+
 import "./Header.css";
 
 
 const Header = () => {
 
   const location = useLocation();
+
+  const { professor } = useAuth();
 
 
   const titles = {
@@ -51,7 +55,10 @@ const Header = () => {
   });
 
 
-  const usuario = "user";
+  // Pega somente o primeiro nome do professor
+  const primeiroNome = professor?.nome
+    ? professor.nome.trim().split(/\s+/)[0]
+    : "Professor";
 
 
   return (
@@ -67,7 +74,7 @@ const Header = () => {
 
 
         <h1>
-          {saudacao}, {usuario}!
+          {saudacao}, {primeiroNome}!
         </h1>
 
 
@@ -92,7 +99,9 @@ const Header = () => {
 
         <button
           className="header-icon notification"
-          onClick={() => setShowNotifications(!showNotifications)}
+          onClick={() =>
+            setShowNotifications(!showNotifications)
+          }
         >
           <MdNotifications />
         </button>
@@ -141,6 +150,7 @@ const Header = () => {
     </header>
 
   );
+
 };
 
 

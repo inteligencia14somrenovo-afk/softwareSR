@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { FaCamera } from "react-icons/fa";
+import API_URL from "../../config/api";
 import "./Configuração.css";
 
 const instrumentosDisponiveis = [
@@ -20,11 +22,14 @@ const Configuração = () => {
 
   const [nome, setNome] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
+  const [fotoPreview, setFotoPreview] = useState("");
   const [instrumentos, setInstrumentos] = useState([]);
 
   const [salvando, setSalvando] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState("");
+
+  const inputFotoRef = useRef(null);
 
   // Carrega os dados atuais do professor
   useEffect(() => {
@@ -32,8 +37,40 @@ const Configuração = () => {
 
     setNome(professor.nome || "");
     setFotoUrl(professor.foto_url || "");
+    setFotoPreview(professor.foto_url || "");
     setInstrumentos(professor.instrumentos || []);
   }, [professor]);
+
+  // Selecionar nova foto
+  const selecionarFoto = (event) => {
+    const arquivo = event.target.files?.[0];
+
+    if (!arquivo) return;
+
+    if (!arquivo.type.startsWith("image/")) {
+      setErro("Selecione um arquivo de imagem válido.");
+      return;
+    }
+
+    // Limite inicial de 5 MB
+    if (arquivo.size > 5 * 1024 * 1024) {
+      setErro("A imagem deve ter no máximo 5 MB.");
+      return;
+    }
+
+    setErro("");
+    setMensagem("");
+
+    const novaPreview = URL.createObjectURL(arquivo);
+
+    setFotoPreview(novaPreview);
+
+    /*
+      Por enquanto mantemos a imagem apenas como preview.
+      O upload permanente será implementado posteriormente
+      através do backend/Storage.
+    */
+  };
 
   const alternarInstrumento = (instrumento) => {
     setInstrumentos((atual) => {
@@ -52,7 +89,7 @@ const Configuração = () => {
     setErro("");
 
     if (!nome.trim()) {
-      setErro("Digite seu nome.");
+      setErro("Digite seu nome completo.");
       return;
     }
 
@@ -65,7 +102,7 @@ const Configuração = () => {
       setSalvando(true);
 
       const response = await fetch(
-        "http://localhost:3000/professores/perfil",
+        `${API_URL}/professores/perfil`,
         {
           method: "PUT",
           credentials: "include",
@@ -84,12 +121,12 @@ const Configuração = () => {
 
       if (!response.ok) {
         setErro(
-          data.mensagem || "Não foi possível salvar as alterações."
+          data.mensagem ||
+            "Não foi possível salvar as alterações."
         );
         return;
       }
 
-      // Atualiza os dados globais do professor
       setProfessor(data.professor);
 
       setMensagem("Perfil atualizado com sucesso.");
@@ -113,11 +150,14 @@ const Configuração = () => {
     );
   }
 
+  const primeiroNome = nome.trim()
+    ? nome.trim().split(/\s+/)[0]
+    : "Professor";
+
   return (
     <div className="configuracao-page">
 
       <div className="configuracao-header">
-
         <div>
           <h1>Configuração</h1>
 
@@ -125,11 +165,12 @@ const Configuração = () => {
             Gerencie suas informações e preferências.
           </p>
         </div>
-
       </div>
 
 
-      {/* MEU PERFIL */}
+      {/* =========================
+          MEU PERFIL
+      ========================= */}
 
       <section className="configuracao-card">
 
@@ -152,59 +193,85 @@ const Configuração = () => {
 
         <form onSubmit={salvarPerfil}>
 
-          {/* FOTO */}
+          {/* =========================
+              FOTO + NOME
+          ========================= */}
 
-          <div className="perfil-foto-area">
+          <div className="perfil-principal">
 
-            <div className="perfil-foto">
+            <div className="foto-container">
 
-              {fotoUrl ? (
+              <div
+                className="perfil-foto"
+                onClick={() =>
+                  inputFotoRef.current?.click()
+                }
+                title="Alterar foto"
+              >
 
-                <img
-                  src={fotoUrl}
-                  alt={nome || "Professor"}
-                />
+                {fotoPreview ? (
 
-              ) : (
+                  <img
+                    src={fotoPreview}
+                    alt={nome || "Professor"}
+                  />
 
-                <span>
-                  {nome
-                    ? nome.charAt(0).toUpperCase()
-                    : "?"}
-                </span>
+                ) : (
 
-              )}
+                  <span>
+                    {primeiroNome.charAt(0).toUpperCase()}
+                  </span>
+
+                )}
+
+                <div className="foto-editar">
+                  <FaCamera />
+                </div>
+
+              </div>
+
+              <input
+                ref={inputFotoRef}
+                type="file"
+                accept="image/*"
+                onChange={selecionarFoto}
+                style={{ display: "none" }}
+              />
 
             </div>
 
-            <div className="foto-info">
 
-              <strong>Foto do perfil</strong>
+            <div className="perfil-identidade">
 
-              <p>
-                Você pode adicionar uma URL de imagem.
-              </p>
+              <h3>
+                {nome.trim() || "Seu nome"}
+              </h3>
 
-              <input
-                type="url"
-                value={fotoUrl}
-                onChange={(e) =>
-                  setFotoUrl(e.target.value)
-                }
-                placeholder="https://..."
-              />
+              <span>
+                Professor
+              </span>
+
+              {instrumentos.length > 0 && (
+
+                <p>
+                  {instrumentos.join(" • ")}
+                </p>
+
+              )}
 
             </div>
 
           </div>
 
 
-          {/* NOME */}
+          {/* =========================
+              NOME COMPLETO
+          ========================= */}
 
           <div className="campo-configuracao">
 
             <label htmlFor="nome">
-              Nome
+              Nome completo
             </label>
 
             <input
@@ -214,14 +281,20 @@ const Configuração = () => {
               onChange={(e) =>
                 setNome(e.target.value)
               }
-              placeholder="Seu nome"
+              placeholder="Digite seu nome completo"
               maxLength={100}
             />
+
+            <small>
+              Esse é o nome que aparecerá no seu perfil.
+            </small>
 
           </div>
 
 
-          {/* EMAIL */}
+          {/* =========================
+              EMAIL
+          ========================= */}
 
           <div className="campo-configuracao">
 
@@ -244,7 +317,9 @@ const Configuração = () => {
           </div>
 
 
-          {/* INSTRUMENTOS */}
+          {/* =========================
+              INSTRUMENTOS
+          ========================= */}
 
           <div className="campo-configuracao">
 
@@ -280,7 +355,9 @@ const Configuração = () => {
           </div>
 
 
-          {/* MENSAGENS */}
+          {/* =========================
+              MENSAGENS
+          ========================= */}
 
           {erro && (
             <div className="mensagem-erro">
@@ -295,7 +372,9 @@ const Configuração = () => {
           )}
 
 
-          {/* BOTÃO */}
+          {/* =========================
+              BOTÃO
+          ========================= */}
 
           <div className="configuracao-acoes">
 
@@ -316,7 +395,9 @@ const Configuração = () => {
       </section>
 
 
-      {/* PREFERÊNCIAS */}
+      {/* =========================
+          PREFERÊNCIAS
+      ========================= */}
 
       <section className="configuracao-card configuracao-futura">
 
@@ -344,7 +425,9 @@ const Configuração = () => {
       </section>
 
 
-      {/* CONTA */}
+      {/* =========================
+          CONTA
+      ========================= */}
 
       <section className="configuracao-card">
 

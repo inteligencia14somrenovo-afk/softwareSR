@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./ConfigurarPerfil.css";
+import API_URL from "../../config/api";
 
 const instrumentosDisponiveis = [
   "Violão",
@@ -57,7 +58,7 @@ const ConfigurarPerfil = () => {
       setSalvando(true);
 
       const response = await fetch(
-        "http://localhost:3000/professores/perfil",
+        `${API_URL}/professores/perfil`,
         {
           method: "PUT",
           credentials: "include",

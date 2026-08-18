@@ -7,7 +7,7 @@ function AlunoCard({
 
   return (
     <div
-      className={`card-aluno ${aluno.cor}`}
+      className={`card-aluno ${aluno.instrumento}`}
       onClick={() => abrirDetalhes(aluno)}
     >
 

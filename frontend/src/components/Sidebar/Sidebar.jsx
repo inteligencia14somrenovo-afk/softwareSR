@@ -125,7 +125,7 @@ const Sidebar = () => {
     <div className="profile-info">
 
       <h4>
-        {professor?.nome || "Professor"}
+        {professor?.nome ? professor.nome.trim().split(/\s+/)[0]: "Professor"} (Instrutor)
       </h4>
 
       <p>

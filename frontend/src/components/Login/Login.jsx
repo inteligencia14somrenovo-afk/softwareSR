@@ -1,5 +1,6 @@
 import { FaUser, FaLock, FaGoogle } from "react-icons/fa";
 import { useState, useRef } from "react";
+import API_URL from "../../config/api";
 
 import "./Login.css";
 import logo from "../../assets/logo.png";
@@ -33,7 +34,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:3000/auth/google";
+    window.location.href = `${API_URL}/auth/google`;
 
   };
 
