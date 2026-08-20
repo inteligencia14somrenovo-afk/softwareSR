@@ -1,39 +1,40 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import { GoTrash } from "react-icons/go";
 import Semanas from "./components/Semanas";
+import API_URL from "../../config/api";
 
 import "./Presenca.css";
 
 function Presenca() {
 
+  const {
+    professor,
+    carregando: carregandoProfessor
+  } = useAuth();
+
   // =========================
   // ALUNOS
   // =========================
 
-  const [alunos, setAlunos] = useState(() => {
-    const alunosSalvos = localStorage.getItem("alunos");
-    return alunosSalvos ? JSON.parse(alunosSalvos) : [];
-  });
+  const [alunos, setAlunos] = useState([]);
+  const [carregandoAlunos, setCarregandoAlunos] = useState(true);
 
 
   // =========================
   // AULAS / HORÁRIOS
   // =========================
 
-  const [aulas, setAulas] = useState(() => {
-    const aulasSalvas = localStorage.getItem("aulas");
-    return aulasSalvas ? JSON.parse(aulasSalvas) : [];
-  });
+  const [aulas, setAulas] = useState([]);
+  const [carregandoAulas, setCarregandoAulas] = useState(true);
 
 
   // =========================
   // PRESENÇAS
   // =========================
 
-  const [presencas, setPresencas] = useState(() => {
-    const presencasSalvas = localStorage.getItem("presencas");
-    return presencasSalvas ? JSON.parse(presencasSalvas) : [];
-  });
+  const [presencas, setPresencas] = useState([]);
+  const [carregandoPresencas, setCarregandoPresencas] = useState(true);
 
 
   // =========================
@@ -45,21 +46,42 @@ function Presenca() {
 
   const [mesSelecionado, setMesSelecionado] = useState(new Date());
 
+
+  // =========================
+  // CONTROLE VISUAL
+  // =========================
+
   const [semanasConcluidas, setSemanasConcluidas] = useState(() => {
-    const salvas = localStorage.getItem("semanasConcluidas");
-    return salvas ? JSON.parse(salvas) : [];
+
+    const salvas =
+      localStorage.getItem("semanasConcluidas");
+
+    return salvas
+      ? JSON.parse(salvas)
+      : [];
+
   });
 
+
   const [mesesConcluidos, setMesesConcluidos] = useState(() => {
-  const salvos = localStorage.getItem("mesesConcluidos");
-  return salvos ? JSON.parse(salvos) : [];
-});
+
+    const salvos =
+      localStorage.getItem("mesesConcluidos");
+
+    return salvos
+      ? JSON.parse(salvos)
+      : [];
+
+  });
+
 
   // =========================
   // FORMULÁRIO
   // =========================
 
-  const [mostrarFormAula, setMostrarFormAula] = useState(false);
+  const [mostrarFormAula, setMostrarFormAula] =
+    useState(false);
+
 
   const [novaAula, setNovaAula] = useState({
     alunoId: "",
@@ -69,105 +91,85 @@ function Presenca() {
 
 
   // =========================
-  // ATUALIZAR ALUNOS
+  // ESTADO DE CARREGAMENTO
   // =========================
 
-  useEffect(() => {
+  const carregando =
+    carregandoProfessor ||
+    carregandoAlunos ||
+    carregandoAulas ||
+    carregandoPresencas;
 
-    const atualizarAlunos = () => {
-      const alunosSalvos = localStorage.getItem("alunos");
-
-      setAlunos(
-        alunosSalvos ? JSON.parse(alunosSalvos) : []
-      );
-    };
-
-    window.addEventListener(
-      "alunosAtualizados",
-      atualizarAlunos
-    );
-
-    return () => {
-      window.removeEventListener(
-        "alunosAtualizados",
-        atualizarAlunos
-      );
-    };
-
-  }, []);
-
-
-  // =========================
-  // SALVAR DADOS
-  // =========================
-
-  useEffect(() => {
-    localStorage.setItem(
-      "aulas",
-      JSON.stringify(aulas)
-    );
-  }, [aulas]);
-
-
-  useEffect(() => {
-    localStorage.setItem(
-      "presencas",
-      JSON.stringify(presencas)
-    );
-  }, [presencas]);
-
-
-  useEffect(() => {
-    localStorage.setItem(
-      "semanasConcluidas",
-      JSON.stringify(semanasConcluidas)
-    );
-  }, [semanasConcluidas]);
-
-  useEffect(() => {
-  localStorage.setItem(
-    "mesesConcluidos",
-    JSON.stringify(mesesConcluidos)
-  );
-}, [mesesConcluidos]);
 
   // =========================
   // DIAS
   // =========================
 
   const dias = [
-    { numero: 1, nome: "Segunda-feira" },
-    { numero: 2, nome: "Terça-feira" },
-    { numero: 3, nome: "Quarta-feira" },
-    { numero: 4, nome: "Quinta-feira" },
-    { numero: 5, nome: "Sexta-feira" },
-    { numero: 6, nome: "Sábado" }
+    {
+      numero: 1,
+      nome: "Segunda-feira"
+    },
+    {
+      numero: 2,
+      nome: "Terça-feira"
+    },
+    {
+      numero: 3,
+      nome: "Quarta-feira"
+    },
+    {
+      numero: 4,
+      nome: "Quinta-feira"
+    },
+    {
+      numero: 5,
+      nome: "Sexta-feira"
+    },
+    {
+      numero: 6,
+      nome: "Sábado"
+    }
   ];
 
 
   // =========================
   // MÊS ATUAL
   // =========================
-const hoje = new Date();
 
-const anoAtual = mesSelecionado.getFullYear();
-const mesAtual = mesSelecionado.getMonth();
+  const anoAtual =
+    mesSelecionado.getFullYear();
 
-const primeiroDiaMes = new Date(
-  anoAtual,
-  mesAtual,
-  1
-);
+  const mesAtual =
+    mesSelecionado.getMonth();
 
-primeiroDiaMes.setHours(0, 0, 0, 0);
 
-const ultimoDiaMes = new Date(
-  anoAtual,
-  mesAtual + 1,
-  0
-);
+  const primeiroDiaMes = new Date(
+    anoAtual,
+    mesAtual,
+    1
+  );
 
-ultimoDiaMes.setHours(23, 59, 59, 999);
+  primeiroDiaMes.setHours(
+    0,
+    0,
+    0,
+    0
+  );
+
+
+  const ultimoDiaMes = new Date(
+    anoAtual,
+    mesAtual + 1,
+    0
+  );
+
+  ultimoDiaMes.setHours(
+    23,
+    59,
+    59,
+    999
+  );
 
 
   // =========================
@@ -176,9 +178,11 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
 
   const obterInicioSemana = (data) => {
 
-    const novaData = new Date(data);
+    const novaData =
+      new Date(data);
 
-    const dia = novaData.getDay();
+    const dia =
+      novaData.getDay();
 
     const diferenca =
       dia === 0
@@ -189,9 +193,15 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
       novaData.getDate() + diferenca
     );
 
-    novaData.setHours(0, 0, 0, 0);
+    novaData.setHours(
+      0,
+      0,
+      0,
+      0
+    );
 
     return novaData;
+
   };
 
 
@@ -201,17 +211,22 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
 
   const obterFimSemana = (inicio) => {
 
-    const fim = new Date(inicio);
+    const fim =
+      new Date(inicio);
 
     fim.setDate(
       fim.getDate() + 5
     );
 
     fim.setHours(
-      23, 59, 59, 999
+      23,
+      59,
+      59,
+      999
     );
 
     return fim;
+
   };
 
 
@@ -223,45 +238,67 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
 
     const semanas = [];
 
-    let inicio = obterInicioSemana(
-      primeiroDiaMes
-    );
-
-    while (inicio <= ultimoDiaMes) {
-
-      const fim = obterFimSemana(
-        inicio
+    let inicio =
+      obterInicioSemana(
+        primeiroDiaMes
       );
+
+
+    while (
+      inicio <= ultimoDiaMes
+    ) {
+
+      const fim =
+        obterFimSemana(
+          inicio
+        );
+
 
       const inicioVisivel =
         inicio < primeiroDiaMes
           ? new Date(primeiroDiaMes)
           : new Date(inicio);
 
+
       const fimVisivel =
         fim > ultimoDiaMes
           ? new Date(ultimoDiaMes)
           : new Date(fim);
 
+
       semanas.push({
-        inicio: new Date(inicio),
-        fim: new Date(fim),
+
+        inicio:
+          new Date(inicio),
+
+        fim:
+          new Date(fim),
+
         inicioVisivel,
+
         fimVisivel
+
       });
 
-      inicio = new Date(inicio);
+
+      inicio =
+        new Date(inicio);
+
 
       inicio.setDate(
         inicio.getDate() + 7
       );
+
     }
 
+
     return semanas;
+
   };
 
 
-  const semanas = obterSemanasDoMes();
+  const semanas =
+    obterSemanasDoMes();
 
 
   // =========================
@@ -269,7 +306,9 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
   // =========================
 
   const obterIdSemana = (index) => {
+
     return `${anoAtual}-${mesAtual}-${index}`;
+
   };
 
 
@@ -279,7 +318,9 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
 
   const semanaAtualConcluida =
     semanasConcluidas.includes(
-      obterIdSemana(semanaSelecionada)
+      obterIdSemana(
+        semanaSelecionada
+      )
     );
 
 
@@ -296,20 +337,29 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
       return null;
     }
 
-    const data = new Date(
-      semana.inicio
-    );
+
+    const data =
+      new Date(
+        semana.inicio
+      );
+
 
     data.setDate(
       data.getDate() +
       (numeroDia - 1)
     );
 
+
     data.setHours(
-      0, 0, 0, 0
+      0,
+      0,
+      0,
+      0
     );
 
+
     return data;
+
   };
 
 
@@ -322,11 +372,15 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
   ) => {
 
     const semana =
-      semanas[semanaSelecionada];
+      semanas[
+        semanaSelecionada
+      ];
+
 
     if (!semana) {
       return false;
     }
+
 
     const data =
       obterDataDoDia(
@@ -334,10 +388,12 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
         numeroDia
       );
 
+
     return (
       data >= primeiroDiaMes &&
       data <= ultimoDiaMes
     );
+
   };
 
 
@@ -347,7 +403,9 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
 
   const dataSelecionada =
     obterDataDoDia(
-      semanas[semanaSelecionada],
+      semanas[
+        semanaSelecionada
+      ],
       diaSelecionado
     );
 
@@ -361,6 +419,16 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
 
 
   // =========================
+  // STRING DO MÊS PARA API
+  // =========================
+
+  const mesString =
+    `${anoAtual}-${String(
+      mesAtual + 1
+    ).padStart(2, "0")}`;
+
+
+  // =========================
   // FORMATAR DATA
   // =========================
 
@@ -370,6 +438,7 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
       return "";
     }
 
+
     return data.toLocaleDateString(
       "pt-BR",
       {
@@ -377,7 +446,320 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
         month: "2-digit"
       }
     );
+
   };
+
+
+  // =====================================================
+  // CARREGAR ALUNOS
+  // =====================================================
+
+  useEffect(() => {
+
+    const carregarAlunos = async () => {
+
+      if (carregandoProfessor) {
+        return;
+      }
+
+
+      if (!professor) {
+
+        setAlunos([]);
+
+        setCarregandoAlunos(false);
+
+        return;
+
+      }
+
+
+      try {
+
+        setCarregandoAlunos(true);
+
+
+        const response =
+          await fetch(
+            `${API_URL}/alunos`,
+            {
+              credentials:
+                "include"
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.mensagem ||
+            "Não foi possível carregar os alunos."
+          );
+
+        }
+
+
+        setAlunos(
+          data.alunos || []
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "❌ Erro ao carregar alunos:",
+          error
+        );
+
+      } finally {
+
+        setCarregandoAlunos(false);
+
+      }
+
+    };
+
+
+    carregarAlunos();
+
+  }, [
+    professor,
+    carregandoProfessor
+  ]);
+
+
+  // =====================================================
+  // CARREGAR AULAS
+  // =====================================================
+
+  useEffect(() => {
+
+    const carregarAulas = async () => {
+
+      if (
+        carregandoProfessor ||
+        !professor
+      ) {
+        return;
+      }
+
+
+      try {
+
+        setCarregandoAulas(true);
+
+
+        const response =
+          await fetch(
+            `${API_URL}/aulas`,
+            {
+              credentials:
+                "include"
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.mensagem ||
+            "Não foi possível carregar os horários."
+          );
+
+        }
+
+
+        const aulasFormatadas =
+          (data.aulas || []).map(
+            (aula) => ({
+
+              id:
+                Number(aula.id),
+
+              alunoId:
+                Number(aula.aluno_id),
+
+              diaSemana:
+                Number(aula.dia_semana),
+
+              horario:
+                aula.horario
+
+            })
+          );
+
+
+        setAulas(
+          aulasFormatadas
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "❌ Erro ao carregar aulas:",
+          error
+        );
+
+      } finally {
+
+        setCarregandoAulas(false);
+
+      }
+
+    };
+
+
+    carregarAulas();
+
+  }, [
+    professor,
+    carregandoProfessor
+  ]);
+
+
+  // =====================================================
+  // CARREGAR PRESENÇAS DO MÊS
+  // =====================================================
+
+  useEffect(() => {
+
+    const carregarPresencas = async () => {
+
+      if (
+        carregandoProfessor ||
+        !professor
+      ) {
+        return;
+      }
+
+
+      try {
+
+        setCarregandoPresencas(
+          true
+        );
+
+
+        const response =
+          await fetch(
+            `${API_URL}/presencas?mes=${mesString}`,
+            {
+              credentials:
+                "include"
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.mensagem ||
+            "Não foi possível carregar as presenças."
+          );
+
+        }
+
+
+        const presencasFormatadas =
+          (data.presencas || []).map(
+            (presenca) => ({
+
+              id:
+                Number(presenca.id),
+
+              aulaId:
+                Number(presenca.aula_id),
+
+              alunoId:
+                Number(presenca.aluno_id),
+
+              data:
+                typeof presenca.data ===
+                "string"
+                  ? presenca.data.split("T")[0]
+                  : presenca.data,
+
+              status:
+                presenca.status
+
+            })
+          );
+
+
+        setPresencas(
+          presencasFormatadas
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "❌ Erro ao carregar presenças:",
+          error
+        );
+
+      } finally {
+
+        setCarregandoPresencas(
+          false
+        );
+
+      }
+
+    };
+
+
+    carregarPresencas();
+
+  }, [
+    professor,
+    carregandoProfessor,
+    mesString
+  ]);
+
+
+  // =====================================================
+  // SALVAR ESTADOS VISUAIS
+  // =====================================================
+
+  useEffect(() => {
+
+    localStorage.setItem(
+      "semanasConcluidas",
+      JSON.stringify(
+        semanasConcluidas
+      )
+    );
+
+  }, [
+    semanasConcluidas
+  ]);
+
+
+  useEffect(() => {
+
+    localStorage.setItem(
+      "mesesConcluidos",
+      JSON.stringify(
+        mesesConcluidos
+      )
+    );
+
+  }, [
+    mesesConcluidos
+  ]);
 
 
   // =========================
@@ -388,7 +770,9 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
     aulas
       .filter(
         (aula) =>
-          Number(aula.diaSemana) ===
+          Number(
+            aula.diaSemana
+          ) ===
           diaSelecionado
       )
       .sort(
@@ -403,12 +787,16 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
   // ENCONTRAR ALUNO
   // =========================
 
-  const encontrarAluno = (alunoId) => {
+  const encontrarAluno = (
+    alunoId
+  ) => {
 
     return alunos.find(
       (aluno) =>
-        aluno.id === Number(alunoId)
+        Number(aluno.id) ===
+        Number(alunoId)
     );
+
   };
 
 
@@ -416,21 +804,28 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
   // ENCONTRAR PRESENÇA
   // =========================
 
-  const encontrarPresenca = (aulaId) => {
+  const encontrarPresenca = (
+    aulaId
+  ) => {
 
     return presencas.find(
       (presenca) =>
-        presenca.aulaId === aulaId &&
-        presenca.data === dataString
+        Number(
+          presenca.aulaId
+        ) ===
+        Number(aulaId) &&
+        presenca.data ===
+        dataString
     );
+
   };
 
 
-  // =========================
+  // =====================================================
   // CADASTRAR HORÁRIO
-  // =========================
+  // =====================================================
 
-  const cadastrarAula = () => {
+  const cadastrarAula = async () => {
 
     if (
       !novaAula.alunoId ||
@@ -443,127 +838,371 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
       );
 
       return;
+
     }
 
-    const novaAulaCadastro = {
 
-      id: Date.now(),
+    try {
 
-      alunoId:
-        Number(novaAula.alunoId),
+      const response =
+        await fetch(
+          `${API_URL}/aulas`,
+          {
 
-      diaSemana:
-        Number(novaAula.diaSemana),
+            method: "POST",
 
-      horario:
-        novaAula.horario
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
 
-    };
+            credentials:
+              "include",
 
-    setAulas(
-      (aulasAtuais) => [
-        ...aulasAtuais,
-        novaAulaCadastro
-      ]
-    );
+            body:
+              JSON.stringify({
+                alunoId:
+                  Number(
+                    novaAula.alunoId
+                  ),
 
-    setNovaAula({
-      alunoId: "",
-      diaSemana: "",
-      horario: ""
-    });
+                diaSemana:
+                  Number(
+                    novaAula.diaSemana
+                  ),
 
-    setMostrarFormAula(false);
+                horario:
+                  novaAula.horario
+              })
+
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        alert(
+          data.mensagem ||
+          "Não foi possível configurar o horário."
+        );
+
+        return;
+
+      }
+
+
+      const aula =
+        data.aula;
+
+
+      const aulaFormatada = {
+
+        id:
+          Number(aula.id),
+
+        alunoId:
+          Number(aula.aluno_id),
+
+        diaSemana:
+          Number(aula.dia_semana),
+
+        horario:
+          aula.horario
+
+      };
+
+
+      setAulas(
+        (atuais) => [
+          ...atuais,
+          aulaFormatada
+        ]
+      );
+
+
+      setNovaAula({
+        alunoId: "",
+        diaSemana: "",
+        horario: ""
+      });
+
+
+      setMostrarFormAula(
+        false
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "❌ Erro ao cadastrar horário:",
+        error
+      );
+
+      alert(
+        "Erro de conexão com o servidor."
+      );
+
+    }
+
   };
 
 
-  // =========================
+  // =====================================================
   // EXCLUIR HORÁRIO
-  // =========================
+  // =====================================================
 
-  const excluirAula = (aulaId) => {
+  const excluirAula = async (
+    aulaId
+  ) => {
 
     const confirmar =
       window.confirm(
         "Deseja realmente excluir este horário?"
       );
 
+
     if (!confirmar) {
       return;
     }
 
-    setAulas(
-      aulas.filter(
-        (aula) =>
-          aula.id !== aulaId
-      )
-    );
 
-    setPresencas(
-      presencas.filter(
-        (presenca) =>
-          presenca.aulaId !== aulaId
-      )
-    );
+    try {
+
+      const response =
+        await fetch(
+          `${API_URL}/aulas/${aulaId}`,
+          {
+
+            method: "DELETE",
+
+            credentials:
+              "include"
+
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        alert(
+          data.mensagem ||
+          "Não foi possível excluir o horário."
+        );
+
+        return;
+
+      }
+
+
+      setAulas(
+        (atuais) =>
+          atuais.filter(
+            (aula) =>
+              Number(aula.id) !==
+              Number(aulaId)
+          )
+      );
+
+
+      // O backend usa ON DELETE CASCADE
+      // para apagar as presenças relacionadas.
+
+      setPresencas(
+        (atuais) =>
+          atuais.filter(
+            (presenca) =>
+              Number(
+                presenca.aulaId
+              ) !==
+              Number(aulaId)
+          )
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "❌ Erro ao excluir horário:",
+        error
+      );
+
+      alert(
+        "Erro de conexão com o servidor."
+      );
+
+    }
+
   };
 
 
-  // =========================
+  // =====================================================
   // REGISTRAR PRESENÇA
-  // =========================
+  // =====================================================
 
-  const registrarPresenca = (
+  const registrarPresenca = async (
     aula,
     status
   ) => {
 
-    const registroExistente =
-      presencas.find(
-        (presenca) =>
-          presenca.aulaId === aula.id &&
-          presenca.data === dataString
-      );
 
-    if (registroExistente) {
-
-      setPresencas(
-        presencas.map(
-          (presenca) =>
-            presenca.id ===
-            registroExistente.id
-              ? {
-                  ...presenca,
-                  status
-                }
-              : presenca
-        )
-      );
-
+    if (!dataString) {
       return;
     }
 
-    const novaPresenca = {
+    try {
 
-      id: Date.now(),
+      const response =
+        await fetch(
+          `${API_URL}/presencas`,
+          {
 
-      aulaId:
-        aula.id,
+            method: "POST",
 
-      alunoId:
-        aula.alunoId,
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
 
-      data:
-        dataString,
+            credentials:
+              "include",
 
-      status
-    };
+            body:
+              JSON.stringify({
 
-    setPresencas(
-      (presencasAtuais) => [
-        ...presencasAtuais,
-        novaPresenca
-      ]
-    );
+                aulaId:
+                  Number(
+                    aula.id
+                  ),
+
+                alunoId:
+                  Number(
+                    aula.alunoId
+                  ),
+
+                data:
+                  dataString,
+
+                status
+
+              })
+
+          }
+        );
+
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+
+        alert(
+          data.mensagem ||
+          "Não foi possível registrar a presença."
+        );
+
+        return;
+
+      }
+
+
+      const novaPresenca = {
+
+        id:
+          Number(
+            data.presenca.id
+          ),
+
+        aulaId:
+          Number(
+            data.presenca.aula_id
+          ),
+
+        alunoId:
+          Number(
+            data.presenca.aluno_id
+          ),
+
+        data:
+          typeof data.presenca.data ===
+          "string"
+            ? data.presenca.data.split("T")[0]
+            : data.presenca.data,
+
+        status:
+          data.presenca.status
+
+      };
+
+
+      setPresencas(
+        (atuais) => {
+
+          const existe =
+            atuais.some(
+              (presenca) =>
+                Number(
+                  presenca.aulaId
+                ) ===
+                Number(
+                  novaPresenca.aulaId
+                ) &&
+                presenca.data ===
+                novaPresenca.data
+            );
+
+
+          if (existe) {
+
+            return atuais.map(
+              (presenca) =>
+                Number(
+                  presenca.aulaId
+                ) ===
+                Number(
+                  novaPresenca.aulaId
+                ) &&
+                presenca.data ===
+                novaPresenca.data
+
+                  ? novaPresenca
+
+                  : presenca
+            );
+
+          }
+
+
+          return [
+            ...atuais,
+            novaPresenca
+          ];
+
+        }
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "❌ Erro ao registrar presença:",
+        error
+      );
+
+      alert(
+        "Erro de conexão com o servidor."
+      );
+
+    }
+
   };
 
 
@@ -575,14 +1214,19 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
     index
   ) => {
 
-    setSemanaSelecionada(index);
+    setSemanaSelecionada(
+      index
+    );
+
 
     const novaSemana =
       semanas[index];
 
+
     if (!novaSemana) {
       return;
     }
+
 
     for (
       let dia = 1;
@@ -596,140 +1240,235 @@ ultimoDiaMes.setHours(23, 59, 59, 999);
           dia
         );
 
+
       if (
         data >= primeiroDiaMes &&
         data <= ultimoDiaMes
       ) {
 
-        setDiaSelecionado(dia);
+        setDiaSelecionado(
+          dia
+        );
 
         break;
+
       }
+
     }
+
+  };
+
+
+  // =====================================================
+  // CONCLUIR / REABRIR SEMANA
+  // =====================================================
+
+  const alternarConclusaoSemana =
+    () => {
+
+      const idSemana =
+        obterIdSemana(
+          semanaSelecionada
+        );
+
+
+      if (
+        semanasConcluidas.includes(
+          idSemana
+        )
+      ) {
+
+        setSemanasConcluidas(
+          (atuais) =>
+            atuais.filter(
+              (item) =>
+                item !== idSemana
+            )
+        );
+
+        return;
+
+      }
+
+
+      const novasConcluidas = [
+
+        ...semanasConcluidas,
+
+        idSemana
+
+      ];
+
+
+      const todasConcluidas =
+        semanas.every(
+          (_, index) =>
+            novasConcluidas.includes(
+              obterIdSemana(index)
+            )
+        );
+
+
+      if (todasConcluidas) {
+
+        const confirmar =
+          window.confirm(
+            `Todas as semanas de ${nomeMes} foram concluídas.\n\nDeseja concluir o mês?`
+          );
+
+
+        if (confirmar) {
+
+          concluirMes(false);
+
+        }
+
+      }
+
+
+      setSemanasConcluidas(
+        novasConcluidas
+      );
+
+    };
+
+
+  // =====================================================
+  // TROCAR MÊS
+  // =====================================================
+
+  const trocarMes = (
+    quantidade
+  ) => {
+
+    setMesSelecionado(
+      new Date(
+        anoAtual,
+        mesAtual + quantidade,
+        1
+      )
+    );
+
+
+    setSemanaSelecionada(
+      0
+    );
+
+
+    setDiaSelecionado(
+      1
+    );
+
   };
 
 
   // =========================
-  // CONCLUIR / REABRIR SEMANA
+  // NOME DO MÊS
   // =========================
 
-const alternarConclusaoSemana = () => {
-
-  const idSemana =
-    obterIdSemana(
-      semanaSelecionada
+  const nomeMes =
+    mesSelecionado.toLocaleDateString(
+      "pt-BR",
+      {
+        month: "long",
+        year: "numeric"
+      }
     );
 
-  // Se a semana já está concluída,
-  // apenas reabre a semana.
-  if (semanasConcluidas.includes(idSemana)) {
 
-    setSemanasConcluidas(
-      (atuais) =>
-        atuais.filter(
-          (item) =>
-            item !== idSemana
-        )
-    );
+  // =====================================================
+  // CONCLUIR MÊS
+  // =====================================================
 
-    return;
-  }
+  const concluirMes = (
+    confirmarAntes = true
+  ) => {
 
-  // Estamos concluindo a semana.
-  const novasConcluidas = [
-    ...semanasConcluidas,
-    idSemana
-  ];
+    if (confirmarAntes) {
 
-  // Verifica se todas as semanas
-  // do mês estão concluídas.
-  const todasConcluidas =
-    semanas.every(
-      (_, index) =>
-        novasConcluidas.includes(
-          obterIdSemana(index)
-        )
-    );
-
-  // Se for a última semana,
-  // pergunta se deseja concluir o mês.
-  if (todasConcluidas) {
-
-    const confirmar = window.confirm(
-      `Todas as semanas de ${nomeMes} foram concluídas.\n\nDeseja concluir o mês?`
-    );
-
-    if (confirmar) {
-      concluirMes(false);
-    }
-  }
-
-  // Marca a semana como concluída.
-  setSemanasConcluidas(
-    novasConcluidas
-  );
-};
+      const confirmar =
+        window.confirm(
+          `Concluir ${nomeMes}?`
+        );
 
 
-  const trocarMes = (quantidade) => {
-  setMesSelecionado(
-    new Date(
-      anoAtual,
-      mesAtual + quantidade,
-      1
-    )
-  );
+      if (!confirmar) {
+        return;
+      }
 
-  setSemanaSelecionada(0);
-  setDiaSelecionado(1);
-};
-
-const nomeMes = mesSelecionado.toLocaleDateString(
-  "pt-BR",
-  {
-    month: "long",
-    year: "numeric"
-  }
-);
-
-const concluirMes = (confirmarAntes = true) => {
-
-  if (confirmarAntes) {
-    const confirmar = window.confirm(
-      `Concluir ${nomeMes}?`
-    );
-
-    if (!confirmar) return;
-  }
-
-  const idMes = `${anoAtual}-${mesAtual}`;
-
-  setMesesConcluidos((atuais) => {
-
-    if (atuais.includes(idMes)) {
-      return atuais;
     }
 
-    return [
-      ...atuais,
-      idMes
-    ];
-  });
 
-  setMesSelecionado(
-    new Date(
-      anoAtual,
-      mesAtual + 1,
+    const idMes =
+      `${anoAtual}-${mesAtual}`;
+
+
+    setMesesConcluidos(
+      (atuais) => {
+
+        if (
+          atuais.includes(
+            idMes
+          )
+        ) {
+          return atuais;
+        }
+
+
+        return [
+          ...atuais,
+          idMes
+        ];
+
+      }
+    );
+
+
+    setMesSelecionado(
+      new Date(
+        anoAtual,
+        mesAtual + 1,
+        1
+      )
+    );
+
+
+    setSemanaSelecionada(
+      0
+    );
+
+
+    setDiaSelecionado(
       1
-    )
-  );
+    );
 
-  setSemanaSelecionada(0);
-  setDiaSelecionado(1);
-};
-  // =========================
+  };
+
+
+  // =====================================================
+  // CARREGAMENTO
+  // =====================================================
+
+  if (carregando) {
+
+    return (
+
+      <div className="presenca">
+
+        <p>
+          Carregando presença...
+        </p>
+
+      </div>
+
+    );
+
+  }
+
+
+  // =====================================================
   // RENDER
-  // =========================
+  // =====================================================
 
   return (
 
@@ -750,6 +1489,7 @@ const concluirMes = (confirmarAntes = true) => {
           </p>
 
         </div>
+
 
         <button
           type="button"
@@ -779,8 +1519,11 @@ const concluirMes = (confirmarAntes = true) => {
             Configurar horário do aluno
           </h2>
 
+
           <select
-            value={novaAula.alunoId}
+            value={
+              novaAula.alunoId
+            }
             onChange={(e) =>
               setNovaAula({
                 ...novaAula,
@@ -793,6 +1536,7 @@ const concluirMes = (confirmarAntes = true) => {
             <option value="">
               Selecione o aluno
             </option>
+
 
             {alunos.map(
               (aluno) => (
@@ -811,7 +1555,9 @@ const concluirMes = (confirmarAntes = true) => {
 
 
           <select
-            value={novaAula.diaSemana}
+            value={
+              novaAula.diaSemana
+            }
             onChange={(e) =>
               setNovaAula({
                 ...novaAula,
@@ -825,12 +1571,15 @@ const concluirMes = (confirmarAntes = true) => {
               Selecione o dia
             </option>
 
+
             {dias.map(
               (dia) => (
 
                 <option
                   key={dia.numero}
-                  value={dia.numero}
+                  value={
+                    dia.numero
+                  }
                 >
                   {dia.nome}
                 </option>
@@ -843,7 +1592,9 @@ const concluirMes = (confirmarAntes = true) => {
 
           <input
             type="time"
-            value={novaAula.horario}
+            value={
+              novaAula.horario
+            }
             onChange={(e) =>
               setNovaAula({
                 ...novaAula,
@@ -865,6 +1616,7 @@ const concluirMes = (confirmarAntes = true) => {
               Salvar horário
             </button>
 
+
             <button
               type="button"
               onClick={() =>
@@ -883,23 +1635,55 @@ const concluirMes = (confirmarAntes = true) => {
       )}
 
 
-     {/* SEMANAS */}
+      {/* SEMANAS */}
 
       <Semanas
-        semanas={semanas}
-        semanaSelecionada={semanaSelecionada}
-        nomeMes={nomeMes}
-        trocarMes={trocarMes}
-        concluirMes={concluirMes}
-        semanasConcluidas={semanasConcluidas}
-        obterIdSemana={obterIdSemana}
-        formatarData={formatarData}
-        selecionarSemana={selecionarSemana}
-        semanaAtualConcluida={semanaAtualConcluida}
-        alternarConclusaoSemana={alternarConclusaoSemana}
+        semanas={
+          semanas
+        }
+
+        semanaSelecionada={
+          semanaSelecionada
+        }
+
+        nomeMes={
+          nomeMes
+        }
+
+        trocarMes={
+          trocarMes
+        }
+
+        concluirMes={
+          concluirMes
+        }
+
+        semanasConcluidas={
+          semanasConcluidas
+        }
+
+        obterIdSemana={
+          obterIdSemana
+        }
+
+        formatarData={
+          formatarData
+        }
+
+        selecionarSemana={
+          selecionarSemana
+        }
+
+        semanaAtualConcluida={
+          semanaAtualConcluida
+        }
+
+        alternarConclusaoSemana={
+          alternarConclusaoSemana
+        }
+
       />
 
-      
 
       {/* ABAS DOS DIAS */}
 
@@ -913,13 +1697,22 @@ const concluirMes = (confirmarAntes = true) => {
                 dia.numero
               );
 
+
             return (
 
               <button
-                key={dia.numero}
+                key={
+                  dia.numero
+                }
+
                 type="button"
-                disabled={!disponivel}
+
+                disabled={
+                  !disponivel
+                }
+
                 className={
+
                   diaSelecionado ===
                     dia.numero &&
                   disponivel
@@ -927,29 +1720,42 @@ const concluirMes = (confirmarAntes = true) => {
                     ? "aba ativa"
 
                     : !disponivel
+
                     ? "aba desabilitada"
+
                     : "aba"
+
                 }
+
                 onClick={() => {
 
-                  if (!disponivel) {
+                  if (
+                    !disponivel
+                  ) {
                     return;
                   }
+
 
                   setDiaSelecionado(
                     dia.numero
                   );
+
                 }}
+
               >
 
                 <span>
+
                   {dia.nome.replace(
                     "-feira",
                     ""
                   )}
+
                 </span>
 
+
                 <small>
+
                   {formatarData(
                     obterDataDoDia(
                       semanas[
@@ -958,11 +1764,13 @@ const concluirMes = (confirmarAntes = true) => {
                       dia.numero
                     )
                   )}
+
                 </small>
 
               </button>
 
             );
+
           }
         )}
 
@@ -989,13 +1797,17 @@ const concluirMes = (confirmarAntes = true) => {
 
             </h2>
 
+
             <p>
+
               {formatarData(
                 dataSelecionada
               )}
+
             </p>
 
           </div>
+
 
           <span>
 
@@ -1035,19 +1847,25 @@ const concluirMes = (confirmarAntes = true) => {
                     aula.alunoId
                   );
 
+
                 if (!aluno) {
                   return null;
                 }
+
 
                 const presenca =
                   encontrarPresenca(
                     aula.id
                   );
 
+
                 return (
 
                   <div
-                    key={aula.id}
+                    key={
+                      aula.id
+                    }
+
                     className="registro-presenca"
                   >
 
@@ -1066,6 +1884,7 @@ const concluirMes = (confirmarAntes = true) => {
                         {aluno.nome}
                       </strong>
 
+
                       <span>
                         {aluno.instrumento}
                       </span>
@@ -1077,18 +1896,23 @@ const concluirMes = (confirmarAntes = true) => {
 
                       <button
                         type="button"
+
                         className={
                           presenca?.status ===
                           "presente"
+
                             ? "presente ativo"
+
                             : "presente"
                         }
+
                         onClick={() =>
                           registrarPresenca(
                             aula,
                             "presente"
                           )
                         }
+
                       >
                         ✓ Presente
                       </button>
@@ -1096,18 +1920,23 @@ const concluirMes = (confirmarAntes = true) => {
 
                       <button
                         type="button"
+
                         className={
                           presenca?.status ===
                           "falta"
+
                             ? "falta ativo"
+
                             : "falta"
                         }
+
                         onClick={() =>
                           registrarPresenca(
                             aula,
                             "falta"
                           )
                         }
+
                       >
                         ✕ Falta
                       </button>
@@ -1115,13 +1944,17 @@ const concluirMes = (confirmarAntes = true) => {
 
                       <button
                         type="button"
+
                         className="excluir-horario"
+
                         title="Excluir horário"
+
                         onClick={() =>
                           excluirAula(
                             aula.id
                           )
                         }
+
                       >
 
                         <GoTrash />
@@ -1133,7 +1966,9 @@ const concluirMes = (confirmarAntes = true) => {
                   </div>
 
                 );
+
               }
+
             )
 
           )}
@@ -1143,7 +1978,9 @@ const concluirMes = (confirmarAntes = true) => {
       </div>
 
     </div>
+
   );
+
 }
 
 export default Presenca;

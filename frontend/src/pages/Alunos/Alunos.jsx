@@ -78,7 +78,7 @@ function Alunos() {
         setCarregandoAlunos(true);
 
         const response = await fetch(
-          `&{API_URL}/alunos`,
+          `${API_URL}/alunos`,
           {
             credentials: "include",
           }
@@ -164,7 +164,7 @@ function Alunos() {
     try {
 
       const response = await fetch(
-        `&{API_URL}/responsaveis`,
+        `${API_URL}/responsaveis`,
         {
           method: "POST",
           credentials: "include",
@@ -264,7 +264,7 @@ function Alunos() {
     try {
 
       const response = await fetch(
-        `&{API_URL}/responsaveis/${responsavelAtualizado.id}`,
+        `${API_URL}/responsaveis/${responsavelAtualizado.id}`,
         {
           method: "PUT",
           credentials: "include",
@@ -380,7 +380,7 @@ function Alunos() {
     try {
 
       const response = await fetch(
-        `&{API_URL}/responsaveis/${responsavelId}`,
+        `${API_URL}/responsaveis/${responsavelId}`,
         {
           method: "DELETE",
           credentials: "include"
@@ -485,7 +485,7 @@ function Alunos() {
       if (alunoEditando) {
 
         const response = await fetch(
-          `&{API_URL}/alunos/${alunoEditando.id}`,
+          `${API_URL}/alunos/${alunoEditando.id}`,
           {
             method: "PUT",
             credentials: "include",
@@ -543,7 +543,7 @@ function Alunos() {
       else {
 
         const response = await fetch(
-          `&{API_URL}/alunos`,
+          `${API_URL}/alunos`,
           {
             method: "POST",
             credentials: "include",
@@ -683,7 +683,7 @@ function Alunos() {
     try {
 
       const response = await fetch(
-        `&{API_URL}/alunos/${id}`,
+        `${API_URL}/alunos/${id}`,
         {
           method: "DELETE",
           credentials: "include",
