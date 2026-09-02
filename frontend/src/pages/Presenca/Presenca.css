@@ -950,3 +950,50 @@
     }
 
 }
+
+/* =====================================================
+   BOTÃO SINCRONIZAR
+   ===================================================== */
+
+.btn-sincronizar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 9px 16px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #333333;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.btn-sincronizar:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #b8b8b8;
+}
+
+.btn-sincronizar:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn-sincronizar:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-sincronizar svg {
+  font-size: 17px;
+}

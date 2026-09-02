@@ -1,4 +1,3 @@
-import Button from "../../../components/UI/Button/Button";
 import Modal from "../../../components/UI/Modal/Modal";
 import Responsaveis from "./Responsaveis";
 
@@ -7,10 +6,7 @@ function AlunoDetalhes({
   nomesInstrumentos,
   calcularIdade,
   formatarAniversario,
-  statusAluno,
   onClose,
-  onEditar,
-  onExcluir,
   onAdicionarResponsavel,
   onExcluirResponsavel,
   onEditarResponsavel
@@ -19,6 +15,16 @@ function AlunoDetalhes({
   if (!aluno) {
     return null;
   }
+
+  const idade =
+    aluno.nascimento
+      ? calcularIdade(aluno.nascimento)
+      : null;
+
+  const instrumento =
+    nomesInstrumentos[aluno.instrumento] ||
+    aluno.instrumento ||
+    "Não informado";
 
   return (
     <Modal onClose={onClose}>
@@ -53,17 +59,6 @@ function AlunoDetalhes({
               {aluno.nome}
             </h2>
 
-
-            <span
-              className={`status-badge ${
-                statusAluno(aluno.status).classe
-              }`}
-            >
-
-              {statusAluno(aluno.status).texto}
-
-            </span>
-
           </div>
 
         </div>
@@ -80,28 +75,29 @@ function AlunoDetalhes({
 
           <p>
             🎸 <strong>Instrumento:</strong>{" "}
-            {
-              nomesInstrumentos[aluno.instrumento]
-            }
+            {instrumento}
           </p>
 
 
           <p>
             🎂 <strong>Idade:</strong>{" "}
-            {calcularIdade(aluno.nascimento)} anos
+            {idade !== null
+              ? `${idade} anos`
+              : "Não informado"}
           </p>
 
 
           <p>
             📍 <strong>Unidade:</strong>{" "}
-            {aluno.unidade}
+            {aluno.unidade || "Não informado"}
           </p>
 
 
           <p>
             🎉 <strong>Aniversário:</strong>{" "}
-            {formatarAniversario(aluno.nascimento) ||
-              "Não informado"}
+            {aluno.nascimento
+              ? formatarAniversario(aluno.nascimento)
+              : "Não informado"}
           </p>
 
         </div>
@@ -110,35 +106,17 @@ function AlunoDetalhes({
         {/* RESPONSÁVEIS */}
 
         <div className="detalhes-section">
+
           <h3>
             Responsáveis
           </h3>
-      
-            <Responsaveis
-                aluno={aluno}
-                onAdicionar={onAdicionarResponsavel}
-                onExcluir={onExcluirResponsavel}
-                onEditar={onEditarResponsavel}
-            />
-            
-        </div>
 
-
-        {/* AÇÕES */}
-
-        <div className="detalhes-actions">
-
-          <Button onClick={onEditar}>
-            ✏️ Editar
-          </Button>
-
-
-          <button
-            className="btn-excluir"
-            onClick={onExcluir}
-          >
-            🗑️ Excluir
-          </button>
+          <Responsaveis
+            aluno={aluno}
+            onAdicionar={onAdicionarResponsavel}
+            onExcluir={onExcluirResponsavel}
+            onEditar={onEditarResponsavel}
+          />
 
         </div>
 

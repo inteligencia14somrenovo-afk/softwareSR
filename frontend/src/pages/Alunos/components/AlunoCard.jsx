@@ -5,9 +5,22 @@ function AlunoCard({
   abrirDetalhes
 }) {
 
+  // Normaliza o instrumento para usar nas classes do CSS
+  const classeInstrumento =
+    aluno.instrumento === "teclado/piano"
+      ? "teclado"
+      : aluno.instrumento || "";
+
+  // Como a planilha atualmente não possui data de nascimento,
+  // evita mostrar uma idade inválida.
+  const idade =
+    aluno.nascimento
+      ? calcularIdade(aluno.nascimento)
+      : null;
+
   return (
     <div
-      className={`card-aluno ${aluno.instrumento}`}
+      className={`card-aluno ${classeInstrumento}`}
       onClick={() => abrirDetalhes(aluno)}
     >
 
@@ -22,7 +35,6 @@ function AlunoCard({
           </h2>
 
         </div>
-
 
         <div className="foto-aluno">
 
@@ -55,7 +67,8 @@ function AlunoCard({
           </span>
 
           {nomesInstrumentos[aluno.instrumento] ||
-            aluno.instrumento}
+            aluno.instrumento ||
+            "Não informado"}
 
         </p>
 
@@ -66,7 +79,9 @@ function AlunoCard({
             Idade
           </span>
 
-          {calcularIdade(aluno.nascimento)} anos
+          {idade !== null
+            ? `${idade} anos`
+            : "Não informado"}
 
         </p>
 
@@ -77,7 +92,7 @@ function AlunoCard({
             Local
           </span>
 
-          📍 {aluno.unidade}
+          📍 {aluno.unidade || "Não informado"}
 
         </p>
 

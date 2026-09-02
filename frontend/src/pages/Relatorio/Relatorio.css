@@ -1,0 +1,1459 @@
+.relatorio {
+  width: 100%;
+  min-height: 100%;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   CABEÇALHO
+===================================================== */
+
+.relatorio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.relatorio-header h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: #222;
+}
+
+.relatorio-header p {
+  margin: 6px 0 0;
+  color: #777;
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   BOTÃO DOWNLOAD
+===================================================== */
+
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: none;
+  padding: 10px 16px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  background: #111;
+  color: #fff;
+
+  transition:
+    opacity 0.2s,
+    transform 0.15s;
+}
+
+.btn-download:hover {
+  opacity: 0.85;
+}
+
+.btn-download:active {
+  transform: scale(0.97);
+}
+
+
+/* =====================================================
+   MÊS
+===================================================== */
+
+.relatorio-mes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 14px;
+
+  width: fit-content;
+
+  margin-bottom: 28px;
+
+  background: #fff;
+
+  border: 1px solid #e8e8e8;
+
+  border-radius: 12px;
+
+  padding: 8px 12px;
+}
+
+.relatorio-mes strong {
+  min-width: 160px;
+
+  text-align: center;
+
+  font-size: 14px;
+
+  text-transform: capitalize;
+
+  color: #333;
+}
+
+.relatorio-mes button {
+  width: 34px;
+  height: 34px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #f4f4f4;
+
+  cursor: pointer;
+
+  font-size: 24px;
+  line-height: 1;
+
+  transition: 0.2s;
+}
+
+.relatorio-mes button:hover {
+  background: #e9e9e9;
+}
+
+
+/* =====================================================
+   RESUMO
+===================================================== */
+
+.relatorio-resumo {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
+  gap: 16px;
+
+  margin-bottom: 28px;
+}
+
+.card-resumo {
+  background: #fff;
+
+  border: 1px solid #e8e8e8;
+
+  border-radius: 14px;
+
+  padding: 20px;
+}
+
+.card-resumo span {
+  display: block;
+
+  color: #777;
+
+  font-size: 13px;
+
+  margin-bottom: 8px;
+}
+
+.card-resumo strong {
+  display: block;
+
+  font-size: 26px;
+
+  color: #222;
+}
+
+.card-resumo.destaque {
+  background: #fafafa;
+}
+
+
+/* =====================================================
+   GRÁFICOS
+===================================================== */
+
+.relatorio-graficos {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 20px;
+
+  margin-bottom: 28px;
+}
+
+.grafico-card {
+  min-height: 280px;
+
+  background: #fff;
+
+  border: 1px solid #e8e8e8;
+
+  border-radius: 16px;
+
+  padding: 22px;
+
+  box-sizing: border-box;
+}
+
+.grafico-header {
+  margin-bottom: 20px;
+}
+
+.grafico-header h2 {
+  margin: 0;
+
+  font-size: 17px;
+
+  color: #222;
+}
+
+.grafico-header p {
+  margin: 5px 0 0;
+
+  color: #888;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   GRÁFICO PRESENÇA X FALTA
+===================================================== */
+
+.grafico-presenca {
+  height: 150px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: center;
+
+  gap: 28px;
+
+  padding: 10px 20px 0;
+}
+
+.barra-grafico {
+  width: 45px;
+
+  height: 150px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  background: #f2f2f2;
+
+  border-radius: 7px 7px 0 0;
+
+  overflow: hidden;
+}
+
+.barra {
+  width: 100%;
+
+  min-height: 2px;
+
+  border-radius: 7px 7px 0 0;
+
+  transition: height 0.4s ease;
+}
+
+.barra.presente {
+  background: #16803a;
+}
+
+.barra.falta {
+  background: #c73535;
+}
+
+.barra.pendente {
+  background: #d09a00;
+}
+
+
+/* =====================================================
+   LEGENDA
+===================================================== */
+
+.legenda-grafico {
+  display: flex;
+
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap: 18px;
+
+  margin-top: 18px;
+
+  font-size: 12px;
+
+  color: #666;
+}
+
+.legenda-grafico span {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+.legenda {
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+
+  display: inline-block;
+}
+
+.legenda.presente {
+  background: #16803a;
+}
+
+.legenda.falta {
+  background: #c73535;
+}
+
+.legenda.pendente {
+  background: #d09a00;
+}
+
+
+/* =====================================================
+   FREQUÊNCIA NO MÊS
+===================================================== */
+
+.frequencia-grafico {
+  height: 175px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  gap: 7px;
+
+  overflow-x: auto;
+
+  padding: 10px 4px 0;
+}
+
+.frequencia-coluna {
+  min-width: 25px;
+
+  height: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 5px;
+}
+
+.frequencia-coluna > span {
+  font-size: 9px;
+
+  color: #777;
+
+  white-space: nowrap;
+}
+
+.frequencia-barra {
+  width: 16px;
+
+  height: 125px;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  background: #f1f1f1;
+
+  border-radius: 5px 5px 0 0;
+
+  overflow: hidden;
+}
+
+.frequencia-barra div {
+  width: 100%;
+
+  min-height: 2px;
+
+  background: #333;
+
+  border-radius: 5px 5px 0 0;
+
+  transition: height 0.4s ease;
+}
+
+.frequencia-coluna small {
+  font-size: 10px;
+
+  color: #888;
+}
+
+.grafico-vazio {
+  width: 100%;
+  height: 180px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #999;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   SEÇÕES
+===================================================== */
+
+.relatorio-secao {
+  background: #fff;
+
+  border: 1px solid #e8e8e8;
+
+  border-radius: 16px;
+
+  overflow: hidden;
+
+  margin-bottom: 28px;
+}
+
+.secao-header {
+  padding: 22px;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+.secao-header h2 {
+  margin: 0;
+
+  font-size: 18px;
+
+  color: #222;
+}
+
+.secao-header p {
+  margin: 5px 0 0;
+
+  color: #888;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   PESQUISA
+===================================================== */
+
+.relatorio-pesquisa {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  margin: 16px 22px;
+
+  padding: 10px 14px;
+
+  background: #fafafa;
+
+  border: 1px solid #e5e5e5;
+
+  border-radius: 10px;
+
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.relatorio-pesquisa:focus-within {
+  background: #fff;
+
+  border-color: #cfcfcf;
+}
+
+.relatorio-pesquisa span {
+  flex-shrink: 0;
+
+  font-size: 15px;
+
+  color: #888;
+}
+
+.relatorio-pesquisa input {
+  width: 100%;
+
+  border: none;
+
+  outline: none;
+
+  background: transparent;
+
+  color: #333;
+
+  font-size: 13px;
+
+  font-family: inherit;
+}
+
+.relatorio-pesquisa input::placeholder {
+  color: #999;
+}
+
+
+/* =====================================================
+   LISTA DE ALUNOS
+===================================================== */
+
+.alunos-relatorio {
+  width: 100%;
+}
+
+.aluno-relatorio {
+  border-bottom: 1px solid #eeeeee;
+}
+
+.aluno-relatorio:last-child {
+  border-bottom: none;
+}
+
+.aluno-linha {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(230px, 2fr)
+    80px
+    100px
+    80px
+    90px
+    150px
+    30px;
+
+  align-items: center;
+
+  gap: 16px;
+
+  padding: 17px 22px;
+
+  border: none;
+
+  background: transparent;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition: background 0.2s;
+}
+
+.aluno-linha:hover {
+  background: #fafafa;
+}
+
+
+/* =====================================================
+   INFORMAÇÕES DO ALUNO
+===================================================== */
+
+.aluno-info {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.aluno-info strong {
+  font-size: 14px;
+
+  color: #222;
+}
+
+.aluno-info span {
+  font-size: 12px;
+
+  color: #888;
+}
+
+
+/* =====================================================
+   NÚMEROS DO ALUNO
+===================================================== */
+
+.aluno-numero {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.aluno-numero strong {
+  font-size: 15px;
+
+  color: #222;
+}
+
+.aluno-numero span {
+  font-size: 11px;
+
+  color: #999;
+}
+
+.aluno-frequencia {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.aluno-frequencia strong {
+  font-size: 14px;
+
+  color: #333;
+}
+
+.frequencia-progress {
+  width: 100%;
+
+  height: 6px;
+
+  background: #eeeeee;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+}
+
+.frequencia-progress div {
+  height: 100%;
+
+  background: #333;
+
+  border-radius: 10px;
+
+  transition: width 0.4s ease;
+}
+
+.aluno-seta {
+  font-size: 18px;
+
+  color: #999;
+
+  text-align: center;
+}
+
+
+/* =====================================================
+   BOTÃO VER TODOS
+===================================================== */
+
+.btn-ver-todos {
+  display: block;
+
+  margin: 16px auto 20px;
+
+  padding: 9px 16px;
+
+  border: 1px solid #dedede;
+
+  border-radius: 8px;
+
+  background: #fff;
+
+  color: #444;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.15s;
+}
+
+.btn-ver-todos:hover {
+  background: #f7f7f7;
+
+  border-color: #ccc;
+}
+
+.btn-ver-todos:active {
+  transform: scale(0.98);
+}
+
+
+/* =====================================================
+   MODAL — HISTÓRICO DO ALUNO
+===================================================== */
+
+.historico-modal-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 24px;
+
+  box-sizing: border-box;
+
+  background: rgba(0, 0, 0, 0.48);
+
+  backdrop-filter: blur(2px);
+
+  animation: modalOverlayEntrada 0.2s ease;
+}
+
+.historico-modal {
+  width: min(900px, 100%);
+
+  max-height: min(800px, 90vh);
+
+  display: flex;
+
+  flex-direction: column;
+
+  background: #fff;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.22);
+
+  overflow: hidden;
+
+  animation: modalEntrada 0.22s ease;
+}
+
+.historico-modal-header {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 24px;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+.historico-modal-header span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #999;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+}
+
+.historico-modal-header h2 {
+  margin: 0;
+
+  color: #222;
+
+  font-size: 21px;
+}
+
+.historico-modal-header p {
+  margin: 5px 0 0;
+
+  color: #888;
+
+  font-size: 13px;
+}
+
+.historico-modal-fechar {
+  width: 34px;
+
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #f4f4f4;
+
+  color: #555;
+
+  font-size: 24px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s,
+    transform 0.15s;
+}
+
+.historico-modal-fechar:hover {
+  background: #e9e9e9;
+}
+
+.historico-modal-fechar:active {
+  transform: scale(0.94);
+}
+
+
+/* =====================================================
+   RESUMO DO MODAL
+===================================================== */
+
+.historico-resumo {
+  display: grid;
+
+  grid-template-columns:
+    repeat(5, minmax(0, 1fr));
+
+  gap: 10px;
+
+  padding: 18px 24px;
+
+  background: #fafafa;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+.historico-resumo > div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.historico-resumo strong {
+  font-size: 17px;
+
+  color: #222;
+}
+
+.historico-resumo span {
+  color: #888;
+
+  font-size: 10px;
+}
+
+.historico-resumo .destaque strong {
+  color: #222;
+}
+
+
+/* =====================================================
+   CONTEÚDO DO MODAL
+===================================================== */
+
+.historico-modal-conteudo {
+  padding: 20px 24px 24px;
+
+  overflow-y: auto;
+}
+
+.historico-modal-conteudo
+.historico-header {
+  margin-bottom: 14px;
+}
+
+.historico-modal-conteudo
+.historico-header strong {
+  color: #333;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   TABELA HISTÓRICO
+===================================================== */
+
+.historico-tabela {
+  border: 1px solid #e5e5e5;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  background: #fff;
+}
+
+.historico-cabecalho,
+.historico-linha {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    1fr
+    1fr
+    1fr;
+
+  align-items: center;
+
+  gap: 16px;
+
+  padding: 13px 16px;
+}
+
+.historico-cabecalho {
+  background: #f6f6f6;
+
+  color: #777;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+}
+
+.historico-linha {
+  border-top: 1px solid #eeeeee;
+
+  font-size: 13px;
+
+  color: #444;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: fit-content;
+
+  min-width: 82px;
+
+  padding: 5px 10px;
+
+  border-radius: 20px;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+.status.presente {
+  background: #eaf7ee;
+
+  color: #16803a;
+}
+
+.status.falta {
+  background: #fdecec;
+
+  color: #c73535;
+}
+
+.status.pendente {
+  background: #fff7df;
+
+  color: #a77700;
+}
+
+
+/* =====================================================
+   TABELA GERAL
+===================================================== */
+
+.tabela-relatorio {
+  width: 100%;
+}
+
+.tabela-cabecalho,
+.tabela-linha {
+  display: grid;
+
+  grid-template-columns:
+    2fr
+    1fr
+    1fr
+    1.2fr
+    1fr;
+
+  align-items: center;
+
+  gap: 16px;
+
+  padding: 14px 22px;
+}
+
+.tabela-cabecalho {
+  background: #fafafa;
+
+  border-bottom: 1px solid #e8e8e8;
+
+  color: #777;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+}
+
+.tabela-linha {
+  border-bottom: 1px solid #eeeeee;
+
+  font-size: 13px;
+
+  color: #444;
+}
+
+.tabela-linha:last-child {
+  border-bottom: none;
+}
+
+.tabela-linha strong {
+  color: #222;
+}
+
+.tabela-vazia {
+  padding: 50px 20px;
+
+  text-align: center;
+
+  color: #999;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   VAZIO
+===================================================== */
+
+.relatorio-vazio {
+  text-align: center;
+
+  padding: 60px 20px;
+
+  color: #999;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   ERRO
+===================================================== */
+
+.relatorio-erro {
+  margin-bottom: 24px;
+
+  padding: 14px 18px;
+
+  border: 1px solid #f0d0d0;
+
+  background: #fff8f8;
+
+  border-radius: 10px;
+
+  color: #a33;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+.relatorio-carregando {
+  min-height: 400px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   ANIMAÇÕES DO MODAL
+===================================================== */
+
+@keyframes modalOverlayEntrada {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalEntrada {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(12px)
+      scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =====================================================
+   RESPONSIVO — 1200px
+===================================================== */
+
+@media (max-width: 1200px) {
+
+  .relatorio-resumo {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+  .aluno-linha {
+    grid-template-columns:
+      minmax(200px, 2fr)
+      70px
+      90px
+      70px
+      80px
+      130px
+      25px;
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVO — 1000px
+===================================================== */
+
+@media (max-width: 1000px) {
+
+  .relatorio-graficos {
+    grid-template-columns: 1fr;
+  }
+
+  .aluno-linha {
+    grid-template-columns:
+      minmax(200px, 2fr)
+      70px
+      90px
+      70px
+      80px
+      120px
+      25px;
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVO — 768px
+===================================================== */
+
+@media (max-width: 768px) {
+
+  .relatorio {
+    padding: 20px;
+  }
+
+  .relatorio-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 18px;
+  }
+
+  .btn-download {
+    width: 100%;
+  }
+
+  .relatorio-mes {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    justify-content: space-between;
+  }
+
+  .relatorio-mes strong {
+    flex: 1;
+  }
+
+  .relatorio-resumo {
+    grid-template-columns:
+      repeat(2, 1fr);
+
+    gap: 10px;
+  }
+
+  .card-resumo {
+    padding: 16px;
+  }
+
+  .card-resumo strong {
+    font-size: 23px;
+  }
+
+  .grafico-card {
+    padding: 18px;
+  }
+
+  /*
+   * Mantém a tabela horizontalmente rolável
+   * em telas pequenas.
+   */
+
+  .relatorio-secao {
+    overflow-x: auto;
+  }
+
+  .alunos-relatorio,
+  .tabela-relatorio {
+    min-width: 850px;
+  }
+
+  /*
+   * A pesquisa continua visível sem
+   * precisar da largura da tabela.
+   */
+
+  .relatorio-pesquisa {
+    min-width: 0;
+
+    box-sizing: border-box;
+  }
+
+  /*
+   * Modal ocupa praticamente toda
+   * a tela no celular.
+   */
+
+  .historico-modal-overlay {
+    padding: 12px;
+  }
+
+  .historico-modal {
+    max-height: 94vh;
+
+    border-radius: 14px;
+  }
+
+  .historico-modal-header {
+    padding: 18px;
+  }
+
+  .historico-resumo {
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    padding: 15px 18px;
+  }
+
+  .historico-modal-conteudo {
+    padding: 16px 18px 20px;
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVO — 600px
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .historico-modal-header h2 {
+    font-size: 18px;
+  }
+
+  .historico-resumo {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .historico-cabecalho,
+  .historico-linha {
+    grid-template-columns:
+      1fr
+      1fr
+      1fr
+      1fr;
+
+    gap: 8px;
+
+    padding: 11px 10px;
+  }
+
+  .historico-cabecalho {
+    font-size: 9px;
+  }
+
+  .historico-linha {
+    font-size: 11px;
+  }
+
+  .status {
+    min-width: 65px;
+
+    padding: 4px 7px;
+
+    font-size: 9px;
+  }
+
+}
+
+
+/* =====================================================
+   RESPONSIVO — 480px
+===================================================== */
+
+@media (max-width: 480px) {
+
+  .relatorio {
+    padding: 15px;
+  }
+
+  .relatorio-header h1 {
+    font-size: 26px;
+  }
+
+  .relatorio-resumo {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 8px;
+  }
+
+  .card-resumo {
+    padding: 14px;
+  }
+
+  .card-resumo span {
+    font-size: 11px;
+  }
+
+  .card-resumo strong {
+    font-size: 21px;
+  }
+
+  .relatorio-graficos {
+    gap: 14px;
+  }
+
+  .grafico-presenca {
+    gap: 20px;
+  }
+
+  .barra-grafico {
+    width: 38px;
+  }
+
+  .legenda-grafico {
+    gap: 10px;
+
+    justify-content: flex-start;
+  }
+
+  .relatorio-pesquisa {
+    margin: 14px 15px;
+
+    padding: 9px 12px;
+  }
+
+  .btn-ver-todos {
+    width: calc(100% - 30px);
+  }
+
+  .historico-modal-overlay {
+    padding: 8px;
+  }
+
+  .historico-modal {
+    max-height: 96vh;
+
+    border-radius: 12px;
+  }
+
+  .historico-modal-header {
+    padding: 16px;
+  }
+
+  .historico-resumo {
+    padding: 13px 16px;
+
+    gap: 12px;
+  }
+
+  .historico-modal-conteudo {
+    padding: 14px 16px 18px;
+  }
+
+}

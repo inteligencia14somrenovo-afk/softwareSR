@@ -1,33 +1,30 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { GoTrash } from "react-icons/go";
+import { IoReloadSharp } from "react-icons/io5";
+import { FaRegHourglassHalf } from "react-icons/fa6";
 import Semanas from "./components/Semanas";
 import API_URL from "../../config/api";
 
 import "./Presenca.css";
 
 function Presenca() {
-
   const {
     professor,
-    carregando: carregandoProfessor
+    carregando: carregandoProfessor,
   } = useAuth();
 
   // =========================
   // ALUNOS
   // =========================
 
-  const [alunos, setAlunos] = useState([]);
   const [carregandoAlunos, setCarregandoAlunos] = useState(true);
-
 
   // =========================
   // AULAS / HORÁRIOS
   // =========================
 
-  const [aulas, setAulas] = useState([]);
   const [carregandoAulas, setCarregandoAulas] = useState(true);
-
+  const [horariosPlanilha, setHorariosPlanilha] = useState([]);
 
   // =========================
   // PRESENÇAS
@@ -36,6 +33,11 @@ function Presenca() {
   const [presencas, setPresencas] = useState([]);
   const [carregandoPresencas, setCarregandoPresencas] = useState(true);
 
+  // =========================
+  // SINCRONIZAÇÃO
+  // =========================
+
+  const [sincronizando, setSincronizando] = useState(false);
 
   // =========================
   // SEMANA E DIA
@@ -48,49 +50,6 @@ function Presenca() {
 
 
   // =========================
-  // CONTROLE VISUAL
-  // =========================
-
-  const [semanasConcluidas, setSemanasConcluidas] = useState(() => {
-
-    const salvas =
-      localStorage.getItem("semanasConcluidas");
-
-    return salvas
-      ? JSON.parse(salvas)
-      : [];
-
-  });
-
-
-  const [mesesConcluidos, setMesesConcluidos] = useState(() => {
-
-    const salvos =
-      localStorage.getItem("mesesConcluidos");
-
-    return salvos
-      ? JSON.parse(salvos)
-      : [];
-
-  });
-
-
-  // =========================
-  // FORMULÁRIO
-  // =========================
-
-  const [mostrarFormAula, setMostrarFormAula] =
-    useState(false);
-
-
-  const [novaAula, setNovaAula] = useState({
-    alunoId: "",
-    diaSemana: "",
-    horario: ""
-  });
-
-
-  // =========================
   // ESTADO DE CARREGAMENTO
   // =========================
 
@@ -100,7 +59,6 @@ function Presenca() {
     carregandoAulas ||
     carregandoPresencas;
 
-
   // =========================
   // DIAS
   // =========================
@@ -108,41 +66,37 @@ function Presenca() {
   const dias = [
     {
       numero: 1,
-      nome: "Segunda-feira"
+      nome: "Segunda-feira",
     },
     {
       numero: 2,
-      nome: "Terça-feira"
+      nome: "Terça-feira",
     },
     {
       numero: 3,
-      nome: "Quarta-feira"
+      nome: "Quarta-feira",
     },
     {
       numero: 4,
-      nome: "Quinta-feira"
+      nome: "Quinta-feira",
     },
     {
       numero: 5,
-      nome: "Sexta-feira"
+      nome: "Sexta-feira",
     },
     {
       numero: 6,
-      nome: "Sábado"
-    }
+      nome: "Sábado",
+    },
   ];
-
 
   // =========================
   // MÊS ATUAL
   // =========================
 
-  const anoAtual =
-    mesSelecionado.getFullYear();
+  const anoAtual = mesSelecionado.getFullYear();
 
-  const mesAtual =
-    mesSelecionado.getMonth();
-
+  const mesAtual = mesSelecionado.getMonth();
 
   const primeiroDiaMes = new Date(
     anoAtual,
@@ -157,7 +111,6 @@ function Presenca() {
     0
   );
 
-
   const ultimoDiaMes = new Date(
     anoAtual,
     mesAtual + 1,
@@ -171,18 +124,14 @@ function Presenca() {
     999
   );
 
-
   // =========================
   // INÍCIO DA SEMANA
   // =========================
 
   const obterInicioSemana = (data) => {
+    const novaData = new Date(data);
 
-    const novaData =
-      new Date(data);
-
-    const dia =
-      novaData.getDay();
+    const dia = novaData.getDay();
 
     const diferenca =
       dia === 0
@@ -201,18 +150,14 @@ function Presenca() {
     );
 
     return novaData;
-
   };
-
 
   // =========================
   // FIM DA SEMANA
   // =========================
 
   const obterFimSemana = (inicio) => {
-
-    const fim =
-      new Date(inicio);
+    const fim = new Date(inicio);
 
     fim.setDate(
       fim.getDate() + 5
@@ -226,103 +171,111 @@ function Presenca() {
     );
 
     return fim;
-
   };
-
 
   // =========================
   // SEMANAS DO MÊS
   // =========================
 
   const obterSemanasDoMes = () => {
-
     const semanas = [];
 
-    let inicio =
-      obterInicioSemana(
-        primeiroDiaMes
-      );
-
+    let inicio = obterInicioSemana(
+      primeiroDiaMes
+    );
 
     while (
       inicio <= ultimoDiaMes
     ) {
-
-      const fim =
-        obterFimSemana(
-          inicio
-        );
-
+      const fim = obterFimSemana(
+        inicio
+      );
 
       const inicioVisivel =
         inicio < primeiroDiaMes
           ? new Date(primeiroDiaMes)
           : new Date(inicio);
 
-
       const fimVisivel =
         fim > ultimoDiaMes
           ? new Date(ultimoDiaMes)
           : new Date(fim);
 
-
       semanas.push({
-
-        inicio:
-          new Date(inicio),
-
-        fim:
-          new Date(fim),
-
+        inicio: new Date(inicio),
+        fim: new Date(fim),
         inicioVisivel,
-
-        fimVisivel
-
+        fimVisivel,
       });
 
-
-      inicio =
-        new Date(inicio);
-
+      inicio = new Date(inicio);
 
       inicio.setDate(
         inicio.getDate() + 7
       );
-
     }
 
-
     return semanas;
-
   };
-
 
   const semanas =
     obterSemanasDoMes();
 
+  // =========================
+  // ABRIR NA SEMANA E DIA ATUAIS
+  // =========================
+
+  useEffect(() => {
+    const hoje = new Date();
+
+    if (
+      hoje.getFullYear() !== anoAtual ||
+      hoje.getMonth() !== mesAtual
+    ) {
+      return;
+    }
+
+    const diaSemanaHoje =
+      hoje.getDay();
+
+    if (diaSemanaHoje === 0) {
+      return;
+    }
+
+    const dia = diaSemanaHoje;
+
+    const indiceSemana =
+      semanas.findIndex((semana) => {
+        const dataInicio =
+          new Date(semana.inicio);
+
+        const dataFim =
+          new Date(semana.fim);
+
+        return (
+          hoje >= dataInicio &&
+          hoje <= dataFim
+        );
+      });
+
+    if (indiceSemana === -1) {
+      return;
+    }
+
+    setSemanaSelecionada(
+      indiceSemana
+    );
+
+    setDiaSelecionado(dia);
+  }, []);
 
   // =========================
   // IDENTIFICADOR DA SEMANA
   // =========================
 
   const obterIdSemana = (index) => {
-
     return `${anoAtual}-${mesAtual}-${index}`;
-
   };
-
-
-  // =========================
-  // VERIFICAR CONCLUSÃO
-  // =========================
-
-  const semanaAtualConcluida =
-    semanasConcluidas.includes(
-      obterIdSemana(
-        semanaSelecionada
-      )
-    );
-
 
   // =========================
   // DATA DO DIA
@@ -332,23 +285,18 @@ function Presenca() {
     semana,
     numeroDia
   ) => {
-
     if (!semana) {
       return null;
     }
 
-
-    const data =
-      new Date(
-        semana.inicio
-      );
-
+    const data = new Date(
+      semana.inicio
+    );
 
     data.setDate(
       data.getDate() +
-      (numeroDia - 1)
+        (numeroDia - 1)
     );
-
 
     data.setHours(
       0,
@@ -357,11 +305,8 @@ function Presenca() {
       0
     );
 
-
     return data;
-
   };
-
 
   // =========================
   // DIA DISPONÍVEL
@@ -370,17 +315,14 @@ function Presenca() {
   const diaEstaDisponivel = (
     numeroDia
   ) => {
-
     const semana =
       semanas[
         semanaSelecionada
       ];
 
-
     if (!semana) {
       return false;
     }
-
 
     const data =
       obterDataDoDia(
@@ -388,14 +330,11 @@ function Presenca() {
         numeroDia
       );
 
-
     return (
       data >= primeiroDiaMes &&
       data <= ultimoDiaMes
     );
-
   };
-
 
   // =========================
   // DATA SELECIONADA
@@ -409,14 +348,12 @@ function Presenca() {
       diaSelecionado
     );
 
-
   const dataString =
     dataSelecionada
       ? dataSelecionada
           .toISOString()
           .split("T")[0]
       : "";
-
 
   // =========================
   // STRING DO MÊS PARA API
@@ -427,119 +364,89 @@ function Presenca() {
       mesAtual + 1
     ).padStart(2, "0")}`;
 
-
   // =========================
   // FORMATAR DATA
   // =========================
 
   const formatarData = (data) => {
-
     if (!data) {
       return "";
     }
-
 
     return data.toLocaleDateString(
       "pt-BR",
       {
         day: "2-digit",
-        month: "2-digit"
+        month: "2-digit",
       }
     );
-
   };
-
 
   // =====================================================
   // CARREGAR ALUNOS
   // =====================================================
 
   useEffect(() => {
-
     const carregarAlunos = async () => {
-
       if (carregandoProfessor) {
         return;
       }
 
-
       if (!professor) {
-
         setAlunos([]);
-
         setCarregandoAlunos(false);
-
         return;
-
       }
 
-
       try {
-
         setCarregandoAlunos(true);
-
 
         const response =
           await fetch(
             `${API_URL}/alunos`,
             {
               credentials:
-                "include"
+                "include",
             }
           );
-
 
         const data =
           await response.json();
 
-
         if (!response.ok) {
-
           throw new Error(
             data.mensagem ||
-            "Não foi possível carregar os alunos."
+              "Não foi possível carregar os alunos."
           );
-
         }
-
 
         setAlunos(
           data.alunos || []
         );
-
-
       } catch (error) {
-
         console.error(
           "❌ Erro ao carregar alunos:",
           error
         );
-
       } finally {
-
         setCarregandoAlunos(false);
-
       }
-
     };
 
-
     carregarAlunos();
-
   }, [
     professor,
-    carregandoProfessor
+    carregandoProfessor,
   ]);
 
-
   // =====================================================
-  // CARREGAR AULAS
+  // CARREGAR HORÁRIOS DA PLANILHA
   // =====================================================
 
-  useEffect(() => {
-
-    const carregarAulas = async () => {
-
+  const carregarHorariosPlanilha =
+    async (
+      mostrarCarregamento = true
+    ) => {
       if (
         carregandoProfessor ||
         !professor
@@ -547,233 +454,267 @@ function Presenca() {
         return;
       }
 
-
       try {
-
-        setCarregandoAulas(true);
-
+        if (mostrarCarregamento) {
+          setCarregandoAulas(true);
+        }
 
         const response =
           await fetch(
-            `${API_URL}/aulas`,
+            `${API_URL}/planilha/horarios/${professor.id}/organizados`,
             {
               credentials:
-                "include"
+                "include",
             }
           );
-
 
         const data =
           await response.json();
 
-
         if (!response.ok) {
-
           throw new Error(
-            data.mensagem ||
-            "Não foi possível carregar os horários."
+            data.erro ||
+              "Não foi possível carregar os horários da planilha."
           );
-
         }
 
+        const mapaDias = {
+          SEGUNDA: 1,
+          TERÇA: 2,
+          QUARTA: 3,
+          QUINTA: 4,
+          SEXTA: 5,
+          SÁBADO: 6,
+        };
 
-        const aulasFormatadas =
-          (data.aulas || []).map(
-            (aula) => ({
-
-              id:
-                Number(aula.id),
-
+        const horarios =
+          (data.dados || []).map(
+            (item) => ({
+              id: item.celula,
               alunoId:
-                Number(aula.aluno_id),
-
+                item.codigoAluno,
+              nome: item.nome,
+              instrumento:
+                item.instrumento,
               diaSemana:
-                Number(aula.dia_semana),
-
+                mapaDias[
+                  item.diaSemana
+                ],
               horario:
-                aula.horario
-
+                item.horario,
+              cancelado:
+                item.cancelado,
+              foto: item.foto,
+              conteudoOriginal:
+                item.conteudoOriginal,
             })
           );
 
-
-        setAulas(
-          aulasFormatadas
+        setHorariosPlanilha(
+          horarios
         );
-
-
       } catch (error) {
-
         console.error(
-          "❌ Erro ao carregar aulas:",
+          "❌ Erro ao carregar horários da planilha:",
           error
         );
 
+        if (mostrarCarregamento) {
+          setHorariosPlanilha([]);
+        }
       } finally {
-
-        setCarregandoAulas(false);
-
+        if (mostrarCarregamento) {
+          setCarregandoAulas(false);
+        }
       }
-
     };
 
+  // =====================================================
+  // CARREGAR PLANILHA AO ABRIR
+  // =====================================================
 
-    carregarAulas();
-
+  useEffect(() => {
+    carregarHorariosPlanilha();
   }, [
     professor,
-    carregandoProfessor
+    carregandoProfessor,
   ]);
 
+  // =====================================================
+  // ATUALIZAÇÃO AUTOMÁTICA DA TELA
+  // =====================================================
+
+  useEffect(() => {
+    if (
+      carregandoProfessor ||
+      !professor
+    ) {
+      return;
+    }
+
+    const intervalo =
+      setInterval(() => {
+        carregarHorariosPlanilha(
+          false
+        );
+      }, 65 * 1000);
+
+    return () => {
+      clearInterval(intervalo);
+    };
+  }, [
+    professor,
+    carregandoProfessor,
+  ]);
+
+  // =====================================================
+  // SINCRONIZAR PLANILHA AGORA
+  // =====================================================
+
+  const sincronizarAgora = async () => {
+    if (sincronizando) {
+      return;
+    }
+
+    try {
+      setSincronizando(true);
+
+      const response =
+        await fetch(
+          `${API_URL}/planilha/sincronizar`,
+          {
+            method: "POST",
+            credentials:
+              "include",
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.erro ||
+            "Erro ao sincronizar planilha."
+        );
+      }
+
+      console.log(
+        "✅ Sincronização concluída:",
+        data
+      );
+
+      await carregarHorariosPlanilha(
+        false
+      );
+    } catch (error) {
+      console.error(
+        "❌ Erro ao sincronizar:",
+        error
+      );
+
+      alert(
+        "Não foi possível sincronizar a planilha."
+      );
+    } finally {
+      setSincronizando(false);
+    }
+  };
 
   // =====================================================
   // CARREGAR PRESENÇAS DO MÊS
   // =====================================================
 
-  useEffect(() => {
+  const carregarPresencas = async () => {
+  if (
+    carregandoProfessor ||
+    !professor
+  ) {
+    return;
+  }
 
-    const carregarPresencas = async () => {
+  try {
+    setCarregandoPresencas(true);
 
-      if (
-        carregandoProfessor ||
-        !professor
-      ) {
-        return;
+    const response = await fetch(
+      `${API_URL}/presencas?mes=${mesString}`,
+      {
+        credentials: "include",
       }
-
-
-      try {
-
-        setCarregandoPresencas(
-          true
-        );
-
-
-        const response =
-          await fetch(
-            `${API_URL}/presencas?mes=${mesString}`,
-            {
-              credentials:
-                "include"
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.mensagem ||
-            "Não foi possível carregar as presenças."
-          );
-
-        }
-
-
-        const presencasFormatadas =
-          (data.presencas || []).map(
-            (presenca) => ({
-
-              id:
-                Number(presenca.id),
-
-              aulaId:
-                Number(presenca.aula_id),
-
-              alunoId:
-                Number(presenca.aluno_id),
-
-              data:
-                typeof presenca.data ===
-                "string"
-                  ? presenca.data.split("T")[0]
-                  : presenca.data,
-
-              status:
-                presenca.status
-
-            })
-          );
-
-
-        setPresencas(
-          presencasFormatadas
-        );
-
-
-      } catch (error) {
-
-        console.error(
-          "❌ Erro ao carregar presenças:",
-          error
-        );
-
-      } finally {
-
-        setCarregandoPresencas(
-          false
-        );
-
-      }
-
-    };
-
-
-    carregarPresencas();
-
-  }, [
-    professor,
-    carregandoProfessor,
-    mesString
-  ]);
-
-
-  // =====================================================
-  // SALVAR ESTADOS VISUAIS
-  // =====================================================
-
-  useEffect(() => {
-
-    localStorage.setItem(
-      "semanasConcluidas",
-      JSON.stringify(
-        semanasConcluidas
-      )
     );
 
-  }, [
-    semanasConcluidas
-  ]);
+    const data =
+      await response.json();
 
+    if (!response.ok) {
+      throw new Error(
+        data.mensagem ||
+          "Não foi possível carregar as presenças."
+      );
+    }
 
-  useEffect(() => {
+    const presencasFormatadas =
+      (
+        data.presencas ||
+        []
+      ).map((presenca) => ({
+        id: Number(
+          presenca.id
+        ),
 
-    localStorage.setItem(
-      "mesesConcluidos",
-      JSON.stringify(
-        mesesConcluidos
-      )
+        celula:
+          presenca.celula,
+
+        data:
+          typeof presenca.data ===
+          "string"
+            ? presenca.data.split(
+                "T"
+              )[0]
+            : presenca.data,
+
+        status:
+          presenca.status,
+      }));
+
+    setPresencas(
+      presencasFormatadas
     );
 
-  }, [
-    mesesConcluidos
-  ]);
+  } catch (error) {
 
+    console.error(
+      "❌ Erro ao carregar presenças:",
+      error
+    );
+
+  } finally {
+
+    setCarregandoPresencas(
+      false
+    );
+  }
+};
+
+useEffect(() => {
+  carregarPresencas();
+}, [
+  professor,
+  carregandoProfessor,
+  mesString,
+]);
 
   // =========================
   // AULAS DO DIA
   // =========================
 
   const aulasDoDia =
-    aulas
+    horariosPlanilha
       .filter(
         (aula) =>
           Number(
             aula.diaSemana
-          ) ===
-          diaSelecionado
+          ) === diaSelecionado
       )
       .sort(
         (a, b) =>
@@ -783,428 +724,141 @@ function Presenca() {
       );
 
 
-  // =========================
-  // ENCONTRAR ALUNO
-  // =========================
-
-  const encontrarAluno = (
-    alunoId
-  ) => {
-
-    return alunos.find(
-      (aluno) =>
-        Number(aluno.id) ===
-        Number(alunoId)
-    );
-
-  };
-
-
-  // =========================
-  // ENCONTRAR PRESENÇA
-  // =========================
-
-  const encontrarPresenca = (
-    aulaId
-  ) => {
-
-    return presencas.find(
-      (presenca) =>
-        Number(
-          presenca.aulaId
-        ) ===
-        Number(aulaId) &&
-        presenca.data ===
-        dataString
-    );
-
-  };
-
-
-  // =====================================================
-  // CADASTRAR HORÁRIO
-  // =====================================================
-
-  const cadastrarAula = async () => {
-
-    if (
-      !novaAula.alunoId ||
-      novaAula.diaSemana === "" ||
-      !novaAula.horario
-    ) {
-
-      alert(
-        "Selecione o aluno, o dia e o horário."
-      );
-
-      return;
-
-    }
-
-
-    try {
-
-      const response =
-        await fetch(
-          `${API_URL}/aulas`,
-          {
-
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            credentials:
-              "include",
-
-            body:
-              JSON.stringify({
-                alunoId:
-                  Number(
-                    novaAula.alunoId
-                  ),
-
-                diaSemana:
-                  Number(
-                    novaAula.diaSemana
-                  ),
-
-                horario:
-                  novaAula.horario
-              })
-
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        alert(
-          data.mensagem ||
-          "Não foi possível configurar o horário."
-        );
-
-        return;
-
-      }
-
-
-      const aula =
-        data.aula;
-
-
-      const aulaFormatada = {
-
-        id:
-          Number(aula.id),
-
-        alunoId:
-          Number(aula.aluno_id),
-
-        diaSemana:
-          Number(aula.dia_semana),
-
-        horario:
-          aula.horario
-
-      };
-
-
-      setAulas(
-        (atuais) => [
-          ...atuais,
-          aulaFormatada
-        ]
-      );
-
-
-      setNovaAula({
-        alunoId: "",
-        diaSemana: "",
-        horario: ""
-      });
-
-
-      setMostrarFormAula(
-        false
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "❌ Erro ao cadastrar horário:",
-        error
-      );
-
-      alert(
-        "Erro de conexão com o servidor."
-      );
-
-    }
-
-  };
-
-
-  // =====================================================
-  // EXCLUIR HORÁRIO
-  // =====================================================
-
-  const excluirAula = async (
-    aulaId
-  ) => {
-
-    const confirmar =
-      window.confirm(
-        "Deseja realmente excluir este horário?"
-      );
-
-
-    if (!confirmar) {
-      return;
-    }
-
-
-    try {
-
-      const response =
-        await fetch(
-          `${API_URL}/aulas/${aulaId}`,
-          {
-
-            method: "DELETE",
-
-            credentials:
-              "include"
-
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        alert(
-          data.mensagem ||
-          "Não foi possível excluir o horário."
-        );
-
-        return;
-
-      }
-
-
-      setAulas(
-        (atuais) =>
-          atuais.filter(
-            (aula) =>
-              Number(aula.id) !==
-              Number(aulaId)
-          )
-      );
-
-
-      // O backend usa ON DELETE CASCADE
-      // para apagar as presenças relacionadas.
-
-      setPresencas(
-        (atuais) =>
-          atuais.filter(
-            (presenca) =>
-              Number(
-                presenca.aulaId
-              ) !==
-              Number(aulaId)
-          )
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        "❌ Erro ao excluir horário:",
-        error
-      );
-
-      alert(
-        "Erro de conexão com o servidor."
-      );
-
-    }
-
-  };
-
+ // =========================
+// ENCONTRAR PRESENÇA
+// =========================
+
+const encontrarPresenca = (aulaId) => {
+  return presencas.find(
+    (presenca) =>
+      presenca.celula === aulaId &&
+      presenca.data === dataString
+  );
+};
 
   // =====================================================
   // REGISTRAR PRESENÇA
   // =====================================================
 
   const registrarPresenca = async (
-    aula,
-    status
-  ) => {
+  aula,
+  status
+) => {
 
+  try {
 
-    if (!dataString) {
+    if (!aula?.id) {
+      console.error(
+        "❌ Aula sem célula da planilha:",
+        aula
+      );
+
       return;
     }
 
-    try {
 
-      const response =
-        await fetch(
-          `${API_URL}/presencas`,
-          {
+    // =================================================
+    // DATA DA CHAMADA
+    // Usa o dia que esta selecionado na lista
+    // =================================================
 
-            method: "POST",
+    const data = dataString;
 
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
+    // =================================================
+    // REGISTRAR
+    // =================================================
 
-            credentials:
-              "include",
+    const response =
+      await fetch(
+        `${API_URL}/presencas`,
+        {
+          method: "POST",
 
-            body:
-              JSON.stringify({
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
 
-                aulaId:
-                  Number(
-                    aula.id
-                  ),
+          credentials: "include",
 
-                alunoId:
-                  Number(
-                    aula.alunoId
-                  ),
-
-                data:
-                  dataString,
-
-                status
-
-              })
-
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-      if (!response.ok) {
-
-        alert(
-          data.mensagem ||
-          "Não foi possível registrar a presença."
-        );
-
-        return;
-
-      }
-
-
-      const novaPresenca = {
-
-        id:
-          Number(
-            data.presenca.id
-          ),
-
-        aulaId:
-          Number(
-            data.presenca.aula_id
-          ),
-
-        alunoId:
-          Number(
-            data.presenca.aluno_id
-          ),
-
-        data:
-          typeof data.presenca.data ===
-          "string"
-            ? data.presenca.data.split("T")[0]
-            : data.presenca.data,
-
-        status:
-          data.presenca.status
-
-      };
-
-
-      setPresencas(
-        (atuais) => {
-
-          const existe =
-            atuais.some(
-              (presenca) =>
-                Number(
-                  presenca.aulaId
-                ) ===
-                Number(
-                  novaPresenca.aulaId
-                ) &&
-                presenca.data ===
-                novaPresenca.data
-            );
-
-
-          if (existe) {
-
-            return atuais.map(
-              (presenca) =>
-                Number(
-                  presenca.aulaId
-                ) ===
-                Number(
-                  novaPresenca.aulaId
-                ) &&
-                presenca.data ===
-                novaPresenca.data
-
-                  ? novaPresenca
-
-                  : presenca
-            );
-
-          }
-
-
-          return [
-            ...atuais,
-            novaPresenca
-          ];
-
+          body: JSON.stringify({
+            celula: aula.id,
+            data,
+            status,
+          }),
         }
       );
 
 
-    } catch (error) {
+    const resultado =
+      await response.json();
 
-      console.error(
-        "❌ Erro ao registrar presença:",
-        error
+
+    if (!response.ok) {
+
+      throw new Error(
+        resultado.mensagem ||
+        "Erro ao registrar presença."
       );
-
-      alert(
-        "Erro de conexão com o servidor."
-      );
-
     }
 
-  };
 
+    console.log(
+      "✅ Presença registrada:",
+      resultado
+    );
+
+
+    // =================================================
+    // ATUALIZAR PRESENÇAS DA TELA
+    // =================================================
+
+    setPresencas((anteriores) => {
+  const dataAtual = data;
+
+  const existente = anteriores.find(
+    (presenca) =>
+      presenca.celula === aula.id &&
+      presenca.data === dataAtual
+  );
+
+  if (existente) {
+    return anteriores.map((presenca) =>
+      presenca.id === existente.id
+        ? {
+            ...presenca,
+            status,
+          }
+        : presenca
+    );
+  }
+
+  return [
+    ...anteriores,
+    {
+      id: resultado.presenca.id,
+      celula: aula.id,
+      data: dataAtual,
+      status,
+    },
+  ];
+});
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ Erro ao registrar presença:",
+      error
+    );
+
+    alert(
+      error.message ||
+      "Não foi possível registrar a presença."
+    );
+  }
+
+};
 
   // =========================
   // TROCAR SEMANA
@@ -1213,124 +867,42 @@ function Presenca() {
   const selecionarSemana = (
     index
   ) => {
-
     setSemanaSelecionada(
       index
     );
 
-
     const novaSemana =
       semanas[index];
-
 
     if (!novaSemana) {
       return;
     }
-
 
     for (
       let dia = 1;
       dia <= 6;
       dia++
     ) {
-
       const data =
         obterDataDoDia(
           novaSemana,
           dia
         );
 
-
       if (
-        data >= primeiroDiaMes &&
-        data <= ultimoDiaMes
+        data >=
+          primeiroDiaMes &&
+        data <=
+          ultimoDiaMes
       ) {
-
         setDiaSelecionado(
           dia
         );
 
         break;
-
       }
-
     }
-
   };
-
-
-  // =====================================================
-  // CONCLUIR / REABRIR SEMANA
-  // =====================================================
-
-  const alternarConclusaoSemana =
-    () => {
-
-      const idSemana =
-        obterIdSemana(
-          semanaSelecionada
-        );
-
-
-      if (
-        semanasConcluidas.includes(
-          idSemana
-        )
-      ) {
-
-        setSemanasConcluidas(
-          (atuais) =>
-            atuais.filter(
-              (item) =>
-                item !== idSemana
-            )
-        );
-
-        return;
-
-      }
-
-
-      const novasConcluidas = [
-
-        ...semanasConcluidas,
-
-        idSemana
-
-      ];
-
-
-      const todasConcluidas =
-        semanas.every(
-          (_, index) =>
-            novasConcluidas.includes(
-              obterIdSemana(index)
-            )
-        );
-
-
-      if (todasConcluidas) {
-
-        const confirmar =
-          window.confirm(
-            `Todas as semanas de ${nomeMes} foram concluídas.\n\nDeseja concluir o mês?`
-          );
-
-
-        if (confirmar) {
-
-          concluirMes(false);
-
-        }
-
-      }
-
-
-      setSemanasConcluidas(
-        novasConcluidas
-      );
-
-    };
 
 
   // =====================================================
@@ -1340,27 +912,21 @@ function Presenca() {
   const trocarMes = (
     quantidade
   ) => {
-
     setMesSelecionado(
       new Date(
         anoAtual,
-        mesAtual + quantidade,
+        mesAtual +
+          quantidade,
         1
       )
     );
-
 
     setSemanaSelecionada(
       0
     );
 
-
-    setDiaSelecionado(
-      1
-    );
-
+    setDiaSelecionado(1);
   };
-
 
   // =========================
   // NOME DO MÊS
@@ -1371,107 +937,29 @@ function Presenca() {
       "pt-BR",
       {
         month: "long",
-        year: "numeric"
+        year: "numeric",
       }
     );
-
-
-  // =====================================================
-  // CONCLUIR MÊS
-  // =====================================================
-
-  const concluirMes = (
-    confirmarAntes = true
-  ) => {
-
-    if (confirmarAntes) {
-
-      const confirmar =
-        window.confirm(
-          `Concluir ${nomeMes}?`
-        );
-
-
-      if (!confirmar) {
-        return;
-      }
-
-    }
-
-
-    const idMes =
-      `${anoAtual}-${mesAtual}`;
-
-
-    setMesesConcluidos(
-      (atuais) => {
-
-        if (
-          atuais.includes(
-            idMes
-          )
-        ) {
-          return atuais;
-        }
-
-
-        return [
-          ...atuais,
-          idMes
-        ];
-
-      }
-    );
-
-
-    setMesSelecionado(
-      new Date(
-        anoAtual,
-        mesAtual + 1,
-        1
-      )
-    );
-
-
-    setSemanaSelecionada(
-      0
-    );
-
-
-    setDiaSelecionado(
-      1
-    );
-
-  };
-
 
   // =====================================================
   // CARREGAMENTO
   // =====================================================
 
   if (carregando) {
-
     return (
-
       <div className="presenca">
-
         <p>
           Carregando presença...
         </p>
-
       </div>
-
     );
-
   }
-
 
   // =====================================================
   // RENDER
   // =====================================================
 
   return (
-
     <div className="presenca">
 
       {/* CABEÇALHO */}
@@ -1479,7 +967,6 @@ function Presenca() {
       <div className="presenca-header">
 
         <div>
-
           <h1>
             Presença
           </h1>
@@ -1487,203 +974,61 @@ function Presenca() {
           <p>
             Controle das aulas individuais
           </p>
-
         </div>
 
-
-        <button
-          type="button"
-          onClick={() =>
-            setMostrarFormAula(
-              !mostrarFormAula
-            )
-          }
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+          }}
         >
 
-          {mostrarFormAula
-            ? "Fechar"
-            : "+ Configurar horário"}
-
+              <button
+          type="button"
+          className="btn-sincronizar"
+          onClick={sincronizarAgora}
+          disabled={sincronizando}
+        >
+          {sincronizando ? (
+            <>
+              <FaRegHourglassHalf />
+              Atualizando...
+            </>
+          ) : (
+            <>
+              <IoReloadSharp />
+              Atualizar Alunos
+            </>
+          )}
         </button>
 
-      </div>
-
-
-      {/* FORMULÁRIO */}
-
-      {mostrarFormAula && (
-
-        <div className="presenca-form">
-
-          <h2>
-            Configurar horário do aluno
-          </h2>
-
-
-          <select
-            value={
-              novaAula.alunoId
-            }
-            onChange={(e) =>
-              setNovaAula({
-                ...novaAula,
-                alunoId:
-                  e.target.value
-              })
-            }
-          >
-
-            <option value="">
-              Selecione o aluno
-            </option>
-
-
-            {alunos.map(
-              (aluno) => (
-
-                <option
-                  key={aluno.id}
-                  value={aluno.id}
-                >
-                  {aluno.nome}
-                </option>
-
-              )
-            )}
-
-          </select>
-
-
-          <select
-            value={
-              novaAula.diaSemana
-            }
-            onChange={(e) =>
-              setNovaAula({
-                ...novaAula,
-                diaSemana:
-                  e.target.value
-              })
-            }
-          >
-
-            <option value="">
-              Selecione o dia
-            </option>
-
-
-            {dias.map(
-              (dia) => (
-
-                <option
-                  key={dia.numero}
-                  value={
-                    dia.numero
-                  }
-                >
-                  {dia.nome}
-                </option>
-
-              )
-            )}
-
-          </select>
-
-
-          <input
-            type="time"
-            value={
-              novaAula.horario
-            }
-            onChange={(e) =>
-              setNovaAula({
-                ...novaAula,
-                horario:
-                  e.target.value
-              })
-            }
-          />
-
-
-          <div>
-
-            <button
-              type="button"
-              onClick={
-                cadastrarAula
-              }
-            >
-              Salvar horário
-            </button>
-
-
-            <button
-              type="button"
-              onClick={() =>
-                setMostrarFormAula(
-                  false
-                )
-              }
-            >
-              Cancelar
-            </button>
-
-          </div>
+         
 
         </div>
 
-      )}
+      </div>
 
 
       {/* SEMANAS */}
 
       <Semanas
-        semanas={
-          semanas
-        }
-
+        semanas={semanas}
         semanaSelecionada={
           semanaSelecionada
         }
-
-        nomeMes={
-          nomeMes
-        }
-
-        trocarMes={
-          trocarMes
-        }
-
-        concluirMes={
-          concluirMes
-        }
-
-        semanasConcluidas={
-          semanasConcluidas
-        }
-
+        nomeMes={nomeMes}
+        trocarMes={trocarMes}
         obterIdSemana={
           obterIdSemana
         }
-
         formatarData={
           formatarData
         }
-
         selecionarSemana={
           selecionarSemana
         }
-
-        semanaAtualConcluida={
-          semanaAtualConcluida
-        }
-
-        alternarConclusaoSemana={
-          alternarConclusaoSemana
-        }
-
+        
       />
-
 
       {/* ABAS DOS DIAS */}
 
@@ -1691,71 +1036,50 @@ function Presenca() {
 
         {dias.map(
           (dia) => {
-
             const disponivel =
               diaEstaDisponivel(
                 dia.numero
               );
 
-
             return (
-
               <button
                 key={
                   dia.numero
                 }
-
                 type="button"
-
                 disabled={
                   !disponivel
                 }
-
                 className={
-
                   diaSelecionado ===
                     dia.numero &&
                   disponivel
-
                     ? "aba ativa"
-
                     : !disponivel
-
                     ? "aba desabilitada"
-
                     : "aba"
-
                 }
-
                 onClick={() => {
-
                   if (
                     !disponivel
                   ) {
                     return;
                   }
 
-
                   setDiaSelecionado(
                     dia.numero
                   );
-
                 }}
-
               >
 
                 <span>
-
                   {dia.nome.replace(
                     "-feira",
                     ""
                   )}
-
                 </span>
 
-
                 <small>
-
                   {formatarData(
                     obterDataDoDia(
                       semanas[
@@ -1764,18 +1088,14 @@ function Presenca() {
                       dia.numero
                     )
                   )}
-
                 </small>
 
               </button>
-
             );
-
           }
         )}
 
       </div>
-
 
       {/* DIA */}
 
@@ -1786,7 +1106,6 @@ function Presenca() {
           <div>
 
             <h2>
-
               {
                 dias.find(
                   (dia) =>
@@ -1794,40 +1113,32 @@ function Presenca() {
                     diaSelecionado
                 )?.nome
               }
-
             </h2>
 
-
             <p>
-
               {formatarData(
                 dataSelecionada
               )}
-
             </p>
 
           </div>
 
-
           <span>
-
             {aulasDoDia.length}{" "}
-
-            {aulasDoDia.length === 1
+            {aulasDoDia.length ===
+            1
               ? "aula"
               : "aulas"}
-
           </span>
 
         </div>
-
 
         {/* LISTA */}
 
         <div className="presenca-lista">
 
-          {aulasDoDia.length === 0 ? (
-
+          {aulasDoDia.length ===
+          0 ? (
             <div className="presenca-vazia">
 
               <p>
@@ -1836,36 +1147,19 @@ function Presenca() {
               </p>
 
             </div>
-
           ) : (
-
             aulasDoDia.map(
               (aula) => {
-
-                const aluno =
-                  encontrarAluno(
-                    aula.alunoId
-                  );
-
-
-                if (!aluno) {
-                  return null;
-                }
-
-
                 const presenca =
                   encontrarPresenca(
                     aula.id
                   );
 
-
                 return (
-
                   <div
                     key={
                       aula.id
                     }
-
                     className="registro-presenca"
                   >
 
@@ -1877,100 +1171,64 @@ function Presenca() {
 
                     </div>
 
-
                     <div className="registro-aluno">
 
                       <strong>
-                        {aluno.nome}
+                        {aula.nome}
                       </strong>
 
-
                       <span>
-                        {aluno.instrumento}
+                        {aula.instrumento}
                       </span>
 
                     </div>
-
 
                     <div className="registro-acoes">
 
                       <button
                         type="button"
-
                         className={
                           presenca?.status ===
                           "presente"
-
                             ? "presente ativo"
-
                             : "presente"
                         }
-
                         onClick={() =>
                           registrarPresenca(
                             aula,
                             "presente"
                           )
                         }
-
                       >
                         ✓ Presente
                       </button>
 
-
                       <button
                         type="button"
-
                         className={
                           presenca?.status ===
                           "falta"
-
                             ? "falta ativo"
-
                             : "falta"
                         }
-
                         onClick={() =>
                           registrarPresenca(
                             aula,
                             "falta"
                           )
                         }
-
                       >
                         ✕ Falta
                       </button>
 
-
-                      <button
-                        type="button"
-
-                        className="excluir-horario"
-
-                        title="Excluir horário"
-
-                        onClick={() =>
-                          excluirAula(
-                            aula.id
-                          )
-                        }
-
-                      >
-
-                        <GoTrash />
-
-                      </button>
+                     
 
                     </div>
 
                   </div>
-
                 );
-
               }
-
             )
-
           )}
 
         </div>
@@ -1978,9 +1236,7 @@ function Presenca() {
       </div>
 
     </div>
-
   );
-
 }
 
 export default Presenca;
