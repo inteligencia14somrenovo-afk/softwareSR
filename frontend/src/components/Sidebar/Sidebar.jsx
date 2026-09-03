@@ -72,7 +72,7 @@ const Sidebar = () => {
 
         <NavLink to="/bandas">
           <FaDrum />
-          {!collapsed && <span>Bandas</span>}
+          {!collapsed && <span>Bandas (Manutenção)</span>}
         </NavLink>
 
 

@@ -6,23 +6,22 @@ import {
   FiCheckCircle,
   FiClock,
   FiArrowRight,
-  FiUserPlus,
   FiClipboard
 } from "react-icons/fi";
 
+import { useAuth } from "../../context/AuthContext";
 import API_URL from "../../config/api";
 
 import "./TelaInicial.css";
-
 
 function TelaInicial() {
 
   const navigate = useNavigate();
 
-
-  // =====================================================
-  // ESTADOS
-  // =====================================================
+  const {
+    professor,
+    carregando: carregandoProfessor
+  } = useAuth();
 
   const [alunos, setAlunos] = useState([]);
   const [aulas, setAulas] = useState([]);
@@ -30,74 +29,70 @@ function TelaInicial() {
 
   const [carregando, setCarregando] = useState(true);
 
-
-  // =====================================================
-  // DATA ATUAL
-  // =====================================================
-
   const hoje = new Date();
 
-  const ano = hoje.getFullYear();
-
-  const mes = String(
-    hoje.getMonth() + 1
-  ).padStart(2, "0");
-
-  const dia = String(
-    hoje.getDate()
-  ).padStart(2, "0");
-
-  const dataHoje = `${ano}-${mes}-${dia}`;
-
+  const dataHoje =
+    `${hoje.getFullYear()}-` +
+    `${String(hoje.getMonth() + 1).padStart(2, "0")}-` +
+    `${String(hoje.getDate()).padStart(2, "0")}`;
 
   /*
-    JavaScript:
+   * JS:
+   * 0 = Domingo
+   * 1 = Segunda
+   * 2 = Terça
+   * 3 = Quarta
+   * 4 = Quinta
+   * 5 = Sexta
+   * 6 = Sábado
+   */
+  const diasSemana = [
+    "DOMINGO",
+    "SEGUNDA",
+    "TERÇA",
+    "QUARTA",
+    "QUINTA",
+    "SEXTA",
+    "SÁBADO"
+  ];
 
-    Domingo = 0
-    Segunda = 1
-    ...
-    Sábado = 6
-
-    Nosso banco:
-
-    Segunda = 1
-    ...
-    Sábado = 6
-
-    Portanto domingo não possui aulas.
-  */
-
-  const diaSemana = hoje.getDay();
-
-
-  // =====================================================
-  // CARREGAR DADOS
-  // =====================================================
+  const diaHoje = diasSemana[hoje.getDay()];
 
   useEffect(() => {
 
-    const carregarDashboard = async () => {
+    if (carregandoProfessor) {
+      return;
+    }
+
+    if (!professor) {
+      setAlunos([]);
+      setAulas([]);
+      setPresencas([]);
+      setCarregando(false);
+      return;
+    }
+
+    const carregarDados = async () => {
 
       try {
 
         setCarregando(true);
 
-
         const [
           respostaAlunos,
-          respostaAulas,
+          respostaHorarios,
           respostaPresencas
         ] = await Promise.all([
 
           fetch(
-            `${API_URL}/alunos`,
+            `${API_URL}/planilha/alunos/${professor.id}`,
             {
               credentials: "include"
             }
           ),
 
           fetch(
-            `${API_URL}/aulas`,
+            `${API_URL}/planilha/horarios/${professor.id}/organizados`,
             {
               credentials: "include"
             }
@@ -112,65 +107,90 @@ function TelaInicial() {
 
         ]);
 
+        const dadosAlunos =
+          await respostaAlunos.json();
 
-        const [
-          dadosAlunos,
-          dadosAulas,
-          dadosPresencas
-        ] = await Promise.all([
+        const dadosHorarios =
+          await respostaHorarios.json();
 
-          respostaAlunos.json(),
-          respostaAulas.json(),
-          respostaPresencas.json()
+        const dadosPresencas =
+          await respostaPresencas.json();
 
-        ]);
+        /*
+         * ALUNOS
+         */
+        if (respostaAlunos.ok) {
 
-
-        if (!respostaAlunos.ok) {
-          throw new Error(
-            dadosAlunos.mensagem ||
-            "Erro ao carregar alunos."
+          setAlunos(
+            dadosAlunos.alunos || []
           );
+
+        } else {
+
+          setAlunos([]);
+
         }
 
+        /*
+         * HORÁRIOS
+         *
+         * O endpoint retorna:
+         *
+         * {
+         *   sucesso: true,
+         *   dados: [...]
+         * }
+         */
+        if (respostaHorarios.ok) {
 
-        if (!respostaAulas.ok) {
-          throw new Error(
-            dadosAulas.mensagem ||
-            "Erro ao carregar aulas."
+          const horarios =
+            Array.isArray(dadosHorarios.dados)
+              ? dadosHorarios.dados
+              : [];
+
+          setAulas(horarios);
+
+          console.log(
+            "✅ Horários carregados na Tela Inicial:",
+            horarios
           );
+
+        } else {
+
+          setAulas([]);
+
         }
 
+        /*
+         * PRESENÇAS
+         */
+        if (respostaPresencas.ok) {
 
-        if (!respostaPresencas.ok) {
-          throw new Error(
-            dadosPresencas.mensagem ||
-            "Erro ao carregar presenças."
-          );
+          const listaPresencas =
+            Array.isArray(dadosPresencas)
+              ? dadosPresencas
+              : Array.isArray(dadosPresencas.presencas)
+                ? dadosPresencas.presencas
+                : [];
+
+          setPresencas(listaPresencas);
+
+        } else {
+
+          setPresencas([]);
+
         }
-
-
-        setAlunos(
-          dadosAlunos.alunos || []
-        );
-
-
-        setAulas(
-          dadosAulas.aulas || []
-        );
-
-
-        setPresencas(
-          dadosPresencas.presencas || []
-        );
-
 
       } catch (error) {
 
         console.error(
-          "❌ Erro ao carregar dashboard:",
+          "❌ Erro ao carregar dados da Tela Inicial:",
           error
         );
+
+        setAlunos([]);
+        setAulas([]);
+        setPresencas([]);
 
       } finally {
 
@@ -180,27 +200,32 @@ function TelaInicial() {
 
     };
 
+    carregarDados();
 
-    carregarDashboard();
+  }, [
+    professor,
+    carregandoProfessor,
+    dataHoje
+  ]);
 
-  }, [dataHoje]);
 
-
-  // =====================================================
-  // AULAS DE HOJE
-  // =====================================================
-
+  /*
+   * =====================================================
+   * AULAS DE HOJE
+   * =====================================================
+   *
+   * Somente aulas normais entram aqui.
+   *
+   * Aulas experimentais são separadas para não serem
+   * tratadas como aulas comuns.
+   */
   const aulasHoje = useMemo(() => {
-
-    if (diaSemana === 0) {
-      return [];
-    }
 
     return aulas
       .filter(
-        (aula) =>
-          Number(aula.dia_semana) ===
-          diaSemana
+        aula =>
+          aula.diaSemana === diaHoje &&
+          aula.tipo !== "experimental"
       )
       .sort(
         (a, b) =>
@@ -209,66 +234,226 @@ function TelaInicial() {
           )
       );
 
-  }, [aulas, diaSemana]);
+  }, [
+    aulas,
+    diaHoje
+  ]);
 
 
-  // =====================================================
-  // PRESENÇA DE HOJE
-  // =====================================================
+  /*
+   * =====================================================
+   * AULAS EXPERIMENTAIS DE HOJE
+   * =====================================================
+   */
+  const aulasExperimentaisHoje = useMemo(() => {
 
-  const totalPresencasHoje =
-    presencas.length;
+    return aulas
+      .filter(
+        aula =>
+          aula.diaSemana === diaHoje &&
+          aula.tipo === "experimental"
+      )
+      .sort(
+        (a, b) =>
+          a.horario.localeCompare(
+            b.horario
+          )
+      );
+
+  }, [
+    aulas,
+    diaHoje
+  ]);
 
 
-  const presentesHoje =
-    presencas.filter(
-      (presenca) =>
-        presenca.status ===
-        "presente"
+  /*
+   * =====================================================
+   * PRESENÇA DE HOJE
+   * =====================================================
+   */
+  const presencasHoje = useMemo(() => {
+
+    return presencas.filter(
+      presenca =>
+        presenca.data === dataHoje
+    );
+
+  }, [
+    presencas,
+    dataHoje
+  ]);
+
+
+  /*
+   * =====================================================
+   * TOTAL DE ALUNOS
+   * =====================================================
+   */
+  const totalAlunos = alunos.length;
+
+
+  /*
+   * =====================================================
+   * TOTAL DE AULAS NORMAIS DE HOJE
+   * =====================================================
+   */
+  const totalAulasHoje =
+    aulasHoje.length;
+
+
+  /*
+   * =====================================================
+   * PRESENÇAS
+   * =====================================================
+   */
+  const totalPresentes =
+    presencasHoje.filter(
+      p => p.status === "presente"
     ).length;
 
 
-  const faltasHoje =
-    presencas.filter(
-      (presenca) =>
-        presenca.status ===
-        "falta"
-    ).length;
+  /*
+   * =====================================================
+   * CONVERTE HH:MM PARA MINUTOS
+   * =====================================================
+   */
+  const horarioEmMinutos = (
+    horario
+  ) => {
+
+    if (!horario) {
+      return 0;
+    }
+
+    const [hora, minuto] =
+      horario.split(":").map(Number);
+
+    return (
+      hora * 60 +
+      minuto
+    );
+
+  };
 
 
-  const percentualPresenca =
-    totalPresencasHoje > 0
-      ? Math.round(
-          (presentesHoje /
-            totalPresencasHoje) *
-            100
-        )
-      : 0;
+  /*
+   * =====================================================
+   * HORÁRIO ATUAL
+   * =====================================================
+   */
+  const agora = new Date();
+
+  const minutosAgora =
+    agora.getHours() * 60 +
+    agora.getMinutes();
 
 
-  // =====================================================
-  // PRÓXIMA AULA
-  // =====================================================
+  /*
+   * =====================================================
+   * AULA ACONTECENDO AGORA
+   * =====================================================
+   *
+   * AE já foi separado acima, então nunca será
+   * considerada uma aula comum aqui.
+   */
+  const aulaAtual = useMemo(() => {
 
-  const horaAtual =
-    `${String(
-      hoje.getHours()
-    ).padStart(2, "0")}:${String(
-      hoje.getMinutes()
-    ).padStart(2, "0")}`;
+    return (
+      aulasHoje.find(aula => {
+
+        const inicio =
+          horarioEmMinutos(
+            aula.horario
+          );
+
+        const fim =
+          inicio + 60;
+
+        return (
+          minutosAgora >= inicio &&
+          minutosAgora < fim
+        );
+
+      }) || null
+    );
+
+  }, [
+    aulasHoje,
+    minutosAgora
+  ]);
 
 
-  const proximaAula =
-    aulasHoje.find(
-      (aula) =>
-        aula.horario >= horaAtual
-    ) || null;
+  /*
+   * =====================================================
+   * PRÓXIMA AULA
+   * =====================================================
+   */
+  const proximaAula = useMemo(() => {
+
+    return (
+      aulasHoje.find(aula => {
+
+        return (
+          horarioEmMinutos(
+            aula.horario
+          ) > minutosAgora
+        );
+
+      }) || null
+    );
+
+  }, [
+    aulasHoje,
+    minutosAgora
+  ]);
 
 
-  // =====================================================
-  // DATA FORMATADA
-  // =====================================================
+  /*
+   * =====================================================
+   * STATUS DA AULA
+   * =====================================================
+   */
+  const obterStatusPresenca = (
+    aula
+  ) => {
 
+    const registro =
+      presencasHoje.find(
+        presenca =>
+          presenca.celula ===
+          aula.celula
+      );
+
+    if (!registro) {
+      return "pendente";
+    }
+
+    return registro.status;
+  };
+
+
+  /*
+   * =====================================================
+   * FORMATA HORÁRIO
+   * =====================================================
+   */
+  const formatarHorario = (
+    horario
+  ) => {
+
+    if (!horario) {
+      return "--:--";
+    }
+
+    return horario;
+  };
+
+
+  /*
+   * =====================================================
+   * FORMATA DATA
+   * =====================================================
+   */
   const dataFormatada =
     hoje.toLocaleDateString(
       "pt-BR",
@@ -280,56 +465,16 @@ function TelaInicial() {
     );
 
 
-  // =====================================================
-  // CARREGANDO
-  // =====================================================
-
-  if (carregando) {
-
-    return (
-
-      <div className="tela-inicial">
-
-        <div className="dashboard-loading">
-
-          <div className="loading-circle"></div>
-
-          <p>
-            Carregando seu painel...
-          </p>
-
-        </div>
-
-      </div>
-
-    );
-
-  }
-
-
-  // =====================================================
-  // RENDER
-  // =====================================================
-
   return (
 
     <div className="tela-inicial">
-
-
-      {/* =================================================
-          CABEÇALHO
-      ================================================= */}
 
       <div className="dashboard-header">
 
         <div>
 
-          <span className="dashboard-label">
-            PAINEL DO PROFESSOR
-          </span>
-
           <h1>
-            Olá, Professor!
+            Olá, {professor?.nome || "Professor"}!
           </h1>
 
           <p>
@@ -340,30 +485,23 @@ function TelaInicial() {
 
         <button
           className="dashboard-presenca-btn"
-          type="button"
           onClick={() =>
             navigate("/presenca")
           }
         >
-          <FiClipboard />
-
+          <FiCheckCircle />
           Registrar presença
-
-          <FiArrowRight />
-
         </button>
 
       </div>
 
 
-      {/* =================================================
-          CARDS
-      ================================================= */}
-
+      {/*
+       * =====================================================
+       * CARDS PRINCIPAIS
+       * =====================================================
+       */}
       <div className="dashboard-cards">
-
-
-        {/* ALUNOS */}
 
         <div className="dashboard-card">
 
@@ -378,19 +516,15 @@ function TelaInicial() {
             </span>
 
             <strong>
-              {alunos.length}
+              {carregando
+                ? "..."
+                : totalAlunos}
             </strong>
-
-            <small>
-              alunos cadastrados
-            </small>
 
           </div>
 
         </div>
 
-
-        {/* AULAS */}
 
         <div className="dashboard-card">
 
@@ -405,19 +539,15 @@ function TelaInicial() {
             </span>
 
             <strong>
-              {aulasHoje.length}
+              {carregando
+                ? "..."
+                : totalAulasHoje}
             </strong>
-
-            <small>
-              aulas programadas
-            </small>
 
           </div>
 
         </div>
 
-
-        {/* PRESENÇA */}
 
         <div className="dashboard-card">
 
@@ -432,27 +562,17 @@ function TelaInicial() {
             </span>
 
             <strong>
-              {totalPresencasHoje > 0
-                ? `${percentualPresenca}%`
-                : "—"}
+              {carregando
+                ? "..."
+                : totalPresentes}
             </strong>
-
-            <small>
-
-              {totalPresencasHoje > 0
-                ? `${presentesHoje} presentes • ${faltasHoje} faltas`
-                : "nenhum registro ainda"}
-
-            </small>
 
           </div>
 
         </div>
 
 
-        {/* PRÓXIMA AULA */}
-
-        <div className="dashboard-card proxima-aula-card">
+        <div className="dashboard-card">
 
           <div className="dashboard-card-icon">
             <FiClock />
@@ -464,31 +584,11 @@ function TelaInicial() {
               Próxima aula
             </span>
 
-            {proximaAula ? (
-
-              <>
-                <strong>
-                  {proximaAula.horario}
-                </strong>
-
-                <small>
-                  {proximaAula.aluno_nome}
-                </small>
-              </>
-
-            ) : (
-
-              <>
-                <strong>
-                  —
-                </strong>
-
-                <small>
-                  Nenhuma aula restante
-                </small>
-              </>
-
-            )}
+            <strong>
+              {proximaAula
+                ? proximaAula.horario
+                : "--:--"}
+            </strong>
 
           </div>
 
@@ -497,129 +597,283 @@ function TelaInicial() {
       </div>
 
 
-      {/* =================================================
-          CONTEÚDO PRINCIPAL
-      ================================================= */}
+      {/*
+       * =====================================================
+       * DESTAQUE DA AULA
+       * =====================================================
+       */}
+      <div className="dashboard-destaque">
+
+        {aulaAtual ? (
+
+          <div className="destaque-conteudo aula-atual">
+
+            <div className="destaque-label">
+              AULA ACONTECENDO AGORA
+            </div>
+
+            <div className="destaque-info">
+
+              <div>
+
+                <h2>
+                  {aulaAtual.nome ||
+                    "Horário reservado"}
+                </h2>
+
+                <p>
+                  {aulaAtual.instrumento ||
+                    "Instrumento não informado"}
+                </p>
+
+              </div>
+
+              <strong>
+                {aulaAtual.horario}
+              </strong>
+
+            </div>
+
+          </div>
+
+        ) : proximaAula ? (
+
+          <div className="destaque-conteudo aula-proxima">
+
+            <div className="destaque-label">
+              PRÓXIMA AULA
+            </div>
+
+            <div className="destaque-info">
+
+              <div>
+
+                <h2>
+                  {proximaAula.nome ||
+                    "Horário reservado"}
+                </h2>
+
+                <p>
+                  {proximaAula.instrumento ||
+                    "Instrumento não informado"}
+                </p>
+
+              </div>
+
+              <strong>
+                {proximaAula.horario}
+              </strong>
+
+            </div>
+
+          </div>
+
+        ) : (
+
+          <div className="destaque-conteudo">
+
+            <div className="destaque-label">
+              AGENDA
+            </div>
+
+            <div className="destaque-info">
+
+              <div>
+
+                <h2>
+                  Nenhuma aula restante hoje
+                </h2>
+
+                <p>
+                  Você não possui mais aulas agendadas para hoje.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )}
+
+      </div>
+
+
+      {/*
+       * =====================================================
+       * ÁREA RESERVADA PARA AULAS EXPERIMENTAIS
+       * =====================================================
+       *
+       * A parte visual será feita no CSS/JSX na próxima
+       * etapa. Os dados já estão separados em:
+       *
+       * aulasExperimentaisHoje
+       *
+       */}
+
+       {aulasExperimentaisHoje.length > 0 && (
+  <section className="dashboard-experimentais">
+
+    <div className="experimentais-header">
+      <div>
+        <h2>🧪 Aulas Experimentais</h2>
+        <p>Experimentos agendados para hoje</p>
+      </div>
+    </div>
+
+    <div className="experimentais-list">
+
+      {aulasExperimentaisHoje.map((aula) => (
+        <div
+          className="experimental-item"
+          key={aula.celula}
+        >
+          <div className="experimental-time">
+            {aula.horario}
+          </div>
+
+          <div className="experimental-info">
+            <strong>
+              {aula.nome || "Aluno experimental"}
+            </strong>
+
+            <span>
+              {aula.idade
+                ? `${aula.idade} anos`
+                : "Idade não informada"}
+            </span>
+          </div>
+
+          <div className="experimental-instrumento">
+            {aula.instrumento === "guitarra" && "🎸"}
+            {aula.instrumento === "violão" && "🎸"}
+            {aula.instrumento === "teclado" && "🎹"}
+            {aula.instrumento === "piano" && "🎹"}
+            {aula.instrumento === "bateria" && "🥁"}
+            {aula.instrumento === "canto" && "🎤"}
+            {aula.instrumento === "violino" && "🎻"}
+            {aula.instrumento === "ukulele" && "🪕"}
+
+            <span>
+              {aula.instrumento || "Instrumento não informado"}
+            </span>
+          </div>
+
+          <div className="experimental-data">
+            {aula.dataExperimental || "--/--"}
+          </div>
+        </div>
+      ))}
+
+    </div>
+  </section>
+)}
+
 
       <div className="dashboard-grid">
 
-
-        {/* =================================================
-            AGENDA
-        ================================================= */}
-
+        {/*
+         * =====================================================
+         * AGENDA
+         * =====================================================
+         */}
         <section className="dashboard-section">
 
           <div className="section-header">
 
             <div>
 
-              <span>
-                AGENDA
-              </span>
-
               <h2>
                 Aulas de hoje
               </h2>
 
+              <p>
+                Sua agenda para hoje
+              </p>
+
             </div>
 
             <button
-              type="button"
               onClick={() =>
                 navigate("/presenca")
               }
             >
-              Ver presença
+              Ver horário
               <FiArrowRight />
             </button>
 
           </div>
 
 
-          {aulasHoje.length === 0 ? (
+          <div className="agenda-list">
 
-            <div className="dashboard-empty">
+            {carregando ? (
 
-              <div>
-                <FiCalendar />
+              <div className="empty-state">
+                Carregando aulas...
               </div>
 
-              <h3>
-                Nenhuma aula hoje
-              </h3>
+            ) : aulasHoje.length === 0 ? (
 
-              <p>
-                Você não possui aulas
-                programadas para hoje.
-              </p>
+              <div className="empty-state">
 
-            </div>
+                <FiCalendar />
 
-          ) : (
+                <h3>
+                  Nenhuma aula hoje
+                </h3>
 
-            <div className="agenda-list">
+                <p>
+                  Não há aulas cadastradas para hoje.
+                </p>
 
-              {aulasHoje.map(
-                (aula) => {
+              </div>
 
-                  const registro =
-                    presencas.find(
-                      (presenca) =>
-                        Number(
-                          presenca.aula_id
-                        ) ===
-                        Number(aula.id)
+            ) : (
+
+              aulasHoje.map(
+                aula => {
+
+                  const status =
+                    obterStatusPresenca(
+                      aula
                     );
-
 
                   return (
 
                     <div
-                      key={aula.id}
                       className="agenda-item"
+                      key={aula.celula}
                     >
 
                       <div className="agenda-time">
-
-                        <strong>
-                          {aula.horario}
-                        </strong>
-
+                        {formatarHorario(
+                          aula.horario
+                        )}
                       </div>
-
 
                       <div className="agenda-info">
 
                         <strong>
-                          {aula.aluno_nome}
+                          {aula.nome ||
+                            "Horário disponível"}
                         </strong>
 
                         <span>
-                          {aula.aluno_instrumento}
+                          {aula.instrumento ||
+                            "Sem instrumento"}
                         </span>
 
                       </div>
 
-
                       <div
-                        className={
-                          registro
-                            ? registro.status ===
-                              "presente"
-                              ? "agenda-status presente"
-                              : "agenda-status falta"
-                            : "agenda-status pendente"
-                        }
+                        className={`agenda-status ${status}`}
                       >
-
-                        {registro
-                          ? registro.status ===
-                            "presente"
-                            ? "Presente"
-                            : "Falta"
-                          : "Pendente"}
-
+                        {status === "presente"
+                          ? "Presente"
+                          : status === "falta"
+                            ? "Falta"
+                            : "Pendente"}
                       </div>
 
                     </div>
@@ -627,123 +881,116 @@ function TelaInicial() {
                   );
 
                 }
-              )}
+              )
 
-            </div>
+            )}
 
-          )}
+          </div>
 
         </section>
 
 
-        {/* =================================================
-            AÇÕES RÁPIDAS
-        ================================================= */}
-
-        <section className="dashboard-section dashboard-actions">
+        {/*
+         * =====================================================
+         * ACESSOS RÁPIDOS
+         * =====================================================
+         */}
+        <section className="dashboard-section">
 
           <div className="section-header">
 
             <div>
 
-              <span>
-                ATALHOS
-              </span>
-
               <h2>
-                Ações rápidas
+                Acessos rápidos
               </h2>
+
+              <p>
+                Acesse as principais áreas
+              </p>
 
             </div>
 
           </div>
 
 
-          <button
-            type="button"
-            onClick={() =>
-              navigate("/alunos")
-            }
-            className="quick-action"
-          >
+          <div className="quick-actions">
 
-            <div>
-              <FiUserPlus />
-            </div>
+            <button
+              onClick={() =>
+                navigate("/alunos")
+              }
+            >
 
-            <span>
+              <FiUsers />
 
-              <strong>
-                Gerenciar alunos
-              </strong>
+              <div>
 
-              <small>
-                Cadastrar e visualizar alunos
-              </small>
+                <strong>
+                  Alunos
+                </strong>
 
-            </span>
+                <span>
+                  Consultar alunos
+                </span>
 
-            <FiArrowRight />
+              </div>
 
-          </button>
+              <FiArrowRight />
+
+            </button>
 
 
-          <button
-            type="button"
-            onClick={() =>
-              navigate("/presenca")
-            }
-            className="quick-action"
-          >
+            <button
+              onClick={() =>
+                navigate("/presenca")
+              }
+            >
 
-            <div>
               <FiCalendar />
-            </div>
 
-            <span>
+              <div>
 
-              <strong>
-                Configurar horários
-              </strong>
+                <strong>
+                  Horário
+                </strong>
 
-              <small>
-                Organizar sua agenda semanal
-              </small>
+                <span>
+                  Ver agenda e horários
+                </span>
 
-            </span>
+              </div>
 
-            <FiArrowRight />
+              <FiArrowRight />
 
-          </button>
+            </button>
 
 
-          <button
-            type="button"
-            onClick={() =>
-              navigate("/relatorio")
-            }
-            className="quick-action"
-          >
+            <button
+              onClick={() =>
+                navigate("/relatorio")
+              }
+            >
 
-            <div>
               <FiClipboard />
-            </div>
 
-            <span>
+              <div>
 
-              <strong>
-                Ver relatórios
-              </strong>
+                <strong>
+                  Relatórios
+                </strong>
 
-              <small>
-                Acompanhar histórico dos alunos
-              </small>
+                <span>
+                  Consultar relatórios
+                </span>
 
-            </span>
+              </div>
 
-            <FiArrowRight />
+              <FiArrowRight />
 
-          </button>
+            </button>
+
+          </div>
 
         </section>
 
@@ -752,8 +999,6 @@ function TelaInicial() {
     </div>
 
   );
-
 }
-
 
 export default TelaInicial;

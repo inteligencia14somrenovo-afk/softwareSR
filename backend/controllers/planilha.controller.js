@@ -229,7 +229,58 @@ async function buscarHorariosProfessor(req, res) {
 
   try {
 
-    const { professorId } = req.params;
+    if (!req.session.professorId) {
+
+      return res.status(401).json({
+        sucesso: false,
+        mensagem: "Usuário não autenticado.",
+      });
+
+    }
+
+    const professorId =
+      req.session.professorId;
+
+
+    const professor =
+      await pool.query(
+        `
+        SELECT
+          pp.id,
+          pp.nome,
+          pp.email
+        FROM professores_planilha pp
+
+        INNER JOIN professores p
+          ON LOWER(TRIM(p.email))
+          =
+          LOWER(TRIM(pp.email))
+
+        WHERE p.id = $1
+          AND pp.ativo = TRUE
+
+        LIMIT 1
+        `,
+        [professorId]
+      );
+
+
+    if (
+      professor.rows.length === 0
+    ) {
+
+      return res.status(404).json({
+        sucesso: false,
+        mensagem:
+          "Nenhuma planilha configurada para este professor.",
+      });
+
+    }
+
+
+    const professorPlanilha =
+      professor.rows[0];
+
 
     const resultado =
       await pool.query(
@@ -247,17 +298,23 @@ async function buscarHorariosProfessor(req, res) {
         WHERE professor_id = $1
         ORDER BY linha, coluna
         `,
-        [professorId]
+        [professorPlanilha.id]
       );
 
-    res.json({
+
+    return res.json({
+
       sucesso: true,
+
       professor_id:
-        Number(professorId),
+        professorId,
+
       total:
         resultado.rows.length,
+
       dados:
         resultado.rows,
+
     });
 
   } catch (error) {
@@ -267,12 +324,17 @@ async function buscarHorariosProfessor(req, res) {
       error
     );
 
-    res.status(500).json({
+    return res.status(500).json({
+
       sucesso: false,
-      erro: error.message,
+
+      erro:
+        error.message,
+
     });
 
   }
+
 }
 
 
@@ -286,20 +348,29 @@ function interpretarCelula(conteudo) {
     !conteudo ||
     !conteudo.trim()
   ) {
+
     return null;
+
   }
 
   const texto =
     conteudo.trim();
 
 
+  // =====================================================
+  // HORÁRIO
+  // =====================================================
+
   const horarioMatch =
     texto.match(
       /^(\d{1,2})(?::(\d{2}))?h?/i
     );
 
+
   if (!horarioMatch) {
+
     return null;
+
   }
 
 
@@ -309,14 +380,237 @@ function interpretarCelula(conteudo) {
       "0"
     );
 
+
   const minuto =
     horarioMatch[2] || "00";
 
+
+  // =====================================================
+  // TEXTO SEM HORÁRIO
+  // =====================================================
+
+  const textoSemHorario =
+    texto
+      .replace(
+        /^(\d{1,2})(?::(\d{2}))?h?/i,
+        ""
+      )
+      .trim();
+
+
+  // =====================================================
+  // AULA EXPERIMENTAL (AE)
+  // =====================================================
+
+  /*
+   * Formato esperado:
+   *
+   * 18h AE Any 16a guitarra 03/09
+   *
+   * Resultado:
+   * tipo = experimental
+   * nome = Any
+   * idade = 16
+   * instrumento = guitarra
+   * dataExperimental = 03/09
+   */
+
+  const experimentalMatch =
+    textoSemHorario.match(
+      /^AE\s+(.+?)\s+(\d{1,3})a\s+(guitarra|violão|violao|teclado|piano|bateria|canto|violino|ukulele)\s+(\d{1,2}\/\d{1,2})$/i
+    );
+
+
+  if (experimentalMatch) {
+
+    const nome =
+      experimentalMatch[1].trim();
+
+
+    const idade =
+      Number(
+        experimentalMatch[2]
+      );
+
+
+    const instrumentoTexto =
+      experimentalMatch[3]
+        .toLowerCase();
+
+
+    const dataExperimental =
+      experimentalMatch[4];
+
+
+    let instrumento =
+      instrumentoTexto;
+
+
+    // Normaliza variações
+
+    if (
+      instrumentoTexto === "violão" ||
+      instrumentoTexto === "violao"
+    ) {
+
+      instrumento = "violao";
+
+    } else if (
+      instrumentoTexto === "teclado" ||
+      instrumentoTexto === "piano"
+    ) {
+
+      instrumento =
+        "teclado/piano";
+
+    }
+
+
+    return {
+
+      horario:
+        `${hora}:${minuto}`,
+
+      tipo:
+        "experimental",
+
+      codigoAluno:
+        null,
+
+      nome,
+
+      idade,
+
+      instrumento,
+
+      dataExperimental,
+
+      foto:
+        texto.includes("📸"),
+
+      conteudoOriginal:
+        texto,
+
+    };
+
+  }
+
+
+  // =====================================================
+  // REPOSIÇÃO DE AULA (REP)
+  // =====================================================
+
+  /*
+   * Formato esperado:
+   *
+   * 18h Rep 1234 João 🎸
+   *
+   * A palavra Rep identifica
+   * uma reposição de aula.
+   *
+   * O restante da célula continua
+   * sendo interpretado normalmente
+   * para encontrar código, nome,
+   * instrumento e foto.
+   */
+
+  const reposicao =
+    /^Rep\b/i.test(
+      textoSemHorario
+    );
+
+
+  if (reposicao) {
+
+    const codigoMatch =
+      textoSemHorario.match(
+        /\b\d{3,5}\b/
+      );
+
+
+    const codigoAluno =
+      codigoMatch
+        ? Number(codigoMatch[0])
+        : null;
+
+
+    let restante =
+      textoSemHorario
+        .replace(
+          /^Rep\b/i,
+          ""
+        )
+        .replace(
+          /📸|❌|🎸|🥁|🎹|🎤|🎻|🎵|🪕|🎼/g,
+          ""
+        )
+        .replace(
+          /\b\d{3,5}\b/,
+          ""
+        )
+        .trim();
+
+
+    const foto =
+      texto.includes("📸");
+
+
+    let instrumento = null;
+
+
+    if (texto.includes("🎸"))
+      instrumento = "guitarra";
+
+    else if (texto.includes("🥁"))
+      instrumento = "bateria";
+
+    else if (texto.includes("🎹"))
+      instrumento = "teclado/piano";
+
+    else if (texto.includes("🎤"))
+      instrumento = "canto";
+
+    else if (texto.includes("🎻"))
+      instrumento = "violino";
+
+    else if (texto.includes("🪕"))
+      instrumento = "ukulele";
+
+
+    return {
+
+      horario:
+        `${hora}:${minuto}`,
+
+      tipo:
+        "reposicao",
+
+      codigoAluno,
+
+      nome:
+        restante || null,
+
+      instrumento,
+
+      foto,
+
+      conteudoOriginal:
+        texto,
+
+    };
+
+  }
+
+
+  // =====================================================
+  // ALUNO NORMAL
+  // =====================================================
 
   const codigoMatch =
     texto.match(
       /\b\d{3,5}\b/
     );
+
 
   const codigoAluno =
     codigoMatch
@@ -340,9 +634,6 @@ function interpretarCelula(conteudo) {
       )
       .trim();
 
-
-  const cancelado =
-    texto.includes("❌");
 
   const foto =
     texto.includes("📸");
@@ -375,6 +666,9 @@ function interpretarCelula(conteudo) {
     horario:
       `${hora}:${minuto}`,
 
+    tipo:
+      "aluno",
+
     codigoAluno,
 
     nome:
@@ -382,14 +676,13 @@ function interpretarCelula(conteudo) {
 
     instrumento,
 
-    cancelado,
-
     foto,
 
     conteudoOriginal:
       texto,
 
   };
+
 }
 
 
@@ -495,10 +788,13 @@ async function buscarHorariosOrganizados(
     ) {
 
       // Ignora a coluna A
+
       if (
         !diasSemana[item.coluna]
       ) {
+
         continue;
+
       }
 
 
@@ -509,7 +805,9 @@ async function buscarHorariosOrganizados(
 
 
       if (!horario) {
+
         continue;
+
       }
 
 
@@ -559,7 +857,8 @@ async function buscarHorariosOrganizados(
 
       sucesso: false,
 
-      erro: error.message,
+      erro:
+        error.message,
 
     });
 
@@ -572,11 +871,15 @@ async function buscarHorariosOrganizados(
 // BUSCAR ALUNOS DA PLANILHA
 // =====================================================
 
-async function buscarAlunosProfessor(req, res) {
+async function buscarAlunosProfessor(
+  req,
+  res
+) {
 
   try {
 
-    const { professorId } = req.params;
+    const { professorId } =
+      req.params;
 
 
     // -------------------------------------------------
@@ -675,10 +978,13 @@ async function buscarAlunosProfessor(req, res) {
     ) {
 
       // Ignora coluna A
+
       if (
         !diasSemana[item.coluna]
       ) {
+
         continue;
+
       }
 
 
@@ -689,16 +995,21 @@ async function buscarAlunosProfessor(req, res) {
 
 
       if (!horario) {
+
         continue;
+
       }
 
 
       // Sem código não conseguimos
       // identificar o aluno com segurança
+
       if (
         !horario.codigoAluno
       ) {
+
         continue;
+
       }
 
 
@@ -718,13 +1029,15 @@ async function buscarAlunosProfessor(req, res) {
           codigo,
           {
 
-            id: codigo,
+            id:
+              codigo,
 
             codigoAluno:
               codigo,
 
             nome:
-              horario.nome || "Aluno sem nome",
+              horario.nome ||
+              "Aluno sem nome",
 
             instrumento:
               horario.instrumento,
@@ -741,7 +1054,8 @@ async function buscarAlunosProfessor(req, res) {
             status:
               "ativo",
 
-            horarios: []
+            horarios:
+              []
 
           }
         );
@@ -807,9 +1121,6 @@ async function buscarAlunosProfessor(req, res) {
         instrumento:
           horario.instrumento,
 
-        cancelado:
-          horario.cancelado,
-
         conteudoOriginal:
           horario.conteudoOriginal
 
@@ -829,6 +1140,7 @@ async function buscarAlunosProfessor(req, res) {
 
 
     // Ordena alfabeticamente
+
     alunos.sort(
       (a, b) =>
         a.nome.localeCompare(
@@ -878,14 +1190,21 @@ async function buscarAlunosProfessor(req, res) {
 
 }
 
+
 // =====================================================
 // EXPORTS
 // =====================================================
 
 module.exports = {
+
   sincronizarPlanilha,
+
   executarSincronizacao,
+
   buscarHorariosProfessor,
+
   buscarHorariosOrganizados,
+
   buscarAlunosProfessor,
+
 };

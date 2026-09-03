@@ -13,6 +13,7 @@ const aulasRoutes = require("./routes/aulas.routes");
 const presencasRoutes = require("./routes/presencas.routes");
 const googleSheetsRoutes = require("./routes/googleSheets");
 const planilhaRoutes = require("./routes/planilha.routes");
+const notificacoesRoutes = require("./routes/notificacoes.routes");
 
 const {
   executarSincronizacao,
@@ -93,6 +94,8 @@ app.use("/presencas", presencasRoutes);
 app.use("/google-sheets", googleSheetsRoutes);
 
 app.use("/planilha", planilhaRoutes);
+
+app.use("/notificacoes", notificacoesRoutes);
 
 // =====================================================
 // HOME

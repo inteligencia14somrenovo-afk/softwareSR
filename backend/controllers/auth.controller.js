@@ -3,8 +3,8 @@ const oauth2Client = require("../config/google");
 const pool = require("../config/database");
 
 const FRONTEND_URL =
-process.env.FRONTEND_URL
-|| "http://localhost:5173";
+  process.env.FRONTEND_URL ||
+  "http://localhost:5173";
 
 const scopes = [
   "openid",
@@ -33,12 +33,9 @@ const callbackGoogle = async (req, res) => {
       });
     }
 
-    // Troca o código recebido pelo Google pelos tokens
     const { tokens } = await oauth2Client.getToken(code);
-
     oauth2Client.setCredentials(tokens);
 
-    // Busca informações da conta Google
     const oauth2 = google.oauth2({
       auth: oauth2Client,
       version: "v2",
@@ -47,7 +44,6 @@ const callbackGoogle = async (req, res) => {
     const { data } = await oauth2.userinfo.get();
 
     const email = data.email;
-    const nomeGoogle = data.name;
 
     if (!email) {
       return res.status(400).json({
@@ -56,62 +52,67 @@ const callbackGoogle = async (req, res) => {
       });
     }
 
-    // Procura o professor pelo e-mail
     const professorExistente = await pool.query(
       `
       SELECT *
       FROM professores
-      WHERE email = $1
+      WHERE LOWER(TRIM(email)) = LOWER(TRIM($1))
+      LIMIT 1
       `,
       [email]
     );
 
-    let professor;
+    if (professorExistente.rows.length === 0) {
+      console.log("🚫 Acesso negado para:", email);
 
-    if (professorExistente.rows.length > 0) {
-      // Professor já existe
-      professor = professorExistente.rows[0];
-
-      console.log("👨‍🏫 Professor encontrado:", professor.email);
-    } else {
-      // Primeiro acesso: cria o professor
-      const novoProfessor = await pool.query(
-        `
-        INSERT INTO professores (email, nome)
-        VALUES ($1, $2)
-        RETURNING *
-        `,
-        [email, nomeGoogle || null]
-      );
-
-      professor = novoProfessor.rows[0];
-
-      console.log("🆕 Novo professor criado:", professor.email);
+      return res.status(403).send(`
+        <html>
+          <head>
+            <meta charset="UTF-8">
+            <title>Acesso não autorizado</title>
+          </head>
+          <body style="
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 60px 20px;
+          ">
+            <h2>Acesso não autorizado</h2>
+            <p>
+              Este e-mail não está cadastrado no sistema
+              da Som Renovo.
+            </p>
+            <p>
+              Entre em contato com um administrador.
+            </p>
+          </body>
+        </html>
+      `);
     }
 
-    //Guarda o professor na sessão
+    const professor = professorExistente.rows[0];
+
     req.session.professorId = professor.id;
 
     await new Promise((resolve, reject) => {
-  req.session.save((err) => {
-    if (err) {
-      reject(err);
-      return;
-    }
+      req.session.save((err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
 
-    resolve();
-  });
-});
+        resolve();
+      });
+    });
 
-    console.log(" Login realizado:", professor.email);
-
+    console.log("✅ Login realizado:", professor.email);
     console.log("FRONTEND_URL:", FRONTEND_URL);
+
     return res.redirect(`${FRONTEND_URL}/`);
 
   } catch (error) {
     console.error("❌ Erro no login Google:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       sucesso: false,
       mensagem: "Erro ao realizar login.",
     });
