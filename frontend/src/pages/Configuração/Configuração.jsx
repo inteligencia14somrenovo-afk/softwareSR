@@ -1,21 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { FaCamera } from "react-icons/fa";
+import {
+  FaCamera,
+  FaCheck,
+  FaGoogle,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import API_URL from "../../config/api";
 import "./Configuração.css";
-
-const instrumentosDisponiveis = [
-  "Violão",
-  "Guitarra",
-  "Baixo",
-  "Ukulele",
-  "Teclado",
-  "Piano",
-  "Bateria",
-  "Canto",
-  "Saxofone",
-  "Outro",
-];
 
 const Configuração = () => {
   const { professor, setProfessor } = useAuth();
@@ -23,25 +16,32 @@ const Configuração = () => {
   const [nome, setNome] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
   const [fotoPreview, setFotoPreview] = useState("");
-  const [instrumentos, setInstrumentos] = useState([]);
 
+  const [notificacoes, setNotificacoes] = useState(true);
   const [salvando, setSalvando] = useState(false);
+
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState("");
 
   const inputFotoRef = useRef(null);
 
-  // Carrega os dados atuais do professor
   useEffect(() => {
     if (!professor) return;
 
     setNome(professor.nome || "");
     setFotoUrl(professor.foto_url || "");
     setFotoPreview(professor.foto_url || "");
-    setInstrumentos(professor.instrumentos || []);
   }, [professor]);
 
-  // Selecionar nova foto
+  useEffect(() => {
+    const notificacoesSalvas =
+      localStorage.getItem("som-renovo-notificacoes");
+
+    if (notificacoesSalvas !== null) {
+      setNotificacoes(notificacoesSalvas === "true");
+    }
+  }, []);
+
   const selecionarFoto = (event) => {
     const arquivo = event.target.files?.[0];
 
@@ -52,7 +52,6 @@ const Configuração = () => {
       return;
     }
 
-    // Limite inicial de 5 MB
     if (arquivo.size > 5 * 1024 * 1024) {
       setErro("A imagem deve ter no máximo 5 MB.");
       return;
@@ -64,22 +63,6 @@ const Configuração = () => {
     const novaPreview = URL.createObjectURL(arquivo);
 
     setFotoPreview(novaPreview);
-
-    /*
-      Por enquanto mantemos a imagem apenas como preview.
-      O upload permanente será implementado posteriormente
-      através do backend/Storage.
-    */
-  };
-
-  const alternarInstrumento = (instrumento) => {
-    setInstrumentos((atual) => {
-      if (atual.includes(instrumento)) {
-        return atual.filter((item) => item !== instrumento);
-      }
-
-      return [...atual, instrumento];
-    });
   };
 
   const salvarPerfil = async (event) => {
@@ -87,16 +70,6 @@ const Configuração = () => {
 
     setMensagem("");
     setErro("");
-
-    if (!nome.trim()) {
-      setErro("Digite seu nome completo.");
-      return;
-    }
-
-    if (instrumentos.length === 0) {
-      setErro("Selecione pelo menos um instrumento.");
-      return;
-    }
 
     try {
       setSalvando(true);
@@ -110,9 +83,8 @@ const Configuração = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            nome: nome.trim(),
+            nome: nome.trim() || null,
             foto_url: fotoUrl || null,
-            instrumentos,
           }),
         }
       );
@@ -129,16 +101,64 @@ const Configuração = () => {
 
       setProfessor(data.professor);
 
-      setMensagem("Perfil atualizado com sucesso.");
+      setMensagem(
+        "Perfil atualizado com sucesso."
+      );
 
     } catch (error) {
-      console.error("Erro ao salvar perfil:", error);
+      console.error(
+        "Erro ao salvar perfil:",
+        error
+      );
 
       setErro(
         "Não foi possível conectar ao servidor."
       );
     } finally {
       setSalvando(false);
+    }
+  };
+
+  const alterarNotificacoes = () => {
+    const novoValor = !notificacoes;
+
+    setNotificacoes(novoValor);
+
+    localStorage.setItem(
+      "som-renovo-notificacoes",
+      String(novoValor)
+    );
+
+    window.dispatchEvent(
+      new Event(
+        "som-renovo-notificacoes-alteradas"
+      )
+    );
+  };
+
+  const sairDaConta = async () => {
+    const confirmar = window.confirm(
+      "Tem certeza que deseja sair da sua conta?"
+    );
+
+    if (!confirmar) return;
+
+    try {
+      await fetch(
+        `${API_URL}/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+    } catch (error) {
+      console.error(
+        "Erro ao sair:",
+        error
+      );
+    } finally {
+      setProfessor(null);
+      window.location.href = "/login";
     }
   };
 
@@ -157,20 +177,23 @@ const Configuração = () => {
   return (
     <div className="configuracao-page">
 
+      {/* CABEÇALHO */}
+
       <div className="configuracao-header">
+
         <div>
-          <h1>Configuração</h1>
+          <h1>Configurações</h1>
 
           <p>
-            Gerencie suas informações e preferências.
+            Gerencie seu perfil e as preferências
+            do sistema.
           </p>
         </div>
+
       </div>
 
 
-      {/* =========================
-          MEU PERFIL
-      ========================= */}
+      {/* 1. MEU PERFIL */}
 
       <section className="configuracao-card">
 
@@ -184,7 +207,8 @@ const Configuração = () => {
             <h2>Meu perfil</h2>
 
             <p>
-              Essas informações serão usadas no sistema.
+              Personalize as informações exibidas
+              no sistema.
             </p>
           </div>
 
@@ -192,10 +216,6 @@ const Configuração = () => {
 
 
         <form onSubmit={salvarPerfil}>
-
-          {/* =========================
-              FOTO + NOME
-          ========================= */}
 
           <div className="perfil-principal">
 
@@ -210,18 +230,19 @@ const Configuração = () => {
               >
 
                 {fotoPreview ? (
-
                   <img
                     src={fotoPreview}
-                    alt={nome || "Professor"}
+                    alt={
+                      nome ||
+                      "Professor"
+                    }
                   />
-
                 ) : (
-
                   <span>
-                    {primeiroNome.charAt(0).toUpperCase()}
+                    {primeiroNome
+                      .charAt(0)
+                      .toUpperCase()}
                   </span>
-
                 )}
 
                 <div className="foto-editar">
@@ -235,7 +256,9 @@ const Configuração = () => {
                 type="file"
                 accept="image/*"
                 onChange={selecionarFoto}
-                style={{ display: "none" }}
+                style={{
+                  display: "none",
+                }}
               />
 
             </div>
@@ -244,29 +267,18 @@ const Configuração = () => {
             <div className="perfil-identidade">
 
               <h3>
-                {nome.trim() || "Seu nome"}
+                {nome.trim() ||
+                  "Seu nome"}
               </h3>
 
               <span>
                 Professor
               </span>
 
-              {instrumentos.length > 0 && (
-
-                <p>
-                  {instrumentos.join(" • ")}
-                </p>
-
-              )}
-
             </div>
 
           </div>
 
-
-          {/* =========================
-              NOME COMPLETO
-          ========================= */}
 
           <div className="campo-configuracao">
 
@@ -286,15 +298,12 @@ const Configuração = () => {
             />
 
             <small>
-              Esse é o nome que aparecerá no seu perfil.
+              Opcional. Esse nome será
+              exibido no sistema.
             </small>
 
           </div>
 
-
-          {/* =========================
-              EMAIL
-          ========================= */}
 
           <div className="campo-configuracao">
 
@@ -302,62 +311,29 @@ const Configuração = () => {
               E-mail da conta Google
             </label>
 
-            <input
-              id="email"
-              type="email"
-              value={professor.email || ""}
-              readOnly
-            />
+            <div className="input-com-icone">
+
+              <FaGoogle />
+
+              <input
+                id="email"
+                type="email"
+                value={
+                  professor.email || ""
+                }
+                readOnly
+              />
+
+            </div>
 
             <small>
-              O e-mail é a identidade da sua conta e não
-              pode ser alterado por aqui.
+              O e-mail é usado para
+              identificar sua conta e não
+              pode ser alterado aqui.
             </small>
 
           </div>
 
-
-          {/* =========================
-              INSTRUMENTOS
-          ========================= */}
-
-          <div className="campo-configuracao">
-
-            <label>
-              Instrumentos que você ensina
-            </label>
-
-            <div className="instrumentos-config-grid">
-
-              {instrumentosDisponiveis.map(
-                (instrumento) => (
-
-                  <button
-                    key={instrumento}
-                    type="button"
-                    className={
-                      instrumentos.includes(instrumento)
-                        ? "instrumento-config selecionado"
-                        : "instrumento-config"
-                    }
-                    onClick={() =>
-                      alternarInstrumento(instrumento)
-                    }
-                  >
-                    {instrumento}
-                  </button>
-
-                )
-              )}
-
-            </div>
-
-          </div>
-
-
-          {/* =========================
-              MENSAGENS
-          ========================= */}
 
           {erro && (
             <div className="mensagem-erro">
@@ -365,16 +341,14 @@ const Configuração = () => {
             </div>
           )}
 
+
           {mensagem && (
             <div className="mensagem-sucesso">
+              <FaCheck />
               {mensagem}
             </div>
           )}
 
-
-          {/* =========================
-              BOTÃO
-          ========================= */}
 
           <div className="configuracao-acoes">
 
@@ -395,39 +369,7 @@ const Configuração = () => {
       </section>
 
 
-      {/* =========================
-          PREFERÊNCIAS
-      ========================= */}
-
-      <section className="configuracao-card configuracao-futura">
-
-        <div className="card-title">
-
-          <div className="card-icon">
-            ⚙️
-          </div>
-
-          <div>
-            <h2>Preferências</h2>
-
-            <p>
-              Configurações gerais do sistema.
-            </p>
-          </div>
-
-        </div>
-
-        <div className="em-breve">
-          Mais opções de personalização estarão
-          disponíveis aqui.
-        </div>
-
-      </section>
-
-
-      {/* =========================
-          CONTA
-      ========================= */}
+      {/* 2. CONTA */}
 
       <section className="configuracao-card">
 
@@ -441,21 +383,380 @@ const Configuração = () => {
             <h2>Conta</h2>
 
             <p>
-              Informações relacionadas à sua conta.
+              Informações relacionadas à
+              sua conta.
             </p>
           </div>
 
         </div>
 
+
         <div className="conta-info">
 
+          <div className="conta-detalhe">
+
+            <span className="conta-label">
+              Conta Google
+            </span>
+
+            <strong>
+              {professor.email}
+            </strong>
+
+          </div>
+
+
+          <div className="conta-detalhe">
+
+            <span className="conta-label">
+              Tipo de acesso
+            </span>
+
+            <strong>
+              Professor
+            </strong>
+
+          </div>
+
+
+          <div className="conta-status-container">
+
+            <span className="conta-status">
+              <span>●</span>
+              Conta ativa
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <div className="conta-acoes">
+
+          <button
+            type="button"
+            className="btn-sair"
+            onClick={sairDaConta}
+          >
+            <FaSignOutAlt />
+            Sair da conta
+          </button>
+
+        </div>
+
+      </section>
+
+
+      {/* 3. NOTIFICAÇÕES */}
+
+      <section className="configuracao-card">
+
+        <div className="card-title">
+
+          <div className="card-icon">
+            🔔
+          </div>
+
+          <div>
+            <h2>Notificações</h2>
+
+            <p>
+              Controle como você deseja
+              receber avisos do sistema.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div className="configuracao-opcao">
+
+          <div className="opcao-texto">
+
+            <strong>
+              Notificações do sistema
+            </strong>
+
+            <span>
+              Permitir avisos e atualizações
+              importantes.
+            </span>
+
+          </div>
+
+
+          <button
+            type="button"
+            className={`switch ${
+              notificacoes
+                ? "ativo"
+                : ""
+            }`}
+            onClick={
+              alterarNotificacoes
+            }
+            aria-label="Ativar ou desativar notificações"
+          >
+
+            <span />
+
+          </button>
+
+        </div>
+
+
+        <div className="aviso-configuracao">
+          As notificações poderão ser
+          conectadas aos eventos do sistema
+          posteriormente.
+        </div>
+
+      </section>
+
+
+      {/* 4. SOBRE O SISTEMA */}
+
+      <section className="configuracao-card configuracao-sobre">
+
+        <div className="card-title">
+
+          <div className="card-icon">
+            ℹ️
+          </div>
+
+          <div>
+            <h2>
+              Sobre o sistema
+            </h2>
+
+            <p>
+              Informações sobre o
+              Som Renovo Manager.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div className="sobre-conteudo">
+
+          
+
+          <div className="sobre-texto">
+
+            
+
+            <p>
+              Sistema de gestão interna
+              da Som Renovo Escola de Música.
+            </p>
+
+            <span>
+              Sistema de gestão interna
+            </span>
+
+          </div>
+
+        </div>
+
+
+        {/* INFORMAÇÕES */}
+
+        <div className="sobre-secao">
+
+
+          <div className="sobre-detalhes">
+
+            <div>
+              <span>Versão</span>
+              <strong><span> - </span>
+                1.0.0
+              </strong>
+            </div>
+
+            <div>
+              <span>Status</span>
+
+              <strong className="sobre-status">
+                <span> ● </span>
+                 Operacional
+              </strong>
+
+            </div>
+
+            <div>
+              <span>
+                Última atualização
+              </span>
+
+              <strong>
+                <span> - </span>
+                  21/09/2026
+              </strong>
+            </div>
+
+          </div>
+
+        </div>
+
+        
+
+
+
+
+
+      {/* DOCUMENTOS */}
+
+<div className="sobre-secao">
+
+  <h3>
+    Privacidade e documentos
+  </h3>
+
+  <div className="sobre-links">
+
+    <Link
+      to="/config/politica-de-privacidade"
+      className="sobre-link"
+    >
+      <span className="sobre-link-icone">
+        🔒
+      </span>
+
+      <span className="sobre-link-texto">
+        Política de Privacidade
+      </span>
+
+      <span className="sobre-link-seta">
+        →
+      </span>
+    </Link>
+
+
+    <Link
+      to="/config/termos-de-uso"
+      className="sobre-link"
+    >
+      <span className="sobre-link-icone">
+        📄
+      </span>
+
+      <span className="sobre-link-texto">
+        Termos de Uso
+      </span>
+
+      <span className="sobre-link-seta">
+        →
+      </span>
+    </Link>
+
+
+    <Link
+      to="/config/tratamento-de-dados"
+      className="sobre-link"
+    >
+      <span className="sobre-link-icone">
+        🛡️
+      </span>
+
+      <span className="sobre-link-texto">
+        Tratamento de Dados / LGPD
+      </span>
+
+      <span className="sobre-link-seta">
+        →
+      </span>
+    </Link>
+
+  </div>
+
+</div>
+
+      {/* AJUDA E SUPORTE */}
+
+<div className="sobre-secao">
+
+  <h3>
+    Ajuda e suporte
+  </h3>
+
+  <div className="sobre-links">
+
+    <Link
+      to="/config/central-de-ajuda"
+      className="sobre-link"
+    >
+      <span className="sobre-link-icone">
+        ❓
+      </span>
+
+      <span className="sobre-link-texto">
+        Central de Ajuda
+      </span>
+
+      <span className="sobre-link-seta">
+        →
+      </span>
+    </Link>
+
+
+    <Link
+      to="/config/relatar-problema"
+      className="sobre-link"
+    >
+      <span className="sobre-link-icone">
+        🐛
+      </span>
+
+      <span className="sobre-link-texto">
+        Relatar um Problema
+      </span>
+
+      <span className="sobre-link-seta">
+        →
+      </span>
+    </Link>
+
+
+    <Link
+      to="/config/contato-suporte"
+      className="sobre-link"
+    >
+      <span className="sobre-link-icone">
+        💬
+      </span>
+
+      <span className="sobre-link-texto">
+        Contato do Suporte
+      </span>
+
+      <span className="sobre-link-seta">
+        →
+      </span>
+    </Link>
+
+  </div>
+
+</div>
+
+
+        {/* RODAPÉ */}
+
+        <div className="sobre-rodape">
+
+          <strong>
+            Som Renovo Manager
+          </strong>
+
           <span>
-            Conta autenticada pelo Google
+            Feito para facilitar a gestão
+            e organização da escola.
           </span>
 
-          <span className="conta-status">
-            ● Ativa
-          </span>
+          <small>
+            © 2026 Som Renovo Escola de Música
+          </small>
 
         </div>
 

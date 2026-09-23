@@ -1,0 +1,509 @@
+.relatorio-admin {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.relatorio-admin-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.relatorio-admin-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.relatorio-admin-header h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #111827;
+}
+
+.relatorio-admin-header p {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* =========================
+   PERÍODO
+========================= */
+
+.relatorio-admin-periodo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.relatorio-admin-periodo button {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #374151;
+  font-size: 22px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.relatorio-admin-periodo button:hover {
+  background: #f3f4f6;
+}
+
+.relatorio-admin-periodo span {
+  min-width: 150px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  text-transform: capitalize;
+}
+
+/* =========================
+   ERRO
+========================= */
+
+.relatorio-admin-erro {
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+/* =========================
+   RESUMO
+========================= */
+
+.relatorio-admin-resumo {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.relatorio-admin-card {
+  min-height: 130px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.relatorio-admin-card span {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.relatorio-admin-card strong {
+  margin-top: 10px;
+  color: #111827;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.relatorio-admin-card small {
+  margin-top: 8px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* =========================
+   SEÇÕES
+========================= */
+
+.relatorio-admin-section {
+  margin-bottom: 24px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.relatorio-admin-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.relatorio-admin-section-header span {
+  display: block;
+  margin-bottom: 5px;
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.relatorio-admin-section-header h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+/* =========================
+   PROFESSORES
+========================= */
+
+.relatorio-admin-professores {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.relatorio-admin-professor {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.relatorio-admin-professor:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.relatorio-admin-professor-avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.relatorio-admin-professor-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.relatorio-admin-professor-info {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.relatorio-admin-professor-info strong {
+  overflow: hidden;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-professor-info span {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.relatorio-admin-professor-total {
+  min-width: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.relatorio-admin-professor-total strong {
+  color: #111827;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.relatorio-admin-professor-total span {
+  margin-top: 4px;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+/* =========================
+   INSTRUMENTOS
+========================= */
+
+.relatorio-admin-instrumentos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 28px;
+}
+
+.relatorio-admin-instrumento {
+  min-width: 0;
+}
+
+.relatorio-admin-instrumento-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.relatorio-admin-instrumento-topo span {
+  overflow: hidden;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-instrumento-topo strong {
+  color: #111827;
+  font-size: 14px;
+}
+
+.relatorio-admin-barra {
+  width: 100%;
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f3f4f6;
+}
+
+.relatorio-admin-barra div {
+  height: 100%;
+  min-width: 3px;
+  border-radius: inherit;
+  background: #374151;
+  transition: width 0.3s ease;
+}
+
+/* =========================
+   PLACEHOLDERS
+========================= */
+
+.relatorio-admin-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.relatorio-admin-placeholder-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.relatorio-admin-placeholder strong {
+  display: block;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.relatorio-admin-placeholder p {
+  margin: 5px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.relatorio-admin-vazio {
+  margin: 0;
+  padding: 24px;
+  color: #9ca3af;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.relatorio-admin-loading {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.relatorio-admin-footer {
+  padding: 8px 2px 24px;
+  color: #9ca3af;
+  font-size: 12px;
+  text-align: right;
+}
+
+.relatorio-admin-footer strong {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media (max-width: 1100px) {
+  .relatorio-admin-resumo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .relatorio-admin-professores {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 800px) {
+  .relatorio-admin {
+    padding: 24px 18px;
+  }
+
+  .relatorio-admin-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .relatorio-admin-periodo {
+    align-self: flex-start;
+  }
+
+  .relatorio-admin-instrumentos {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .relatorio-admin {
+    padding: 20px 14px;
+  }
+
+  .relatorio-admin-header h1 {
+    font-size: 25px;
+  }
+
+  .relatorio-admin-header p {
+    font-size: 14px;
+  }
+
+  .relatorio-admin-resumo {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .relatorio-admin-card {
+    min-height: 115px;
+    padding: 16px;
+  }
+
+  .relatorio-admin-card strong {
+    font-size: 26px;
+  }
+
+  .relatorio-admin-section {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .relatorio-admin-section-header h2 {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 450px) {
+  .relatorio-admin-resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .relatorio-admin-periodo {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .relatorio-admin-periodo span {
+    flex: 1;
+  }
+
+  .relatorio-admin-professor {
+    padding: 12px;
+  }
+
+  .relatorio-admin-professor-avatar {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .relatorio-admin-placeholder {
+    align-items: flex-start;
+  }
+}

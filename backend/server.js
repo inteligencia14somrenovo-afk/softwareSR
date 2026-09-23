@@ -17,6 +17,7 @@ const notificacoesRoutes = require("./routes/notificacoes.routes");
 
 const {
   executarSincronizacao,
+  getStatusSincronizacao,
 } = require("./controllers/planilha.controller");
 
 const app = express();
@@ -143,6 +144,70 @@ app.get("/teste-banco", async (req, res) => {
 
   }
 
+});
+
+// =====================================================
+// HEALTH CHECK DO SISTEMA
+// =====================================================
+
+app.get("/health", async (req, res) => {
+  const inicio = Date.now();
+
+  try {
+    const resultado = await pool.query(`
+      SELECT
+        (SELECT COUNT(*)::integer
+         FROM alunos) AS total_alunos,
+
+        (SELECT COUNT(*)::integer
+         FROM professores
+         WHERE role = 'professor') AS total_professores,
+
+        NOW() AS database_time
+    `);
+
+    const tempoResposta = Date.now() - inicio;
+
+    res.json({
+      status: "ok",
+      database: "connected",
+      responseTime: tempoResposta,
+      timestamp: new Date().toISOString(),
+      databaseTime: resultado.rows[0].database_time,
+      environment: process.env.NODE_ENV || "development",
+
+      dados: {
+        totalAlunos: resultado.rows[0].total_alunos,
+        totalProfessores:
+          resultado.rows[0].total_professores,
+      },
+
+      sincronizacao: getStatusSincronizacao(),
+    });
+
+  } catch (error) {
+    const tempoResposta = Date.now() - inicio;
+
+    console.error(
+      "❌ Health check falhou:",
+      error
+    );
+
+    res.status(503).json({
+      status: "error",
+      database: "disconnected",
+      responseTime: tempoResposta,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || "development",
+
+      dados: {
+        totalAlunos: null,
+        totalProfessores: null,
+      },
+
+      sincronizacao: getStatusSincronizacao(),
+    });
+  }
 });
 
 // =====================================================

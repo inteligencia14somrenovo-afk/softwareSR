@@ -4,13 +4,24 @@ const sheets = require("../config/googleSheets");
 const SPREADSHEET_ID =
   "1bbzbHCy5_tHx2mjI7KW6xl1f_K7dPFK5QWVWeXbAnco";
 
+  let statusSincronizacao = {
+  status: "aguardando",
+  inicio: null,
+  fim: null,
+  duracao: null,
+  resultado: null,
+  erro: null,
+};
+
 function colunaParaLetra(numero) {
   let resultado = "";
 
   while (numero > 0) {
     const resto = (numero - 1) % 26;
+
     resultado =
       String.fromCharCode(65 + resto) + resultado;
+
     numero = Math.floor((numero - 1) / 26);
   }
 
@@ -47,299 +58,7 @@ function letraParaNumero(letras) {
 
 
 // =====================================================
-// FUNÇÃO INTERNA DE SINCRONIZAÇÃO
-// =====================================================
-
-async function executarSincronizacao() {
-  const client = await pool.connect();
-
-  try {
-    const professores = await client.query(`
-      SELECT id, nome, email, aba, intervalo
-      FROM professores_planilha
-      WHERE ativo = TRUE
-    `);
-
-    let totalCelulas = 0;
-
-    await client.query("BEGIN");
-
-    for (const professor of professores.rows) {
-
-      console.log(
-        `🔄 Sincronizando ${professor.nome}...`
-      );
-
-      const response =
-        await sheets.spreadsheets.values.get({
-          spreadsheetId: SPREADSHEET_ID,
-          range: `${professor.aba}!${professor.intervalo}`,
-        });
-
-      const valores =
-        response.data.values || [];
-
-      const inicio =
-        extrairInicioIntervalo(
-          professor.intervalo
-        );
-
-      const colunaInicial =
-        letraParaNumero(inicio.coluna);
-
-      const linhaInicial =
-        inicio.linha;
-
-
-      // Remove o espelho anterior
-      await client.query(
-        `
-        DELETE FROM planilha_horarios
-        WHERE professor_id = $1
-        `,
-        [professor.id]
-      );
-
-
-      for (
-        let linha = 0;
-        linha < valores.length;
-        linha++
-      ) {
-
-        const row = valores[linha];
-
-        for (
-          let coluna = 0;
-          coluna < row.length;
-          coluna++
-        ) {
-
-          const conteudo =
-            row[coluna] ?? "";
-
-          const numeroLinha =
-            linhaInicial + linha;
-
-          const numeroColuna =
-            colunaInicial + coluna;
-
-          const letraColuna =
-            colunaParaLetra(
-              numeroColuna
-            );
-
-          const celula =
-            `${letraColuna}${numeroLinha}`;
-
-
-          await client.query(
-            `
-            INSERT INTO planilha_horarios
-            (
-              professor_id,
-              linha,
-              coluna,
-              celula,
-              conteudo
-            )
-            VALUES
-            ($1, $2, $3, $4, $5)
-            `,
-            [
-              professor.id,
-              linha + 1,
-              coluna + 1,
-              celula,
-              conteudo,
-            ]
-          );
-
-          totalCelulas++;
-        }
-      }
-
-      console.log(
-        `✅ ${professor.nome} sincronizado: ${valores.length} linhas`
-      );
-    }
-
-    await client.query("COMMIT");
-
-    return {
-      sucesso: true,
-      professores:
-        professores.rows.length,
-      celulas: totalCelulas,
-    };
-
-  } catch (error) {
-
-    await client.query("ROLLBACK");
-
-    throw error;
-
-  } finally {
-
-    client.release();
-
-  }
-}
-
-
-// =====================================================
-// SINCRONIZAÇÃO MANUAL — API
-// =====================================================
-
-async function sincronizarPlanilha(req, res) {
-
-  try {
-
-    const resultado =
-      await executarSincronizacao();
-
-    res.json({
-      sucesso: true,
-      mensagem:
-        "Planilha sincronizada com sucesso!",
-      ...resultado,
-    });
-
-  } catch (error) {
-
-    console.error(
-      "❌ Erro ao sincronizar planilha:",
-      error
-    );
-
-    res.status(500).json({
-      sucesso: false,
-      erro: error.message,
-    });
-
-  }
-}
-
-
-// =====================================================
-// BUSCAR HORÁRIOS BRUTOS
-// =====================================================
-
-async function buscarHorariosProfessor(req, res) {
-
-  try {
-
-    if (!req.session.professorId) {
-
-      return res.status(401).json({
-        sucesso: false,
-        mensagem: "Usuário não autenticado.",
-      });
-
-    }
-
-    const professorId =
-      req.session.professorId;
-
-
-    const professor =
-      await pool.query(
-        `
-        SELECT
-          pp.id,
-          pp.nome,
-          pp.email
-        FROM professores_planilha pp
-
-        INNER JOIN professores p
-          ON LOWER(TRIM(p.email))
-          =
-          LOWER(TRIM(pp.email))
-
-        WHERE p.id = $1
-          AND pp.ativo = TRUE
-
-        LIMIT 1
-        `,
-        [professorId]
-      );
-
-
-    if (
-      professor.rows.length === 0
-    ) {
-
-      return res.status(404).json({
-        sucesso: false,
-        mensagem:
-          "Nenhuma planilha configurada para este professor.",
-      });
-
-    }
-
-
-    const professorPlanilha =
-      professor.rows[0];
-
-
-    const resultado =
-      await pool.query(
-        `
-        SELECT
-          id,
-          professor_id,
-          linha,
-          coluna,
-          celula,
-          conteudo,
-          created_at,
-          updated_at
-        FROM planilha_horarios
-        WHERE professor_id = $1
-        ORDER BY linha, coluna
-        `,
-        [professorPlanilha.id]
-      );
-
-
-    return res.json({
-
-      sucesso: true,
-
-      professor_id:
-        professorId,
-
-      total:
-        resultado.rows.length,
-
-      dados:
-        resultado.rows,
-
-    });
-
-  } catch (error) {
-
-    console.error(
-      "❌ Erro ao buscar horários:",
-      error
-    );
-
-    return res.status(500).json({
-
-      sucesso: false,
-
-      erro:
-        error.message,
-
-    });
-
-  }
-
-}
-
-
-// =====================================================
-// INTERPRETAR CÉLULA
+// FUNÇÃO INTERNA — INTERPRETAR CÉLULA
 // =====================================================
 
 function interpretarCelula(conteudo) {
@@ -348,9 +67,7 @@ function interpretarCelula(conteudo) {
     !conteudo ||
     !conteudo.trim()
   ) {
-
     return null;
-
   }
 
   const texto =
@@ -366,20 +83,15 @@ function interpretarCelula(conteudo) {
       /^(\d{1,2})(?::(\d{2}))?h?/i
     );
 
-
   if (!horarioMatch) {
-
     return null;
-
   }
-
 
   const hora =
     horarioMatch[1].padStart(
       2,
       "0"
     );
-
 
   const minuto =
     horarioMatch[2] || "00";
@@ -402,67 +114,111 @@ function interpretarCelula(conteudo) {
   // AULA EXPERIMENTAL (AE)
   // =====================================================
 
-  /*
-   * Formato esperado:
-   *
-   * 18h AE Any 16a guitarra 03/09
-   *
-   * Resultado:
-   * tipo = experimental
-   * nome = Any
-   * idade = 16
-   * instrumento = guitarra
-   * dataExperimental = 03/09
-   */
-
   const experimentalMatch =
     textoSemHorario.match(
-      /^AE\s+(.+?)\s+(\d{1,3})a\s+(guitarra|violão|violao|teclado|piano|bateria|canto|violino|ukulele)\s+(\d{1,2}\/\d{1,2})$/i
+      /^AE\s+(.+?)\s+(\d{1,3})a\s+(guitarra|violão|violao|teclado|piano|bateria|canto|violino|ukulele)\s+(\d{1,2}\/\d{1,2})(?:\s+(?:📸|❌|🎸|🥁|🎹|🎤|🎻|🎵|🪕|🎼)?\s*(\d{3,5})\s+(.+?))?$/i
     );
 
 
   if (experimentalMatch) {
 
     const nome =
-      experimentalMatch[1].trim();
-
+      `AE ${experimentalMatch[1].trim()}`;
 
     const idade =
       Number(
         experimentalMatch[2]
       );
 
-
     const instrumentoTexto =
       experimentalMatch[3]
         .toLowerCase();
 
-
     const dataExperimental =
       experimentalMatch[4];
-
 
     let instrumento =
       instrumentoTexto;
 
 
-    // Normaliza variações
-
     if (
       instrumentoTexto === "violão" ||
       instrumentoTexto === "violao"
     ) {
-
       instrumento = "violao";
 
     } else if (
       instrumentoTexto === "teclado" ||
       instrumentoTexto === "piano"
     ) {
-
       instrumento =
         "teclado/piano";
+    }
 
+
+    // ===================================================
+    // ALUNO FIXO SUBSTITUÍDO
+    // ===================================================
+
+    let alunoSubstituido =
+      null;
+
+    if (
+      experimentalMatch[5]
+    ) {
+
+      const codigoAluno =
+        Number(
+          experimentalMatch[5]
+        );
+
+      const nomeAluno =
+        experimentalMatch[6]
+          .trim();
+
+      let instrumentoAluno =
+        null;
+
+
+      if (texto.includes("🎸"))
+        instrumentoAluno =
+          "guitarra";
+
+      else if (texto.includes("🥁"))
+        instrumentoAluno =
+          "bateria";
+
+      else if (texto.includes("🎹"))
+        instrumentoAluno =
+          "teclado/piano";
+
+      else if (texto.includes("🎤"))
+        instrumentoAluno =
+          "canto";
+
+      else if (texto.includes("🎻"))
+        instrumentoAluno =
+          "violino";
+
+      else if (texto.includes("🪕"))
+        instrumentoAluno =
+          "ukulele";
+
+
+      alunoSubstituido = {
+
+        codigoAluno,
+
+        nome:
+          nomeAluno,
+
+        instrumento:
+          instrumentoAluno,
+
+        dataBloqueada:
+          dataExperimental,
+
+      };
     }
 
 
@@ -485,6 +241,8 @@ function interpretarCelula(conteudo) {
 
       dataExperimental,
 
+      alunoSubstituido,
+
       foto:
         texto.includes("📸"),
 
@@ -492,27 +250,12 @@ function interpretarCelula(conteudo) {
         texto,
 
     };
-
   }
 
 
   // =====================================================
   // REPOSIÇÃO DE AULA (REP)
   // =====================================================
-
-  /*
-   * Formato esperado:
-   *
-   * 18h Rep 1234 João 🎸
-   *
-   * A palavra Rep identifica
-   * uma reposição de aula.
-   *
-   * O restante da célula continua
-   * sendo interpretado normalmente
-   * para encontrar código, nome,
-   * instrumento e foto.
-   */
 
   const reposicao =
     /^Rep\b/i.test(
@@ -526,7 +269,6 @@ function interpretarCelula(conteudo) {
       textoSemHorario.match(
         /\b\d{3,5}\b/
       );
-
 
     const codigoAluno =
       codigoMatch
@@ -598,7 +340,6 @@ function interpretarCelula(conteudo) {
         texto,
 
     };
-
   }
 
 
@@ -682,6 +423,807 @@ function interpretarCelula(conteudo) {
       texto,
 
   };
+}
+
+
+// =====================================================
+// MONTAR ALUNOS A PARTIR DA PLANILHA
+// =====================================================
+
+function montarAlunosDaPlanilha(
+  resultado
+) {
+
+  const diasSemana = {
+
+    2: "SEGUNDA",
+    3: "TERÇA",
+    4: "QUARTA",
+    5: "QUINTA",
+    6: "SEXTA",
+    7: "SÁBADO",
+
+  };
+
+
+  const alunosMap =
+    new Map();
+
+
+  for (
+    const item
+    of resultado.rows
+  ) {
+
+    // Ignora coluna A
+
+    if (
+      !diasSemana[item.coluna]
+    ) {
+      continue;
+    }
+
+
+    const horario =
+      interpretarCelula(
+        item.conteudo
+      );
+
+
+    if (!horario) {
+      continue;
+    }
+
+
+    let codigo =
+      horario.codigoAluno;
+
+    let nome =
+      horario.nome;
+
+    let instrumento =
+      horario.instrumento;
+
+    let foto =
+      horario.foto;
+
+
+    // =================================================
+    // AE COM ALUNO FIXO
+    // =================================================
+
+    if (
+      horario.tipo === "experimental" &&
+      horario.alunoSubstituido
+    ) {
+
+      codigo =
+        horario.alunoSubstituido.codigoAluno;
+
+      nome =
+        horario.alunoSubstituido.nome;
+
+      instrumento =
+        horario.alunoSubstituido.instrumento;
+
+      foto = false;
+
+    }
+
+
+    // AE sem aluno fixo não vira aluno cadastrado
+
+    if (!codigo) {
+      continue;
+    }
+
+
+    if (
+      !alunosMap.has(codigo)
+    ) {
+
+      alunosMap.set(
+        codigo,
+        {
+
+          id:
+            codigo,
+
+          codigoAluno:
+            codigo,
+
+          nome:
+            nome ||
+            "Aluno sem nome",
+
+          instrumento,
+
+          foto,
+
+          nascimento:
+            null,
+
+          unidade:
+            "Porto velho",
+
+          status:
+            "ativo",
+
+          horarios:
+            []
+
+        }
+      );
+    }
+
+
+    const aluno =
+      alunosMap.get(codigo);
+
+
+    if (
+      (!aluno.nome ||
+        aluno.nome === "Aluno sem nome") &&
+      nome
+    ) {
+
+      aluno.nome =
+        nome;
+
+    }
+
+
+    if (
+      !aluno.instrumento &&
+      instrumento
+    ) {
+
+      aluno.instrumento =
+        instrumento;
+
+    }
+
+
+    if (foto) {
+      aluno.foto = true;
+    }
+
+
+    aluno.horarios.push({
+
+      celula:
+        item.celula,
+
+      diaSemana:
+        diasSemana[item.coluna],
+
+      horario:
+        horario.horario,
+
+      instrumento,
+
+      conteudoOriginal:
+        horario.conteudoOriginal,
+
+      dataBloqueada:
+        horario.tipo === "experimental" &&
+        horario.alunoSubstituido
+          ? horario.alunoSubstituido.dataBloqueada
+          : null,
+
+    });
+
+  }
+
+
+  const alunos =
+    Array.from(
+      alunosMap.values()
+    );
+
+
+  alunos.sort(
+    (a, b) =>
+      a.nome.localeCompare(
+        b.nome,
+        "pt-BR"
+      )
+  );
+
+
+  return alunos;
+}
+
+
+// =====================================================
+// SINCRONIZAR ALUNOS NA TABELA alunos
+// =====================================================
+
+async function sincronizarAlunosDoProfessor(
+  client,
+  professorId,
+  professorPlanilhaId
+) {
+
+  const resultado =
+    await client.query(
+      `
+      SELECT
+        celula,
+        linha,
+        coluna,
+        conteudo
+      FROM planilha_horarios
+      WHERE professor_id = $1
+      ORDER BY linha, coluna
+      `,
+      [professorPlanilhaId]
+    );
+
+
+  const alunos =
+    montarAlunosDaPlanilha(
+      resultado
+    );
+
+
+  let novos = 0;
+  let atualizados = 0;
+
+
+  for (
+    const aluno
+    of alunos
+  ) {
+
+    // =================================================
+    // VERIFICA SE O ALUNO JÁ EXISTE
+    // =================================================
+
+    const existente =
+      await client.query(
+        `
+        SELECT
+          id,
+          nascimento,
+          foto
+        FROM alunos
+        WHERE professor_id = $1
+          AND codigo_aluno = $2
+        LIMIT 1
+        `,
+        [
+          professorId,
+          aluno.codigoAluno,
+        ]
+      );
+
+
+    // =================================================
+    // ATUALIZA
+    // =================================================
+
+    if (
+      existente.rows.length > 0
+    ) {
+
+      const alunoExistente =
+        existente.rows[0];
+
+
+      await client.query(
+        `
+        UPDATE alunos
+        SET
+          nome = $1,
+          instrumento = $2,
+          status = $3,
+          updated_at = NOW()
+        WHERE id = $4
+        `,
+        [
+          aluno.nome,
+          aluno.instrumento ||
+            "Não informado",
+          "ativo",
+          alunoExistente.id,
+        ]
+      );
+
+
+      atualizados++;
+
+      continue;
+    }
+
+
+    // =================================================
+    // NOVO ALUNO
+    // =================================================
+
+    await client.query(
+      `
+      INSERT INTO alunos
+      (
+        professor_id,
+        codigo_aluno,
+        nome,
+        nascimento,
+        foto,
+        instrumento,
+        unidade,
+        status,
+        created_at,
+        updated_at
+      )
+      VALUES
+      (
+        $1,
+        $2,
+        $3,
+        NULL,
+        NULL,
+        $4,
+        $5,
+        $6,
+        NOW(),
+        NOW()
+      )
+      `,
+      [
+        professorId,
+        aluno.codigoAluno,
+        aluno.nome,
+        aluno.instrumento ||
+          "Não informado",
+        aluno.unidade,
+        aluno.status,
+      ]
+    );
+
+
+    novos++;
+
+  }
+
+
+  return {
+    total: alunos.length,
+    novos,
+    atualizados,
+  };
+}
+
+
+// =====================================================
+// FUNÇÃO INTERNA DE SINCRONIZAÇÃO
+// =====================================================
+
+async function executarSincronizacao() {
+  const inicio = Date.now();
+
+  statusSincronizacao = {
+    status: "executando",
+    inicio: new Date().toISOString(),
+    fim: null,
+    duracao: null,
+    resultado: null,
+    erro: null,
+  };
+
+  const client = await pool.connect();
+
+
+  try {
+
+    const professores =
+      await client.query(
+        `
+        SELECT
+          pp.id,
+          pp.nome,
+          pp.email,
+          pp.aba,
+          pp.intervalo,
+          p.id AS professor_id
+        FROM professores_planilha pp
+
+        INNER JOIN professores p
+          ON LOWER(TRIM(p.email))
+          =
+          LOWER(TRIM(pp.email))
+
+        WHERE pp.ativo = TRUE
+        `
+      );
+
+
+    let totalCelulas = 0;
+    let totalAlunosNovos = 0;
+    let totalAlunosAtualizados = 0;
+
+
+    await client.query(
+      "BEGIN"
+    );
+
+
+    for (
+      const professor
+      of professores.rows
+    ) {
+
+      console.log(
+        `🔄 Sincronizando ${professor.nome}...`
+      );
+
+
+      const response =
+        await sheets.spreadsheets.values.get({
+          spreadsheetId:
+            SPREADSHEET_ID,
+
+          range:
+            `${professor.aba}!${professor.intervalo}`,
+        });
+
+
+      const valores =
+        response.data.values || [];
+
+
+      const inicio =
+        extrairInicioIntervalo(
+          professor.intervalo
+        );
+
+
+      const colunaInicial =
+        letraParaNumero(
+          inicio.coluna
+        );
+
+
+      const linhaInicial =
+        inicio.linha;
+
+
+      // =================================================
+      // REMOVE O ESPELHO ANTERIOR
+      // =================================================
+
+      await client.query(
+        `
+        DELETE FROM planilha_horarios
+        WHERE professor_id = $1
+        `,
+        [professor.id]
+      );
+
+
+      // =================================================
+      // RECRIA O ESPELHO
+      // =================================================
+
+      for (
+        let linha = 0;
+        linha < valores.length;
+        linha++
+      ) {
+
+        const row =
+          valores[linha];
+
+
+        for (
+          let coluna = 0;
+          coluna < row.length;
+          coluna++
+        ) {
+
+          const conteudo =
+            row[coluna] ?? "";
+
+
+          const numeroLinha =
+            linhaInicial + linha;
+
+
+          const numeroColuna =
+            colunaInicial + coluna;
+
+
+          const letraColuna =
+            colunaParaLetra(
+              numeroColuna
+            );
+
+
+          const celula =
+            `${letraColuna}${numeroLinha}`;
+
+
+          await client.query(
+            `
+            INSERT INTO planilha_horarios
+            (
+              professor_id,
+              linha,
+              coluna,
+              celula,
+              conteudo
+            )
+            VALUES
+            ($1, $2, $3, $4, $5)
+            `,
+            [
+              professor.id,
+              linha + 1,
+              coluna + 1,
+              celula,
+              conteudo,
+            ]
+          );
+
+
+          totalCelulas++;
+
+        }
+
+      }
+
+
+      // =================================================
+      // SINCRONIZA ALUNOS
+      // =================================================
+
+      const resultadoAlunos =
+        await sincronizarAlunosDoProfessor(
+          client,
+          professor.professor_id,
+          professor.id
+        );
+
+
+      totalAlunosNovos +=
+        resultadoAlunos.novos;
+
+
+      totalAlunosAtualizados +=
+        resultadoAlunos.atualizados;
+
+
+      console.log(
+        `✅ ${professor.nome} sincronizado: ${valores.length} linhas | ` +
+        `${resultadoAlunos.total} alunos | ` +
+        `${resultadoAlunos.novos} novos | ` +
+        `${resultadoAlunos.atualizados} atualizados`
+      );
+
+    }
+
+
+   await client.query("COMMIT");
+
+const resultado = {
+  sucesso: true,
+  professores: professores.rows.length,
+  celulas: totalCelulas,
+  alunosNovos: totalAlunosNovos,
+  alunosAtualizados: totalAlunosAtualizados,
+};
+
+statusSincronizacao = {
+  status: "sucesso",
+  inicio: statusSincronizacao.inicio,
+  fim: new Date().toISOString(),
+  duracao: Date.now() - inicio,
+  resultado,
+  erro: null,
+};
+
+return resultado;
+
+
+  } catch (error) {
+  await client.query("ROLLBACK");
+
+  statusSincronizacao = {
+    status: "erro",
+    inicio: statusSincronizacao.inicio,
+    fim: new Date().toISOString(),
+    duracao: Date.now() - inicio,
+    resultado: null,
+    erro: error.message,
+  };
+
+  throw error;
+} finally {
+
+    client.release();
+
+  }
+
+}
+
+
+// =====================================================
+// SINCRONIZAÇÃO MANUAL — API
+// =====================================================
+
+async function sincronizarPlanilha(
+  req,
+  res
+) {
+
+  try {
+
+    const resultado =
+      await executarSincronizacao();
+
+
+    res.json({
+
+      sucesso: true,
+
+      mensagem:
+        "Planilha sincronizada com sucesso!",
+
+      ...resultado,
+
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ Erro ao sincronizar planilha:",
+      error
+    );
+
+
+    res.status(500).json({
+
+      sucesso: false,
+
+      erro:
+        error.message,
+
+    });
+
+  }
+
+}
+
+
+// =====================================================
+// BUSCAR HORÁRIOS BRUTOS
+// =====================================================
+
+async function buscarHorariosProfessor(
+  req,
+  res
+) {
+
+  try {
+
+    if (
+      !req.session.professorId
+    ) {
+
+      return res.status(401).json({
+
+        sucesso: false,
+
+        mensagem:
+          "Usuário não autenticado.",
+
+      });
+
+    }
+
+
+    const professorId =
+      req.session.professorId;
+
+
+    const professor =
+      await pool.query(
+        `
+        SELECT
+          pp.id,
+          pp.nome,
+          pp.email
+        FROM professores_planilha pp
+
+        INNER JOIN professores p
+          ON LOWER(TRIM(p.email))
+          =
+          LOWER(TRIM(pp.email))
+
+        WHERE p.id = $1
+          AND pp.ativo = TRUE
+
+        LIMIT 1
+        `,
+        [professorId]
+      );
+
+
+    if (
+      professor.rows.length === 0
+    ) {
+
+      return res.status(404).json({
+
+        sucesso: false,
+
+        mensagem:
+          "Nenhuma planilha configurada para este professor.",
+
+      });
+
+    }
+
+
+    const professorPlanilha =
+      professor.rows[0];
+
+
+    const resultado =
+      await pool.query(
+        `
+        SELECT
+          id,
+          professor_id,
+          linha,
+          coluna,
+          celula,
+          conteudo,
+          created_at,
+          updated_at
+        FROM planilha_horarios
+        WHERE professor_id = $1
+        ORDER BY linha, coluna
+        `,
+        [professorPlanilha.id]
+      );
+
+
+    return res.json({
+
+      sucesso: true,
+
+      professor_id:
+        professorId,
+
+      total:
+        resultado.rows.length,
+
+      dados:
+        resultado.rows,
+
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ Erro ao buscar horários:",
+      error
+    );
+
+
+    return res.status(500).json({
+
+      sucesso: false,
+
+      erro:
+        error.message,
+
+    });
+
+  }
 
 }
 
@@ -735,7 +1277,7 @@ async function buscarHorariosOrganizados(
         sucesso: false,
 
         erro:
-          "Nenhuma planilha configurada para este professor."
+          "Nenhuma planilha configurada para este professor.",
 
       });
 
@@ -765,15 +1307,10 @@ async function buscarHorariosOrganizados(
     const diasSemana = {
 
       2: "SEGUNDA",
-
       3: "TERÇA",
-
       4: "QUARTA",
-
       5: "QUINTA",
-
       6: "SEXTA",
-
       7: "SÁBADO",
 
     };
@@ -786,8 +1323,6 @@ async function buscarHorariosOrganizados(
       const item
       of resultado.rows
     ) {
-
-      // Ignora a coluna A
 
       if (
         !diasSemana[item.coluna]
@@ -826,6 +1361,51 @@ async function buscarHorariosOrganizados(
 
       });
 
+
+      if (
+        horario.tipo === "experimental" &&
+        horario.alunoSubstituido
+      ) {
+
+        dados.push({
+
+          celula:
+            item.celula,
+
+          diaSemana:
+            diasSemana[item.coluna],
+
+          coluna:
+            item.coluna,
+
+          horario:
+            horario.horario,
+
+          tipo:
+            "aluno",
+
+          codigoAluno:
+            horario.alunoSubstituido.codigoAluno,
+
+          nome:
+            horario.alunoSubstituido.nome,
+
+          instrumento:
+            horario.alunoSubstituido.instrumento,
+
+          foto:
+            false,
+
+          dataBloqueada:
+            horario.alunoSubstituido.dataBloqueada,
+
+          conteudoOriginal:
+            item.conteudo,
+
+        });
+
+      }
+
     }
 
 
@@ -846,12 +1426,14 @@ async function buscarHorariosOrganizados(
 
     });
 
+
   } catch (error) {
 
     console.error(
       "❌ Erro ao organizar horários:",
       error
     );
+
 
     res.status(500).json({
 
@@ -881,10 +1463,6 @@ async function buscarAlunosProfessor(
     const { professorId } =
       req.params;
 
-
-    // -------------------------------------------------
-    // Localiza a configuração da planilha do professor
-    // -------------------------------------------------
 
     const professor =
       await pool.query(
@@ -918,7 +1496,7 @@ async function buscarAlunosProfessor(
         sucesso: false,
 
         erro:
-          "Nenhuma planilha configurada para este professor."
+          "Nenhuma planilha configurada para este professor.",
 
       });
 
@@ -928,10 +1506,6 @@ async function buscarAlunosProfessor(
     const professorPlanilha =
       professor.rows[0];
 
-
-    // -------------------------------------------------
-    // Busca as células sincronizadas
-    // -------------------------------------------------
 
     const resultado =
       await pool.query(
@@ -949,210 +1523,11 @@ async function buscarAlunosProfessor(
       );
 
 
-    // -------------------------------------------------
-    // Somente colunas dos dias da semana
-    // -------------------------------------------------
-
-    const diasSemana = {
-
-      2: "SEGUNDA",
-      3: "TERÇA",
-      4: "QUARTA",
-      5: "QUINTA",
-      6: "SEXTA",
-      7: "SÁBADO",
-
-    };
-
-
-    // -------------------------------------------------
-    // Agrupa os alunos pelo código
-    // -------------------------------------------------
-
-    const alunosMap = new Map();
-
-
-    for (
-      const item
-      of resultado.rows
-    ) {
-
-      // Ignora coluna A
-
-      if (
-        !diasSemana[item.coluna]
-      ) {
-
-        continue;
-
-      }
-
-
-      const horario =
-        interpretarCelula(
-          item.conteudo
-        );
-
-
-      if (!horario) {
-
-        continue;
-
-      }
-
-
-      // Sem código não conseguimos
-      // identificar o aluno com segurança
-
-      if (
-        !horario.codigoAluno
-      ) {
-
-        continue;
-
-      }
-
-
-      const codigo =
-        horario.codigoAluno;
-
-
-      // -------------------------------------------------
-      // Primeiro registro do aluno
-      // -------------------------------------------------
-
-      if (
-        !alunosMap.has(codigo)
-      ) {
-
-        alunosMap.set(
-          codigo,
-          {
-
-            id:
-              codigo,
-
-            codigoAluno:
-              codigo,
-
-            nome:
-              horario.nome ||
-              "Aluno sem nome",
-
-            instrumento:
-              horario.instrumento,
-
-            foto:
-              horario.foto,
-
-            nascimento:
-              null,
-
-            unidade:
-              "Porto velho",
-
-            status:
-              "ativo",
-
-            horarios:
-              []
-
-          }
-        );
-
-      }
-
-
-      const aluno =
-        alunosMap.get(codigo);
-
-
-      // -------------------------------------------------
-      // Completa dados caso apareçam
-      // diferentes em outra célula
-      // -------------------------------------------------
-
-      if (
-        !aluno.nome &&
-        horario.nome
-      ) {
-
-        aluno.nome =
-          horario.nome;
-
-      }
-
-
-      if (
-        !aluno.instrumento &&
-        horario.instrumento
-      ) {
-
-        aluno.instrumento =
-          horario.instrumento;
-
-      }
-
-
-      if (
-        horario.foto
-      ) {
-
-        aluno.foto = true;
-
-      }
-
-
-      // -------------------------------------------------
-      // Guarda os horários do aluno
-      // -------------------------------------------------
-
-      aluno.horarios.push({
-
-        celula:
-          item.celula,
-
-        diaSemana:
-          diasSemana[item.coluna],
-
-        horario:
-          horario.horario,
-
-        instrumento:
-          horario.instrumento,
-
-        conteudoOriginal:
-          horario.conteudoOriginal
-
-      });
-
-    }
-
-
-    // -------------------------------------------------
-    // Converte Map para array
-    // -------------------------------------------------
-
     const alunos =
-      Array.from(
-        alunosMap.values()
+      montarAlunosDaPlanilha(
+        resultado
       );
 
-
-    // Ordena alfabeticamente
-
-    alunos.sort(
-      (a, b) =>
-        a.nome.localeCompare(
-          b.nome,
-          "pt-BR"
-        )
-    );
-
-
-    // -------------------------------------------------
-    // RESPOSTA
-    // -------------------------------------------------
 
     res.json({
 
@@ -1164,7 +1539,7 @@ async function buscarAlunosProfessor(
       total:
         alunos.length,
 
-      alunos
+      alunos,
 
     });
 
@@ -1182,7 +1557,7 @@ async function buscarAlunosProfessor(
       sucesso: false,
 
       erro:
-        error.message
+        error.message,
 
     });
 
@@ -1194,17 +1569,15 @@ async function buscarAlunosProfessor(
 // =====================================================
 // EXPORTS
 // =====================================================
+function getStatusSincronizacao() {
+  return statusSincronizacao;
+}
 
 module.exports = {
-
   sincronizarPlanilha,
-
   executarSincronizacao,
-
+  getStatusSincronizacao,
   buscarHorariosProfessor,
-
   buscarHorariosOrganizados,
-
   buscarAlunosProfessor,
-
 };

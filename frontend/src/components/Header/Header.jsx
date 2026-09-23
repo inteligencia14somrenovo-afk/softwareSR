@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { MdDarkMode, MdNotifications } from "react-icons/md";
-
 import API_URL from "../../config/api";
 
 import "./Header.css";
@@ -23,6 +22,14 @@ const Header = () => {
   const [notificacaoToast, setNotificacaoToast] =
     useState(null);
 
+  const [notificacoesAtivas, setNotificacoesAtivas] =
+    useState(() => {
+      const valor =
+        localStorage.getItem("som-renovo-notificacoes");
+
+      return valor !== "false";
+    });
+
 
   // =====================================================
   // CONTROLE DAS NOTIFICAÇÕES JÁ CONHECIDAS
@@ -41,7 +48,24 @@ const Header = () => {
 
   const buscarNotificacoes = async () => {
 
+    // Se notificações estiverem desativadas,
+    // não fazemos nenhuma consulta ao backend.
+
+    if (!notificacoesAtivas) {
+
+      setNotificacoes([]);
+
+      setNotificacaoToast(null);
+
+      setCarregandoNotificacoes(false);
+
+      return;
+    }
+
+
     try {
+
+      setCarregandoNotificacoes(true);
 
       const resposta =
         await fetch(
@@ -80,9 +104,6 @@ const Header = () => {
 
       // =================================================
       // PRIMEIRA BUSCA
-      //
-      // Apenas registra as notificações existentes.
-      // Não mostra toast.
       // =================================================
 
       if (primeiraBusca.current) {
@@ -171,6 +192,55 @@ const Header = () => {
 
 
   // =====================================================
+  // OUVIR ALTERAÇÃO DA CONFIGURAÇÃO
+  // =====================================================
+
+  useEffect(() => {
+
+    const atualizarPreferencia =
+      () => {
+
+        const valor =
+          localStorage.getItem(
+            "som-renovo-notificacoes"
+          );
+
+        const ativas =
+          valor !== "false";
+
+        setNotificacoesAtivas(ativas);
+
+        if (!ativas) {
+
+          setNotificacoes([]);
+
+          setNotificacaoToast(null);
+
+          setShowNotifications(false);
+
+        }
+
+      };
+
+
+    window.addEventListener(
+      "som-renovo-notificacoes-alteradas",
+      atualizarPreferencia
+    );
+
+
+    return () => {
+
+      window.removeEventListener(
+        "som-renovo-notificacoes-alteradas",
+        atualizarPreferencia
+      );
+
+    };
+
+  }, []);
+
+  // =====================================================
   // PRIMEIRA BUSCA
   // =====================================================
 
@@ -178,7 +248,7 @@ const Header = () => {
 
     buscarNotificacoes();
 
-  }, []);
+  }, [notificacoesAtivas]);
 
 
   // =====================================================
@@ -186,6 +256,11 @@ const Header = () => {
   // =====================================================
 
   useEffect(() => {
+
+    if (!notificacoesAtivas) {
+      return;
+    }
+
 
     const intervalo =
       setInterval(
@@ -202,7 +277,7 @@ const Header = () => {
 
     };
 
-  }, []);
+  }, [notificacoesAtivas]);
 
 
   // =====================================================
@@ -238,6 +313,7 @@ const Header = () => {
   // =====================================================
 
   const temNotificacoes =
+    notificacoesAtivas &&
     notificacoes.length > 0;
 
 
@@ -246,6 +322,10 @@ const Header = () => {
   // =====================================================
 
   const abrirNotificacoes = () => {
+
+    if (!notificacoesAtivas) {
+      return;
+    }
 
     setShowNotifications(
       (estado) => !estado
@@ -326,9 +406,17 @@ const Header = () => {
               showNotifications
                 ? "notification-active"
                 : ""
+            } ${
+              !notificacoesAtivas
+                ? "notifications-disabled"
+                : ""
             }`}
             type="button"
-            aria-label="Notificações"
+            aria-label={
+              notificacoesAtivas
+                ? "Notificações"
+                : "Notificações desativadas"
+            }
             onClick={abrirNotificacoes}
           >
 
@@ -355,16 +443,7 @@ const Header = () => {
               TEMA
           ============================================= */}
 
-          <button
-            className="header-icon theme-button"
-            type="button"
-            aria-label="Alterar tema"
-          >
-
-            <MdDarkMode />
-
-          </button>
-
+        
         </div>
 
       </div>
@@ -372,12 +451,9 @@ const Header = () => {
 
       {/* =================================================
           TOAST DE NOVA NOTIFICAÇÃO
-
-          Só aparece quando uma nova notificação
-          é detectada após a primeira busca.
       ================================================= */}
 
-      {notificacaoToast && (
+      {notificacaoToast && notificacoesAtivas && (
 
         <div
           className="notification-toast"
@@ -440,7 +516,7 @@ const Header = () => {
           PAINEL DE NOTIFICAÇÕES
       ================================================= */}
 
-      {showNotifications && (
+      {showNotifications && notificacoesAtivas && (
 
         <div className="notification-panel">
 

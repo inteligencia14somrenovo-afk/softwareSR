@@ -4,6 +4,7 @@ import { IoReloadSharp } from "react-icons/io5";
 import { FaRegHourglassHalf } from "react-icons/fa6";
 import Semanas from "./components/Semanas";
 import API_URL from "../../config/api";
+import { nomesInstrumentos } from "../Alunos/utils/instrumentos";
 
 import "./Presenca.css";
 
@@ -13,12 +14,7 @@ function Presenca() {
     carregando: carregandoProfessor,
   } = useAuth();
 
-  // =========================
-  // ALUNOS
-  // =========================
-
-  const [carregandoAlunos, setCarregandoAlunos] = useState(true);
-
+ 
   // =========================
   // AULAS / HORÁRIOS
   // =========================
@@ -55,7 +51,6 @@ function Presenca() {
 
   const carregando =
     carregandoProfessor ||
-    carregandoAlunos ||
     carregandoAulas ||
     carregandoPresencas;
 
@@ -382,62 +377,7 @@ function Presenca() {
     );
   };
 
-  // =====================================================
-  // CARREGAR ALUNOS
-  // =====================================================
-
-  useEffect(() => {
-    const carregarAlunos = async () => {
-      if (carregandoProfessor) {
-        return;
-      }
-
-      if (!professor) {
-        setAlunos([]);
-        setCarregandoAlunos(false);
-        return;
-      }
-
-      try {
-        setCarregandoAlunos(true);
-
-        const response =
-          await fetch(
-            `${API_URL}/alunos`,
-            {
-              credentials:
-                "include",
-            }
-          );
-
-        const data =
-          await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            data.mensagem ||
-              "Não foi possível carregar os alunos."
-          );
-        }
-
-        setAlunos(
-          data.alunos || []
-        );
-      } catch (error) {
-        console.error(
-          "❌ Erro ao carregar alunos:",
-          error
-        );
-      } finally {
-        setCarregandoAlunos(false);
-      }
-    };
-
-    carregarAlunos();
-  }, [
-    professor,
-    carregandoProfessor,
-  ]);
+  
 
   // =====================================================
   // CARREGAR HORÁRIOS DA PLANILHA
@@ -471,6 +411,7 @@ function Presenca() {
         const data =
           await response.json();
 
+
         if (!response.ok) {
           throw new Error(
             data.erro ||
@@ -488,27 +429,22 @@ function Presenca() {
         };
 
         const horarios =
-          (data.dados || []).map(
-            (item) => ({
-              id: item.celula,
-              alunoId:
-                item.codigoAluno,
-              nome: item.nome,
-              instrumento:
-                item.instrumento,
-              diaSemana:
-                mapaDias[
-                  item.diaSemana
-                ],
-              horario:
-                item.horario,
-              cancelado:
-                item.cancelado,
-              foto: item.foto,
-              conteudoOriginal:
-                item.conteudoOriginal,
-            })
-          );
+  (data.dados || []).map(
+    (item) => ({
+      id: item.celula,
+      alunoId: item.codigoAluno,
+      nome: item.nome,
+      instrumento: item.instrumento,
+      diaSemana: mapaDias[item.diaSemana],
+      horario: item.horario,
+      dataExperimental: item.dataExperimental,
+      dataBloqueada: item.dataBloqueada,
+      tipo: item.tipo,
+      cancelado: item.cancelado,
+      foto: item.foto,
+      conteudoOriginal: item.conteudoOriginal,
+    })
+  );
 
         setHorariosPlanilha(
           horarios
@@ -528,6 +464,8 @@ function Presenca() {
         }
       }
     };
+
+
 
   // =====================================================
   // CARREGAR PLANILHA AO ABRIR
@@ -707,23 +645,59 @@ useEffect(() => {
   // =========================
   // AULAS DO DIA
   // =========================
+const aulasDoDia =
+  horariosPlanilha
+    .filter((aula) => {
 
-  const aulasDoDia =
-    horariosPlanilha
-      .filter(
-        (aula) =>
-          Number(
-            aula.diaSemana
-          ) === diaSelecionado
-      )
-      .sort(
-        (a, b) =>
-          a.horario.localeCompare(
-            b.horario
-          )
+      // ==========================================
+      // AULA EXPERIMENTAL
+      // Só aparece na data específica
+      // ==========================================
+
+      if (aula.tipo === "experimental") {
+        if (!aula.dataExperimental) {
+          return false;
+        }
+
+        const [dia, mes] =
+          aula.dataExperimental.split("/");
+
+        const dataAE =
+          `${dataSelecionada.getFullYear()}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+
+        return dataAE === dataString;
+      }
+
+      // ==========================================
+      // ALUNO NORMAL
+      // Continua recorrente semanalmente
+      // ==========================================
+
+      // Se esse aluno foi substituído por uma AE
+      // nessa data, ele não aparece nesse dia.
+      if (aula.dataBloqueada) {
+        const [dia, mes] =
+          aula.dataBloqueada.split("/");
+
+        const dataBloqueada =
+          `${dataSelecionada.getFullYear()}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+
+        if (dataBloqueada === dataString) {
+          return false;
+        }
+      }
+
+      return (
+        Number(aula.diaSemana) ===
+        diaSelecionado
       );
-
-
+    })
+    .sort(
+      (a, b) =>
+        a.horario.localeCompare(
+          b.horario
+        )
+    );
  // =========================
 // ENCONTRAR PRESENÇA
 // =========================
@@ -1177,9 +1151,11 @@ const encontrarPresenca = (aulaId) => {
                         {aula.nome}
                       </strong>
 
-                      <span>
-                        {aula.instrumento}
-                      </span>
+                     <span>
+                      {nomesInstrumentos[aula.instrumento] ||
+                        aula.instrumento ||
+                        "Não informado"}
+                    </span>
 
                     </div>
 

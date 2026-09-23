@@ -1,7 +1,6 @@
 import { FaHome } from "@react-icons/all-files/fa/FaHome";
 import { FaUserGraduate } from "@react-icons/all-files/fa/FaUserGraduate";
 import { FaClipboardCheck } from "@react-icons/all-files/fa/FaClipboardCheck";
-import { FaBook } from "@react-icons/all-files/fa/FaBook";
 import { FaChartBar } from "@react-icons/all-files/fa/FaChartBar";
 import { FaCog } from "@react-icons/all-files/fa/FaCog";
 import { FaDrum } from "@react-icons/all-files/fa/FaDrum";
@@ -10,6 +9,7 @@ import { MdMenu, MdMenuOpen } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { FaChalkboardTeacher } from "react-icons/fa";
 
 import logo from "../../assets/logo.png";
 import "./Sidebar.css";
@@ -20,6 +20,10 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { professor } = useAuth();
+
+const podeGerenciarProfessores =
+  professor?.role === "admin" ||
+  professor?.role === "dev";
 
 
   return (
@@ -69,6 +73,12 @@ const Sidebar = () => {
           {!collapsed && <span>Alunos</span>}
         </NavLink>
 
+        {podeGerenciarProfessores && (
+          <NavLink to="/professores">
+            <FaChalkboardTeacher />
+            {!collapsed && <span>Professores</span>}
+          </NavLink>
+        )}
 
         <NavLink to="/bandas">
           <FaDrum />
@@ -79,12 +89,6 @@ const Sidebar = () => {
         <NavLink to="/presenca">
           <FaClipboardCheck />
           {!collapsed && <span>Presença</span>}
-        </NavLink>
-
-
-        <NavLink to="/planos-de-aula">
-          <FaBook />
-          {!collapsed && <span>Planos de aula</span>}
         </NavLink>
 
 
@@ -125,7 +129,16 @@ const Sidebar = () => {
     <div className="profile-info">
 
       <h4>
-        {professor?.nome ? professor.nome.trim().split(/\s+/)[0]: "Professor"} (Instrutor)
+        {professor?.nome
+  ? professor.nome.trim().split(/\s+/)[0]
+  : "Usuário"}{" "}
+(
+  {professor?.role === "dev"
+    ? "Dev"
+    : professor?.role === "admin"
+    ? "Admin"
+    : "Instrutor"}
+)
       </h4>
 
       <p>

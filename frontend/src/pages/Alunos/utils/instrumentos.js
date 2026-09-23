@@ -1,10 +1,10 @@
 export const nomesInstrumentos = {
-  violao: "Violão",
-  guitarra: "Guitarra",
-  ukulele: "Ukulele",
-  violino: "Violino",
-  piano: "Piano",
-  teclado: "Teclado",
+  violao: "Cordas",
+  guitarra: "Cordas",
+  ukulele: "Cordas",
+  violino: "Cordas",
+  piano: "Teclas",
+  teclado: "Teclas",
   canto: "Canto",
   bateria: "Bateria"
 };

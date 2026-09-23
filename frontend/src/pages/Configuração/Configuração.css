@@ -1,13 +1,8 @@
 .configuracao-page {
-  width: 100%;
-  min-height: 100%;
-  box-sizing: border-box;
-
-  padding: 35px 40px 50px;
-
-  background: #f5f5f5;
-
-  overflow-y: auto;
+  padding: 30px;
+  max-width: 1050px;
+  margin: 0 auto;
+  color: #222;
 }
 
 
@@ -16,27 +11,19 @@
 ========================= */
 
 .configuracao-header {
-  width: 100%;
-  max-width: 1100px;
-
-  margin: 0 auto 30px;
+  margin-bottom: 25px;
 }
 
 .configuracao-header h1 {
   margin: 0;
-
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 700;
-
-  color: #222;
 }
 
 .configuracao-header p {
-  margin: 8px 0 0;
-
-  font-size: 15px;
-
+  margin: 7px 0 0;
   color: #777;
+  font-size: 14px;
 }
 
 
@@ -45,214 +32,113 @@
 ========================= */
 
 .configuracao-card {
-  width: 100%;
-  max-width: 1100px;
-
-  box-sizing: border-box;
-
-  margin: 0 auto 25px;
-
-  padding: 30px;
-
   background: #fff;
-
-  border: 1px solid #e8e8e8;
-
-  border-radius: 16px;
-
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e7e7e7;
+  border-radius: 14px;
+  padding: 25px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
 }
-
-
-/* =========================
-   TÍTULO DO CARD
-========================= */
 
 .card-title {
   display: flex;
   align-items: center;
-
-  gap: 15px;
-
-  margin-bottom: 30px;
+  gap: 13px;
+  margin-bottom: 25px;
 }
 
 .card-icon {
-  width: 45px;
-  height: 45px;
-
-  flex-shrink: 0;
-
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  border-radius: 12px;
-
-  background: #fff0f0;
-
-  font-size: 21px;
+  font-size: 19px;
+  flex-shrink: 0;
 }
 
 .card-title h2 {
   margin: 0;
-
-  font-size: 20px;
-
-  color: #222;
+  font-size: 18px;
+  font-weight: 650;
 }
 
 .card-title p {
-  margin: 5px 0 0;
-
-  font-size: 14px;
-
-  color: #777;
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #888;
 }
 
 
 /* =========================
-   PERFIL PRINCIPAL
+   PERFIL
 ========================= */
 
 .perfil-principal {
   display: flex;
   align-items: center;
-
-  gap: 25px;
-
-  margin-bottom: 30px;
-
-  padding-bottom: 28px;
-
+  gap: 18px;
+  padding-bottom: 25px;
+  margin-bottom: 25px;
   border-bottom: 1px solid #eee;
 }
 
-
-/* =========================
-   FOTO
-========================= */
-
 .foto-container {
-  flex-shrink: 0;
+  position: relative;
 }
 
 .perfil-foto {
-  position: relative;
-
-  width: 105px;
-  height: 105px;
-
-  overflow: hidden;
-
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: #111;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  border-radius: 50%;
-
-  background: #d40808;
-
-  color: #fff;
-
-  font-size: 40px;
+  font-size: 34px;
   font-weight: 600;
-
+  overflow: hidden;
   cursor: pointer;
-
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+  position: relative;
 }
 
 .perfil-foto img {
   width: 100%;
   height: 100%;
-
   object-fit: cover;
 }
 
-.perfil-foto > span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 100%;
-  height: 100%;
-}
-
-
-/* =========================
-   BOTÃO DA FOTO
-========================= */
-
 .foto-editar {
   position: absolute;
-
-  right: 2px;
-  bottom: 2px;
-
-  width: 32px;
-  height: 32px;
-
+  inset: auto 0 0 0;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.68);
   display: flex;
   align-items: center;
   justify-content: center;
-
-  border-radius: 50%;
-
-  background: #222;
-
   color: #fff;
-
   font-size: 13px;
-
-  border: 3px solid #fff;
-
-  transition: 0.2s;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 .perfil-foto:hover .foto-editar {
-  background: #d40808;
-}
-
-
-/* =========================
-   IDENTIDADE
-========================= */
-
-.perfil-identidade {
-  min-width: 0;
+  opacity: 1;
 }
 
 .perfil-identidade h3 {
   margin: 0;
-
-  font-size: 24px;
-  font-weight: 700;
-
-  color: #222;
-
-  word-break: break-word;
+  font-size: 19px;
 }
 
 .perfil-identidade span {
-  display: block;
-
-  margin-top: 4px;
-
-  font-size: 14px;
-
+  display: inline-block;
+  margin-top: 5px;
   color: #888;
-}
-
-.perfil-identidade p {
-  margin: 12px 0 0;
-
-  font-size: 14px;
-  font-weight: 500;
-
-  color: #d40808;
-
-  word-break: break-word;
+  font-size: 13px;
 }
 
 
@@ -261,109 +147,63 @@
 ========================= */
 
 .campo-configuracao {
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .campo-configuracao label {
   display: block;
-
-  margin-bottom: 9px;
-
+  margin-bottom: 7px;
   font-size: 14px;
   font-weight: 600;
-
-  color: #333;
 }
 
-.campo-configuracao > input {
+.campo-configuracao input {
   width: 100%;
-
+  height: 44px;
   box-sizing: border-box;
-
-  padding: 13px 15px;
-
   border: 1px solid #ddd;
-
-  border-radius: 9px;
-
+  border-radius: 8px;
+  padding: 0 13px;
+  font-size: 14px;
   outline: none;
-
-  background: #fff;
-
-  color: #222;
-
-  font-size: 15px;
-
-  transition: 0.2s;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.campo-configuracao > input:focus {
-  border-color: #d40808;
+.campo-configuracao input:focus {
+  border-color: #111;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
 }
 
-.campo-configuracao > input[readonly] {
+.campo-configuracao input[readonly] {
   background: #f7f7f7;
-
   color: #777;
-
   cursor: not-allowed;
 }
 
 .campo-configuracao small {
   display: block;
-
-  margin-top: 7px;
-
-  color: #888;
-
+  margin-top: 6px;
+  color: #999;
   font-size: 12px;
 }
 
-
-/* =========================
-   INSTRUMENTOS
-========================= */
-
-.instrumentos-config-grid {
-  display: grid;
-
-  grid-template-columns: repeat(4, 1fr);
-
-  gap: 10px;
+.input-com-icone {
+  position: relative;
 }
 
-.instrumento-config {
-  min-height: 45px;
-
-  padding: 10px 12px;
-
-  border: 1px solid #ddd;
-
-  border-radius: 9px;
-
-  background: #fff;
-
-  color: #444;
-
+.input-com-icone svg {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #777;
   font-size: 14px;
-
-  cursor: pointer;
-
-  transition: 0.2s;
 }
 
-.instrumento-config:hover {
-  border-color: #d40808;
-
-  color: #d40808;
-}
-
-.instrumento-config.selecionado {
-  border-color: #d40808;
-
-  background: #d40808;
-
-  color: #fff;
+.input-com-icone input {
+  padding-left: 38px;
 }
 
 
@@ -372,76 +212,62 @@
 ========================= */
 
 .mensagem-erro {
-  padding: 12px 15px;
-
-  margin-bottom: 20px;
-
+  padding: 11px 13px;
+  margin-bottom: 18px;
   border-radius: 8px;
-
-  background: #ffe5e5;
-
-  color: #a00000;
-
-  font-size: 14px;
+  background: #fff0f0;
+  color: #b42318;
+  font-size: 13px;
 }
 
 .mensagem-sucesso {
-  padding: 12px 15px;
-
-  margin-bottom: 20px;
-
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  margin-bottom: 18px;
   border-radius: 8px;
-
-  background: #e7f7ec;
-
-  color: #18743a;
-
-  font-size: 14px;
+  background: #eefaf1;
+  color: #237a3b;
+  font-size: 13px;
 }
 
 
 /* =========================
-   AÇÕES
+   BOTÃO SALVAR
 ========================= */
 
 .configuracao-acoes {
   display: flex;
-
   justify-content: flex-end;
-
-  padding-top: 5px;
+  margin-top: 5px;
 }
 
 .btn-salvar {
-  min-width: 190px;
-
-  height: 45px;
-
-  padding: 0 22px;
-
+  height: 42px;
+  padding: 0 20px;
   border: none;
-
-  border-radius: 9px;
-
-  background: #d40808;
-
+  border-radius: 8px;
+  background: #111;
   color: #fff;
-
   font-size: 14px;
   font-weight: 600;
-
   cursor: pointer;
-
-  transition: 0.2s;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .btn-salvar:hover {
-  background: #a70707;
+  opacity: 0.88;
+}
+
+.btn-salvar:active {
+  transform: scale(0.98);
 }
 
 .btn-salvar:disabled {
-  opacity: 0.6;
-
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -451,196 +277,1009 @@
 ========================= */
 
 .conta-info {
-  display: flex;
-
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
   align-items: center;
-  justify-content: space-between;
-
-  padding: 15px;
-
-  border-radius: 9px;
-
+  gap: 25px;
+  padding: 18px;
+  border-radius: 10px;
   background: #f8f8f8;
+}
 
-  color: #555;
+.conta-detalhe {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
 
+.conta-label {
+  color: #999;
+  font-size: 12px;
+}
+
+.conta-detalhe strong {
   font-size: 14px;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.conta-status-container {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .conta-status {
-  color: #16833d;
-
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #2e7d32;
+  font-size: 13px;
   font-weight: 600;
 }
 
-
-/* =========================
-   PREFERÊNCIAS
-========================= */
-
-.configuracao-futura {
-  opacity: 0.85;
+.conta-status span {
+  font-size: 10px;
 }
 
-.em-breve {
-  padding: 20px;
+.conta-acoes {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
 
-  border-radius: 10px;
+.btn-sair {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: #444;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
-  background: #f8f8f8;
+.btn-sair:hover {
+  border-color: #bbb;
+  background: #f7f7f7;
+}
 
-  color: #888;
 
-  text-align: center;
+/* =========================
+   NOTIFICAÇÕES
+========================= */
 
+.configuracao-opcao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 17px 0;
+}
+
+.opcao-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.opcao-texto strong {
   font-size: 14px;
 }
 
-
-/* =========================
-   TABLET
-========================= */
-
-@media (max-width: 900px) {
-
-  .configuracao-page {
-    padding: 30px 25px 40px;
-  }
-
-  .configuracao-card {
-    padding: 25px;
-  }
-
-  .instrumentos-config-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
+.opcao-texto span {
+  color: #888;
+  font-size: 12px;
 }
 
 
 /* =========================
-   CELULAR
+   SWITCH
+========================= */
+
+.switch {
+  width: 46px;
+  height: 26px;
+  padding: 3px;
+  border: none;
+  border-radius: 30px;
+  background: #ccc;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.switch span {
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.switch.ativo {
+  background: #111;
+}
+
+.switch.ativo span {
+  transform: translateX(20px);
+}
+
+
+/* =========================
+   SOBRE O SISTEMA
+========================= */
+
+.sobre-conteudo {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px;
+  background: #f8f8f8;
+  border-radius: 10px;
+}
+
+.sobre-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  background: #111;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+
+.sobre-texto {
+  min-width: 0;
+}
+
+.sobre-texto h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.sobre-texto p {
+  margin: 6px 0 0;
+  color: #777;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* =========================
+   INFORMAÇÕES
+========================= */
+
+.sobre-detalhes {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 24px;
+  border-top: 1px solid #eee;
+}
+
+.sobre-detalhes::before {
+  content: "Informações";
+  display: block;
+  margin-bottom: 5px;
+  padding-top: 20px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+.sobre-detalhe {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+  background: transparent;
+}
+
+.sobre-detalhe span {
+  color: #777;
+  font-size: 13px;
+}
+
+.sobre-detalhe strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+  text-align: right;
+}
+
+
+/* =========================
+   SEÇÕES DO SOBRE
+========================= */
+
+.sobre-secao {
+  margin-top: 28px;
+}
+
+.sobre-secao h4 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+.sobre-secao h3 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+
+/* =========================
+   LINKS / DOCUMENTOS / SUPORTE
+========================= */
+
+.sobre-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sobre-link {
+  width: 100%;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 11px 14px;
+  border: 1px solid #e1e1e1;
+  border-radius: 9px;
+  background: #fff;
+  color: #444;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.sobre-link:hover {
+  border-color: #bbb;
+  background: #f7f7f7;
+  color: #111;
+}
+
+.sobre-link:active {
+  transform: scale(0.99);
+}
+
+
+/* =========================
+   RODAPÉ
+========================= */
+
+.sobre-rodape {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+.sobre-rodape strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 650;
+  color: #444;
+}
+
+.sobre-rodape span {
+  display: block;
+  margin-top: 6px;
+  color: #999;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+
+/* =========================
+   RESPONSIVO
 ========================= */
 
 @media (max-width: 600px) {
 
-  .configuracao-page {
-    padding: 20px 15px 35px;
-  }
-
-  .configuracao-header h1 {
-    font-size: 25px;
-  }
-
-  .configuracao-card {
-    padding: 20px;
-
-    border-radius: 13px;
-  }
-
-  .card-title {
-    gap: 12px;
-
-    margin-bottom: 25px;
-  }
-
-  .card-icon {
-    width: 40px;
-    height: 40px;
-
-    font-size: 18px;
-  }
-
-  .card-title h2 {
-    font-size: 18px;
-  }
-
-
-  /* Perfil no celular */
-
-  .perfil-principal {
-    align-items: center;
-
-    gap: 18px;
-  }
-
-  .perfil-foto {
-    width: 85px;
-    height: 85px;
-
-    font-size: 32px;
-  }
-
-  .foto-editar {
-    width: 28px;
-    height: 28px;
-
-    font-size: 11px;
-
-    border-width: 2px;
-  }
-
-  .perfil-identidade h3 {
-    font-size: 19px;
-  }
-
-  .perfil-identidade span {
-    font-size: 13px;
-  }
-
-  .perfil-identidade p {
-    margin-top: 8px;
-
-    font-size: 12px;
-  }
-
-
-  .instrumentos-config-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .configuracao-acoes {
-    justify-content: stretch;
-  }
-
-  .btn-salvar {
-    width: 100%;
-  }
-
-  .conta-info {
-    flex-direction: column;
-
+  .sobre-conteudo {
     align-items: flex-start;
-
-    gap: 8px;
+    padding: 18px;
   }
 
-}
-
-
-/* =========================
-   CELULAR PEQUENO
-========================= */
-
-@media (max-width: 380px) {
-
-  .perfil-principal {
-    align-items: flex-start;
-  }
-
-  .perfil-foto {
-    width: 75px;
-    height: 75px;
-
-    font-size: 28px;
-  }
-
-  .perfil-identidade h3 {
+  .sobre-logo {
+    width: 52px;
+    height: 52px;
     font-size: 17px;
   }
 
-  .instrumentos-config-grid {
-    grid-template-columns: 1fr;
+  .sobre-texto h3 {
+    font-size: 17px;
   }
 
+  .sobre-detalhe {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sobre-detalhe strong {
+    text-align: left;
+  }
+
+  .sobre-link {
+    min-height: 44px;
+  }
+}
+
+/* =========================
+   PÁGINAS DE DOCUMENTOS
+========================= */
+
+.documento-configuracao {
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+  color: #222;
+}
+
+/* Cabeçalho */
+
+.documento-header {
+  margin-bottom: 25px;
+}
+
+.documento-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  color: #666;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.documento-voltar:hover {
+  color: #111;
+}
+
+.documento-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #222;
+}
+
+.documento-header p {
+  margin: 8px 0 0;
+  color: #777;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Conteúdo */
+
+.documento-card {
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  border-radius: 14px;
+  padding: 30px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
+
+.documento-secao {
+  margin-bottom: 28px;
+}
+
+.documento-secao:last-child {
+  margin-bottom: 0;
+}
+
+.documento-secao h2 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #222;
+}
+
+.documento-secao p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+/* Informações importantes */
+
+.documento-aviso {
+  margin-bottom: 28px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  background: #f7f7f7;
+  border: 1px solid #e8e8e8;
+}
+
+.documento-aviso strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #222;
+}
+
+.documento-aviso p {
+  margin: 0;
+  color: #777;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Rodapé do documento */
+
+.documento-footer {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  color: #999;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Responsivo */
+
+@media (max-width: 600px) {
+
+  .documento-configuracao {
+    padding: 20px 15px;
+  }
+
+  .documento-header h1 {
+    font-size: 24px;
+  }
+
+  .documento-card {
+    padding: 22px 18px;
+    border-radius: 12px;
+  }
+
+  .documento-secao h2 {
+    font-size: 16px;
+  }
+
+  .documento-secao p {
+    font-size: 13px;
+    line-height: 1.7;
+  }
+}
+
+/* =========================
+CENTRAL DE AJUDA
+========================= */
+
+.ajuda-lista {
+display: flex;
+flex-direction: column;
+border-top: 1px solid #eee;
+}
+
+.ajuda-item {
+border-bottom: 1px solid #eee;
+}
+
+.ajuda-pergunta {
+width: 100%;
+min-height: 56px;
+padding: 15px 4px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 20px;
+border: none;
+background: transparent;
+color: #222;
+font-size: 14px;
+font-weight: 600;
+text-align: left;
+cursor: pointer;
+}
+
+.ajuda-pergunta:hover {
+color: #555;
+}
+
+.ajuda-icone {
+width: 25px;
+height: 25px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 50%;
+background: #f3f3f3;
+color: #555;
+font-size: 18px;
+font-weight: 400;
+flex-shrink: 0;
+}
+
+.ajuda-item.aberto .ajuda-icone {
+background: #111;
+color: #fff;
+}
+
+.ajuda-resposta {
+padding: 0 40px 18px 4px;
+color: #777;
+font-size: 13px;
+line-height: 1.7;
+}
+
+.ajuda-acoes {
+display: flex;
+gap: 10px;
+margin-top: 25px;
+}
+
+.ajuda-acao {
+flex: 1;
+min-height: 44px;
+display: flex;
+align-items: center;
+justify-content: center;
+box-sizing: border-box;
+padding: 10px 15px;
+border: 1px solid #ddd;
+border-radius: 8px;
+background: #fff;
+color: #444;
+text-decoration: none;
+font-size: 13px;
+font-weight: 600;
+transition: all 0.2s ease;
+}
+
+.ajuda-acao:hover {
+border-color: #bbb;
+background: #f7f7f7;
+color: #111;
+}
+
+/* =========================
+RELATAR PROBLEMA
+========================= */
+
+.problema-formulario {
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+
+.problema-campo {
+display: flex;
+flex-direction: column;
+gap: 7px;
+}
+
+.problema-campo label {
+font-size: 14px;
+font-weight: 600;
+color: #222;
+}
+
+.problema-campo input,
+.problema-campo select,
+.problema-campo textarea {
+width: 100%;
+box-sizing: border-box;
+border: 1px solid #ddd;
+border-radius: 8px;
+padding: 11px 13px;
+background: #fff;
+color: #222;
+font-family: inherit;
+font-size: 14px;
+outline: none;
+transition:
+border-color 0.2s ease,
+box-shadow 0.2s ease;
+}
+
+.problema-campo input,
+.problema-campo select {
+height: 44px;
+}
+
+.problema-campo textarea {
+resize: vertical;
+min-height: 130px;
+line-height: 1.5;
+}
+
+.problema-campo input:focus,
+.problema-campo select:focus,
+.problema-campo textarea:focus {
+border-color: #111;
+box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.problema-campo input::placeholder,
+.problema-campo textarea::placeholder {
+color: #aaa;
+}
+
+.problema-aviso {
+padding: 14px 16px;
+border-radius: 9px;
+background: #f8f8f8;
+}
+
+.problema-aviso strong {
+display: block;
+margin-bottom: 5px;
+font-size: 13px;
+color: #333;
+}
+
+.problema-aviso p {
+margin: 0;
+color: #888;
+font-size: 12px;
+line-height: 1.6;
+}
+
+.problema-acoes {
+display: flex;
+justify-content: flex-end;
+align-items: center;
+gap: 10px;
+margin-top: 5px;
+}
+
+.problema-cancelar,
+.problema-enviar,
+.problema-novo {
+min-height: 42px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+box-sizing: border-box;
+padding: 0 17px;
+border-radius: 8px;
+font-size: 13px;
+font-weight: 600;
+cursor: pointer;
+text-decoration: none;
+}
+
+.problema-cancelar {
+border: 1px solid #ddd;
+background: #fff;
+color: #555;
+}
+
+.problema-cancelar:hover {
+background: #f7f7f7;
+}
+
+.problema-enviar {
+border: none;
+background: #111;
+color: #fff;
+}
+
+.problema-enviar:hover {
+opacity: 0.88;
+}
+
+.problema-sucesso {
+display: flex;
+align-items: flex-start;
+gap: 15px;
+padding: 18px;
+border-radius: 10px;
+background: #eefaf1;
+border: 1px solid #d8f0dc;
+}
+
+.problema-sucesso-icone {
+width: 38px;
+height: 38px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 50%;
+background: #2e7d32;
+color: #fff;
+font-size: 18px;
+font-weight: 700;
+flex-shrink: 0;
+}
+
+.problema-sucesso strong {
+display: block;
+margin-bottom: 5px;
+font-size: 14px;
+color: #246b2c;
+}
+
+.problema-sucesso p {
+margin: 0;
+color: #57835d;
+font-size: 13px;
+line-height: 1.5;
+}
+
+.problema-novo {
+margin-top: 18px;
+border: 1px solid #ddd;
+background: #fff;
+color: #444;
+}
+
+.problema-novo:hover {
+background: #f7f7f7;
+}
+
+/* =========================
+CONTATO DO SUPORTE
+========================= */
+
+.suporte-perfil {
+display: flex;
+align-items: center;
+gap: 15px;
+padding: 20px;
+border-radius: 10px;
+background: #f8f8f8;
+}
+
+.suporte-avatar {
+width: 58px;
+height: 58px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 50%;
+background: #111;
+color: #fff;
+font-size: 17px;
+font-weight: 700;
+flex-shrink: 0;
+}
+
+.suporte-perfil h2 {
+margin: 0;
+font-size: 17px;
+font-weight: 700;
+}
+
+.suporte-perfil p {
+margin: 5px 0 0;
+color: #888;
+font-size: 12px;
+}
+
+.suporte-contatos {
+display: flex;
+flex-direction: column;
+margin-top: 25px;
+}
+
+.suporte-contato {
+display: flex;
+align-items: center;
+gap: 13px;
+padding: 17px 0;
+border-bottom: 1px solid #eee;
+}
+
+.suporte-contato-icone {
+width: 38px;
+height: 38px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 9px;
+background: #f4f4f4;
+font-size: 17px;
+flex-shrink: 0;
+}
+
+.suporte-contato-texto {
+display: flex;
+flex-direction: column;
+gap: 4px;
+min-width: 0;
+flex: 1;
+}
+
+.suporte-contato-texto span {
+color: #999;
+font-size: 11px;
+}
+
+.suporte-contato-texto strong {
+color: #333;
+font-size: 13px;
+font-weight: 600;
+word-break: break-word;
+}
+
+.suporte-contato-botao {
+min-height: 36px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+box-sizing: border-box;
+padding: 0 13px;
+border: 1px solid #ddd;
+border-radius: 7px;
+background: #fff;
+color: #444;
+text-decoration: none;
+font-size: 12px;
+font-weight: 600;
+white-space: nowrap;
+transition: all 0.2s ease;
+}
+
+.suporte-contato-botao:hover {
+border-color: #bbb;
+background: #f7f7f7;
+color: #111;
+}
+
+.suporte-aviso {
+margin-top: 25px;
+padding: 15px 17px;
+border-radius: 9px;
+background: #f8f8f8;
+}
+
+.suporte-aviso strong {
+display: block;
+margin-bottom: 5px;
+font-size: 13px;
+color: #333;
+}
+
+.suporte-aviso p {
+margin: 0;
+color: #888;
+font-size: 12px;
+line-height: 1.6;
+}
+
+.suporte-acoes {
+display: flex;
+justify-content: flex-end;
+margin-top: 18px;
+}
+
+.suporte-acao-secundaria {
+min-height: 40px;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+box-sizing: border-box;
+padding: 0 15px;
+border: 1px solid #ddd;
+border-radius: 8px;
+background: #fff;
+color: #444;
+text-decoration: none;
+font-size: 13px;
+font-weight: 600;
+}
+
+.suporte-acao-secundaria:hover {
+background: #f7f7f7;
+border-color: #bbb;
+}
+
+/* =========================
+RESPONSIVO - AJUDA/SUPORTE
+========================= */
+
+@media (max-width: 600px) {
+
+.ajuda-acoes {
+flex-direction: column;
+}
+
+.ajuda-acao {
+width: 100%;
+}
+
+.ajuda-resposta {
+padding-right: 4px;
+}
+
+.problema-acoes {
+flex-direction: column-reverse;
+align-items: stretch;
+}
+
+.problema-cancelar,
+.problema-enviar {
+width: 100%;
+}
+
+.suporte-contato {
+align-items: flex-start;
+flex-wrap: wrap;
+}
+
+.suporte-contato-texto {
+flex: 1;
+min-width: calc(100% - 55px);
+}
+
+.suporte-contato-botao {
+width: 100%;
+margin-left: 51px;
+}
+
+.suporte-acoes {
+justify-content: stretch;
+}
+
+.suporte-acao-secundaria {
+width: 100%;
+}
+}
+
+/* =========================
+   LINKS DO SOBRE - ÍCONE
+========================= */
+
+.sobre-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.sobre-link-icone {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: #f4f4f4;
+  font-size: 15px;
+}
+
+.sobre-link-texto {
+  flex: 1;
+}
+
+.sobre-link-seta {
+  color: #999;
+  font-size: 17px;
+  transition: transform 0.2s ease;
+}
+
+.sobre-link:hover .sobre-link-seta {
+  transform: translateX(3px);
+  color: #555;
 }

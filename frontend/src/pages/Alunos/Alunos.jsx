@@ -85,7 +85,7 @@ function Alunos() {
 
 
         const response = await fetch(
-          `${API_URL}/planilha/alunos/${professor.id}`,
+          `${API_URL}/alunos`,
           {
             credentials: "include",
           }
@@ -284,14 +284,25 @@ function Alunos() {
   // FILTRAGEM
   // =========================================================
 
-  const alunosFiltrados =
-    alunos.filter((aluno) => {
+ const alunosFiltrados =
+  alunos.filter((aluno) => {
 
-      const textoPesquisa =
-        pesquisa
-          .toLowerCase()
-          .trim();
+    // Não exibir alunos de aula experimental (AE)
+    if (
+      (aluno.nome || "")
+        .trim()
+        .toUpperCase()
+        .startsWith("AE")
+    ) {
+      return false;
+    }
 
+    const textoPesquisa =
+      pesquisa
+        .toLowerCase()
+        .trim();
+
+    // restante...
 
       const correspondePesquisa =
 

@@ -30,6 +30,7 @@ router.get("/me", async (req, res) => {
         foto_url,
         instrumentos,
         perfil_configurado,
+        role,
         created_at,
         updated_at
       FROM professores

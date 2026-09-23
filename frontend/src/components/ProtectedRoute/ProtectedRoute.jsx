@@ -13,11 +13,6 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Está logado, mas ainda não configurou o perfil
-  if (!professor.perfil_configurado) {
-    return <Navigate to="/configurar-perfil" replace />;
-  }
-
   // Tudo certo
   return children;
 };

@@ -639,3 +639,11 @@
         width: calc(100vw - 24px);
     }
 }
+
+.notifications-disabled {
+  opacity: 0.45;
+}
+
+.notifications-disabled:hover {
+  opacity: 0.65;
+}

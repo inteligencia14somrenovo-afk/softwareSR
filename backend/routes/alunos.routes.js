@@ -9,6 +9,13 @@ const router = express.Router();
 // Lista somente os alunos do professor autenticado
 // =====================================================
 
+// =====================================================
+// GET /alunos
+//
+// Professor → somente seus alunos
+// Admin/Dev → todos os alunos da escola
+// =====================================================
+
 router.get("/", async (req, res) => {
 
   try {
@@ -20,12 +27,94 @@ router.get("/", async (req, res) => {
       });
     }
 
+
     const professorId = req.session.professorId;
+
+
+    // =====================================================
+    // BUSCA O USUÁRIO AUTENTICADO
+    // =====================================================
+
+    const professorResult = await pool.query(
+      `
+      SELECT
+        id,
+        nome,
+        role
+      FROM professores
+      WHERE id = $1
+      `,
+      [professorId]
+    );
+
+
+    if (professorResult.rows.length === 0) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: "Usuário não encontrado."
+      });
+    }
+
+
+    const usuario = professorResult.rows[0];
+
+
+    // =====================================================
+    // ADMIN / DEV
+    // Busca todos os alunos da escola
+    // =====================================================
+
+    if (
+      usuario.role === "admin" ||
+      usuario.role === "dev"
+    ) {
+
+      const resultado = await pool.query(
+        `
+        SELECT
+          a.id,
+          a.professor_id,
+          a.codigo_aluno,
+          a.nome,
+          a.nascimento,
+          a.foto,
+          a.instrumento,
+          a.unidade,
+          a.status,
+          a.created_at,
+          a.updated_at,
+
+          p.nome AS professor_nome
+
+        FROM alunos a
+
+        LEFT JOIN professores p
+          ON p.id = a.professor_id
+
+        ORDER BY a.nome ASC
+        `
+      );
+
+
+      return res.json({
+        sucesso: true,
+        alunos: resultado.rows
+      });
+
+    }
+
+
+    // =====================================================
+    // PROFESSOR
+    // Busca somente os próprios alunos
+    // =====================================================
 
     const resultado = await pool.query(
       `
       SELECT
         id,
+        professor_id,
+        codigo_aluno,
         nome,
         nascimento,
         foto,
@@ -41,14 +130,20 @@ router.get("/", async (req, res) => {
       [professorId]
     );
 
+
     res.json({
       sucesso: true,
       alunos: resultado.rows
     });
 
+
   } catch (error) {
 
-    console.error("❌ Erro ao buscar alunos:", error);
+    console.error(
+      "❌ Erro ao buscar alunos:",
+      error
+    );
+
 
     res.status(500).json({
       sucesso: false,

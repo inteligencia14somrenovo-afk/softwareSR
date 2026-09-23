@@ -1,3 +1,5 @@
+import { nomesInstrumentos } from "../Alunos/utils/instrumentos";
+
 function AulaCard({
   aula,
   aluno,
@@ -29,7 +31,9 @@ function AulaCard({
         </h3>
 
         <p>
-          {aluno.instrumento}
+          {nomesInstrumentos[aula.instrumento] ||
+          aula.instrumento ||
+          "Não informado"}
         </p>
 
       </div>

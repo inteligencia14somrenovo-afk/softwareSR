@@ -1,0 +1,457 @@
+/* =========================
+   TELA INICIAL ADMIN
+========================= */
+
+.admin-inicio {
+    width: 100%;
+    padding: 30px;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.admin-inicio-header {
+    margin-bottom: 25px;
+}
+
+.admin-inicio-header h1 {
+    margin: 0 0 5px;
+    font-size: 28px;
+}
+
+.admin-inicio-header p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+
+/* =========================
+   RESUMO
+========================= */
+
+.admin-resumo {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.admin-resumo-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.admin-resumo-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background: #f3f3f3;
+    color: #222;
+    font-size: 21px;
+}
+
+.admin-resumo-card span {
+    display: block;
+    margin-bottom: 4px;
+    color: #888;
+    font-size: 12px;
+}
+
+.admin-resumo-card strong {
+    display: block;
+    font-size: 25px;
+    line-height: 1;
+}
+
+
+/* =========================
+   GRID
+========================= */
+
+.admin-inicio-grid {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.5fr)
+        minmax(320px, 1fr);
+    gap: 22px;
+    margin-bottom: 22px;
+}
+
+
+/* =========================
+   PAINÉIS
+========================= */
+
+.admin-painel {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.admin-painel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.admin-painel-header h2 {
+    margin: 0 0 4px;
+    font-size: 19px;
+}
+
+.admin-painel-header p {
+    margin: 0;
+    color: #888;
+    font-size: 13px;
+}
+
+.admin-painel-header button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 0;
+    border: none;
+    background: transparent;
+    color: #555;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-painel-header button:hover {
+    color: #111;
+}
+
+
+/* =========================
+   PROFESSORES
+========================= */
+
+.admin-professores-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-professor-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px;
+    border: 1px solid #eee;
+    border-radius: 11px;
+    background: #fafafa;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.admin-professor-item:hover {
+    background: #f5f5f5;
+    border-color: #ddd;
+    transform: translateX(2px);
+}
+
+.admin-professor-avatar {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 50%;
+    background: #eee;
+}
+
+.admin-professor-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-professor-avatar span {
+    color: #333;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.admin-professor-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-professor-info strong {
+    display: block;
+    color: #222;
+    font-size: 14px;
+}
+
+.admin-professor-info span {
+    display: block;
+    margin-top: 3px;
+    overflow: hidden;
+    color: #888;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-professor-alunos {
+    min-width: 55px;
+    text-align: right;
+}
+
+.admin-professor-alunos strong {
+    display: block;
+    color: #222;
+    font-size: 16px;
+}
+
+.admin-professor-alunos span {
+    display: block;
+    margin-top: 2px;
+    color: #888;
+    font-size: 10px;
+}
+
+.admin-professor-item > svg {
+    color: #aaa;
+    flex-shrink: 0;
+}
+
+
+/* =========================
+   INSTRUMENTOS
+========================= */
+
+.admin-instrumentos {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.admin-instrumento-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 13px 14px;
+    border-radius: 10px;
+    background: #f8f8f8;
+}
+
+.admin-instrumento-nome {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+    color: #555;
+    font-size: 13px;
+}
+
+.admin-instrumento-nome svg {
+    color: #777;
+    flex-shrink: 0;
+}
+
+.admin-instrumento-item > strong {
+    color: #222;
+    font-size: 15px;
+}
+
+
+/* =========================
+   ACESSOS RÁPIDOS
+========================= */
+
+.admin-acessos {
+    margin-bottom: 0;
+}
+
+.admin-acessos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.admin-acessos-grid button {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 11px;
+    background: #fafafa;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.admin-acessos-grid button:hover {
+    background: #f3f3f3;
+    border-color: #ddd;
+    transform: translateY(-2px);
+}
+
+.admin-acessos-grid button > svg:first-child {
+    color: #333;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.admin-acessos-grid button > svg:last-child {
+    margin-left: auto;
+    color: #aaa;
+    flex-shrink: 0;
+}
+
+.admin-acessos-grid button div {
+    flex: 1;
+    min-width: 0;
+}
+
+.admin-acessos-grid strong {
+    display: block;
+    margin-bottom: 3px;
+    color: #222;
+    font-size: 13px;
+}
+
+.admin-acessos-grid span {
+    display: block;
+    overflow: hidden;
+    color: #888;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================
+   ESTADO
+========================= */
+
+.admin-estado {
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #888;
+    font-size: 13px;
+}
+
+
+/* =========================
+   RESPONSIVO
+========================= */
+
+@media (max-width: 1100px) {
+
+    .admin-resumo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-inicio-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-acessos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .admin-inicio {
+        padding: 20px;
+    }
+
+    .admin-inicio-header h1 {
+        font-size: 25px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .admin-inicio {
+        padding: 10px;
+    }
+
+    .admin-resumo {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .admin-resumo-card {
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .admin-resumo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .admin-resumo-card strong {
+        font-size: 21px;
+    }
+
+    .admin-painel {
+        padding: 16px;
+    }
+
+    .admin-acessos-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 450px) {
+
+    .admin-resumo {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-painel-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-professor-info span {
+        max-width: 130px;
+    }
+
+}
