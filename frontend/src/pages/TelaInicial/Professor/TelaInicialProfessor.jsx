@@ -13,7 +13,7 @@ import { nomesInstrumentos } from "../../Alunos/utils/instrumentos";
 import { useAuth } from "../../../context/AuthContext";
 import API_URL from "../../../config/api";
 
-import "../TelaInicial.css";
+import "./TelaInicialProfessor.css";
 
 function TelaInicial() {
 

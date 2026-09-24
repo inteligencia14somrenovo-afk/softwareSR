@@ -6,10 +6,14 @@ function AlunoCard({
 }) {
 
   // Normaliza o instrumento para usar nas classes do CSS
-  const classeInstrumento =
-    aluno.instrumento === "teclado/piano"
-      ? "teclado"
-      : aluno.instrumento || "";
+const mapaInstrumentos = {
+  "teclado/piano": "teclado",
+  "guitarra/violao": "guitarra",
+};
+
+const classeInstrumento =
+  mapaInstrumentos[aluno.instrumento] || aluno.instrumento || "";
+    
 
   // Como a planilha atualmente não possui data de nascimento,
   // evita mostrar uma idade inválida.

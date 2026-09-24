@@ -77,7 +77,9 @@ function TelaInicialAdmin() {
   }, [professor, carregandoProfessor]);
 
   const totalAlunos = alunos.length;
-  const totalProfessores = professores.length;
+  const totalProfessores = professores.filter(
+  (professor) => professor.role === "professor"
+).length;
 
   const alunosAtivos = alunos.filter(
     (aluno) =>
@@ -462,26 +464,6 @@ function TelaInicialAdmin() {
 
           </button>
 
-
-          <button
-            onClick={() =>
-              navigate("/presenca")
-            }
-          >
-
-            <FiCalendar />
-
-            <div>
-              <strong>Presença</strong>
-
-              <span>
-                Acompanhar presença
-              </span>
-            </div>
-
-            <FiArrowRight />
-
-          </button>
 
 
           <button

@@ -14,45 +14,75 @@ function Presenca() {
     carregando: carregandoProfessor,
   } = useAuth();
 
- 
+  // =====================================================
+  // PERFIL DE ACESSO
+  // =====================================================
+
+  const isAdminOuDev =
+    professor?.role === "admin" ||
+    professor?.role === "dev";
+
+  const isProfessor =
+    professor?.role === "professor";
+
   // =========================
   // AULAS / HORÁRIOS
   // =========================
 
-  const [carregandoAulas, setCarregandoAulas] = useState(true);
-  const [horariosPlanilha, setHorariosPlanilha] = useState([]);
+  const [carregandoAulas, setCarregandoAulas] =
+    useState(true);
+
+  const [horariosPlanilha, setHorariosPlanilha] =
+    useState([]);
 
   // =========================
   // PRESENÇAS
   // =========================
 
-  const [presencas, setPresencas] = useState([]);
-  const [carregandoPresencas, setCarregandoPresencas] = useState(true);
+  const [presencas, setPresencas] =
+    useState([]);
+
+  const [carregandoPresencas, setCarregandoPresencas] =
+    useState(true);
 
   // =========================
   // SINCRONIZAÇÃO
   // =========================
 
-  const [sincronizando, setSincronizando] = useState(false);
+  const [sincronizando, setSincronizando] =
+    useState(false);
 
   // =========================
   // SEMANA E DIA
   // =========================
 
-  const [semanaSelecionada, setSemanaSelecionada] = useState(0);
-  const [diaSelecionado, setDiaSelecionado] = useState(1);
+  const [semanaSelecionada, setSemanaSelecionada] =
+    useState(0);
 
-  const [mesSelecionado, setMesSelecionado] = useState(new Date());
+  const [diaSelecionado, setDiaSelecionado] =
+    useState(1);
 
+  const [mesSelecionado, setMesSelecionado] =
+    useState(new Date());
 
   // =========================
   // ESTADO DE CARREGAMENTO
   // =========================
 
+  /*
+   * Para Admin/DEV não esperamos o carregamento
+   * de aulas/presenças, pois essa tela não é usada
+   * por esses perfis.
+   */
   const carregando =
     carregandoProfessor ||
-    carregandoAulas ||
-    carregandoPresencas;
+    (
+      !isAdminOuDev &&
+      (
+        carregandoAulas ||
+        carregandoPresencas
+      )
+    );
 
   // =========================
   // DIAS
@@ -89,15 +119,18 @@ function Presenca() {
   // MÊS ATUAL
   // =========================
 
-  const anoAtual = mesSelecionado.getFullYear();
+  const anoAtual =
+    mesSelecionado.getFullYear();
 
-  const mesAtual = mesSelecionado.getMonth();
+  const mesAtual =
+    mesSelecionado.getMonth();
 
-  const primeiroDiaMes = new Date(
-    anoAtual,
-    mesAtual,
-    1
-  );
+  const primeiroDiaMes =
+    new Date(
+      anoAtual,
+      mesAtual,
+      1
+    );
 
   primeiroDiaMes.setHours(
     0,
@@ -106,11 +139,12 @@ function Presenca() {
     0
   );
 
-  const ultimoDiaMes = new Date(
-    anoAtual,
-    mesAtual + 1,
-    0
-  );
+  const ultimoDiaMes =
+    new Date(
+      anoAtual,
+      mesAtual + 1,
+      0
+    );
 
   ultimoDiaMes.setHours(
     23,
@@ -126,7 +160,8 @@ function Presenca() {
   const obterInicioSemana = (data) => {
     const novaData = new Date(data);
 
-    const dia = novaData.getDay();
+    const dia =
+      novaData.getDay();
 
     const diferenca =
       dia === 0
@@ -134,7 +169,8 @@ function Presenca() {
         : 1 - dia;
 
     novaData.setDate(
-      novaData.getDate() + diferenca
+      novaData.getDate() +
+        diferenca
     );
 
     novaData.setHours(
@@ -152,7 +188,8 @@ function Presenca() {
   // =========================
 
   const obterFimSemana = (inicio) => {
-    const fim = new Date(inicio);
+    const fim =
+      new Date(inicio);
 
     fim.setDate(
       fim.getDate() + 5
@@ -175,35 +212,44 @@ function Presenca() {
   const obterSemanasDoMes = () => {
     const semanas = [];
 
-    let inicio = obterInicioSemana(
-      primeiroDiaMes
-    );
+    let inicio =
+      obterInicioSemana(
+        primeiroDiaMes
+      );
 
     while (
       inicio <= ultimoDiaMes
     ) {
-      const fim = obterFimSemana(
-        inicio
-      );
+      const fim =
+        obterFimSemana(
+          inicio
+        );
 
       const inicioVisivel =
         inicio < primeiroDiaMes
-          ? new Date(primeiroDiaMes)
+          ? new Date(
+              primeiroDiaMes
+            )
           : new Date(inicio);
 
       const fimVisivel =
         fim > ultimoDiaMes
-          ? new Date(ultimoDiaMes)
+          ? new Date(
+              ultimoDiaMes
+            )
           : new Date(fim);
 
       semanas.push({
-        inicio: new Date(inicio),
-        fim: new Date(fim),
+        inicio:
+          new Date(inicio),
+        fim:
+          new Date(fim),
         inicioVisivel,
         fimVisivel,
       });
 
-      inicio = new Date(inicio);
+      inicio =
+        new Date(inicio);
 
       inicio.setDate(
         inicio.getDate() + 7
@@ -221,11 +267,14 @@ function Presenca() {
   // =========================
 
   useEffect(() => {
-    const hoje = new Date();
+    const hoje =
+      new Date();
 
     if (
-      hoje.getFullYear() !== anoAtual ||
-      hoje.getMonth() !== mesAtual
+      hoje.getFullYear() !==
+        anoAtual ||
+      hoje.getMonth() !==
+        mesAtual
     ) {
       return;
     }
@@ -233,27 +282,38 @@ function Presenca() {
     const diaSemanaHoje =
       hoje.getDay();
 
-    if (diaSemanaHoje === 0) {
+    if (
+      diaSemanaHoje === 0
+    ) {
       return;
     }
 
-    const dia = diaSemanaHoje;
+    const dia =
+      diaSemanaHoje;
 
     const indiceSemana =
-      semanas.findIndex((semana) => {
-        const dataInicio =
-          new Date(semana.inicio);
+      semanas.findIndex(
+        (semana) => {
+          const dataInicio =
+            new Date(
+              semana.inicio
+            );
 
-        const dataFim =
-          new Date(semana.fim);
+          const dataFim =
+            new Date(
+              semana.fim
+            );
 
-        return (
-          hoje >= dataInicio &&
-          hoje <= dataFim
-        );
-      });
+          return (
+            hoje >= dataInicio &&
+            hoje <= dataFim
+          );
+        }
+      );
 
-    if (indiceSemana === -1) {
+    if (
+      indiceSemana === -1
+    ) {
       return;
     }
 
@@ -261,14 +321,18 @@ function Presenca() {
       indiceSemana
     );
 
-    setDiaSelecionado(dia);
+    setDiaSelecionado(
+      dia
+    );
   }, []);
 
   // =========================
   // IDENTIFICADOR DA SEMANA
   // =========================
 
-  const obterIdSemana = (index) => {
+  const obterIdSemana = (
+    index
+  ) => {
     return `${anoAtual}-${mesAtual}-${index}`;
   };
 
@@ -284,9 +348,10 @@ function Presenca() {
       return null;
     }
 
-    const data = new Date(
-      semana.inicio
-    );
+    const data =
+      new Date(
+        semana.inicio
+      );
 
     data.setDate(
       data.getDate() +
@@ -326,8 +391,10 @@ function Presenca() {
       );
 
     return (
-      data >= primeiroDiaMes &&
-      data <= ultimoDiaMes
+      data >=
+        primeiroDiaMes &&
+      data <=
+        ultimoDiaMes
     );
   };
 
@@ -363,7 +430,9 @@ function Presenca() {
   // FORMATAR DATA
   // =========================
 
-  const formatarData = (data) => {
+  const formatarData = (
+    data
+  ) => {
     if (!data) {
       return "";
     }
@@ -377,8 +446,6 @@ function Presenca() {
     );
   };
 
-  
-
   // =====================================================
   // CARREGAR HORÁRIOS DA PLANILHA
   // =====================================================
@@ -387,6 +454,18 @@ function Presenca() {
     async (
       mostrarCarregamento = true
     ) => {
+
+      /*
+       * Admin e DEV não possuem
+       * acompanhamento de alunos.
+       * Portanto não carregamos a planilha.
+       */
+      if (
+        isAdminOuDev
+      ) {
+        return;
+      }
+
       if (
         carregandoProfessor ||
         !professor
@@ -395,8 +474,12 @@ function Presenca() {
       }
 
       try {
-        if (mostrarCarregamento) {
-          setCarregandoAulas(true);
+        if (
+          mostrarCarregamento
+        ) {
+          setCarregandoAulas(
+            true
+          );
         }
 
         const response =
@@ -410,7 +493,6 @@ function Presenca() {
 
         const data =
           await response.json();
-
 
         if (!response.ok) {
           throw new Error(
@@ -429,50 +511,87 @@ function Presenca() {
         };
 
         const horarios =
-  (data.dados || []).map(
-    (item) => ({
-      id: item.celula,
-      alunoId: item.codigoAluno,
-      nome: item.nome,
-      instrumento: item.instrumento,
-      diaSemana: mapaDias[item.diaSemana],
-      horario: item.horario,
-      dataExperimental: item.dataExperimental,
-      dataBloqueada: item.dataBloqueada,
-      tipo: item.tipo,
-      cancelado: item.cancelado,
-      foto: item.foto,
-      conteudoOriginal: item.conteudoOriginal,
-    })
-  );
+          (
+            data.dados ||
+            []
+          ).map(
+            (item) => ({
+              id:
+                item.celula,
+              alunoId:
+                item.codigoAluno,
+              nome:
+                item.nome,
+              instrumento:
+                item.instrumento,
+              diaSemana:
+                mapaDias[
+                  item.diaSemana
+                ],
+              horario:
+                item.horario,
+              dataExperimental:
+                item.dataExperimental,
+              dataBloqueada:
+                item.dataBloqueada,
+              tipo:
+                item.tipo,
+              cancelado:
+                item.cancelado,
+              foto:
+                item.foto,
+              conteudoOriginal:
+                item.conteudoOriginal,
+            })
+          );
 
         setHorariosPlanilha(
           horarios
         );
+
       } catch (error) {
+
         console.error(
           "❌ Erro ao carregar horários da planilha:",
           error
         );
 
-        if (mostrarCarregamento) {
-          setHorariosPlanilha([]);
+        if (
+          mostrarCarregamento
+        ) {
+          setHorariosPlanilha(
+            []
+          );
         }
+
       } finally {
-        if (mostrarCarregamento) {
-          setCarregandoAulas(false);
+
+        if (
+          mostrarCarregamento
+        ) {
+          setCarregandoAulas(
+            false
+          );
         }
       }
     };
-
-
 
   // =====================================================
   // CARREGAR PLANILHA AO ABRIR
   // =====================================================
 
   useEffect(() => {
+
+    if (
+      carregandoProfessor ||
+      !professor ||
+      !isProfessor
+    ) {
+      return;
+    }
+
     carregarHorariosPlanilha();
+
   }, [
     professor,
     carregandoProfessor,
@@ -483,9 +602,11 @@ function Presenca() {
   // =====================================================
 
   useEffect(() => {
+
     if (
       carregandoProfessor ||
-      !professor
+      !professor ||
+      !isProfessor
     ) {
       return;
     }
@@ -498,8 +619,11 @@ function Presenca() {
       }, 65 * 1000);
 
     return () => {
-      clearInterval(intervalo);
+      clearInterval(
+        intervalo
+      );
     };
+
   }, [
     professor,
     carregandoProfessor,
@@ -509,398 +633,494 @@ function Presenca() {
   // SINCRONIZAR PLANILHA AGORA
   // =====================================================
 
-  const sincronizarAgora = async () => {
-    if (sincronizando) {
-      return;
-    }
+  const sincronizarAgora =
+    async () => {
 
-    try {
-      setSincronizando(true);
-
-      const response =
-        await fetch(
-          `${API_URL}/planilha/sincronizar`,
-          {
-            method: "POST",
-            credentials:
-              "include",
-          }
-        );
-
-      const data =
-        await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.erro ||
-            "Erro ao sincronizar planilha."
-        );
+      if (
+        !isProfessor ||
+        sincronizando
+      ) {
+        return;
       }
 
-      console.log(
-        "✅ Sincronização concluída:",
-        data
-      );
+      try {
 
-      await carregarHorariosPlanilha(
-        false
-      );
-    } catch (error) {
-      console.error(
-        "❌ Erro ao sincronizar:",
-        error
-      );
+        setSincronizando(
+          true
+        );
 
-      alert(
-        "Não foi possível sincronizar a planilha."
-      );
-    } finally {
-      setSincronizando(false);
-    }
-  };
+        const response =
+          await fetch(
+            `${API_URL}/planilha/sincronizar`,
+            {
+              method: "POST",
+              credentials:
+                "include",
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.erro ||
+              "Erro ao sincronizar planilha."
+          );
+        }
+
+        console.log(
+          "✅ Sincronização concluída:",
+          data
+        );
+
+        await carregarHorariosPlanilha(
+          false
+        );
+
+      } catch (error) {
+
+        console.error(
+          "❌ Erro ao sincronizar:",
+          error
+        );
+
+        alert(
+          "Não foi possível sincronizar a planilha."
+        );
+
+      } finally {
+
+        setSincronizando(
+          false
+        );
+      }
+    };
 
   // =====================================================
   // CARREGAR PRESENÇAS DO MÊS
   // =====================================================
 
-  const carregarPresencas = async () => {
-  if (
-    carregandoProfessor ||
-    !professor
-  ) {
-    return;
-  }
+  const carregarPresencas =
+    async () => {
 
-  try {
-    setCarregandoPresencas(true);
-
-    const response = await fetch(
-      `${API_URL}/presencas?mes=${mesString}`,
-      {
-        credentials: "include",
+      if (
+        carregandoProfessor ||
+        !professor ||
+        !isProfessor
+      ) {
+        return;
       }
-    );
 
-    const data =
-      await response.json();
+      try {
 
-    if (!response.ok) {
-      throw new Error(
-        data.mensagem ||
-          "Não foi possível carregar as presenças."
-      );
+        setCarregandoPresencas(
+          true
+        );
+
+        const response =
+          await fetch(
+            `${API_URL}/presencas?mes=${mesString}`,
+            {
+              credentials:
+                "include",
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.mensagem ||
+              "Não foi possível carregar as presenças."
+          );
+        }
+
+        const presencasFormatadas =
+          (
+            data.presencas ||
+            []
+          ).map(
+            (presenca) => ({
+              id: Number(
+                presenca.id
+              ),
+
+              celula:
+                presenca.celula,
+
+              data:
+                typeof presenca.data ===
+                "string"
+                  ? presenca.data.split(
+                      "T"
+                    )[0]
+                  : presenca.data,
+
+              status:
+                presenca.status,
+            })
+          );
+
+        setPresencas(
+          presencasFormatadas
+        );
+
+      } catch (error) {
+
+        console.error(
+          "❌ Erro ao carregar presenças:",
+          error
+        );
+
+      } finally {
+
+        setCarregandoPresencas(
+          false
+        );
+      }
+    };
+
+  // =====================================================
+  // EFFECT — PRESENÇAS
+  // =====================================================
+
+  useEffect(() => {
+
+    if (
+      carregandoProfessor ||
+      !professor ||
+      !isProfessor
+    ) {
+      return;
     }
 
-    const presencasFormatadas =
-      (
-        data.presencas ||
-        []
-      ).map((presenca) => ({
-        id: Number(
-          presenca.id
-        ),
+    carregarPresencas();
 
-        celula:
-          presenca.celula,
+  }, [
+    professor,
+    carregandoProfessor,
+    mesString,
+  ]);
 
-        data:
-          typeof presenca.data ===
-          "string"
-            ? presenca.data.split(
-                "T"
-              )[0]
-            : presenca.data,
-
-        status:
-          presenca.status,
-      }));
-
-    setPresencas(
-      presencasFormatadas
-    );
-
-  } catch (error) {
-
-    console.error(
-      "❌ Erro ao carregar presenças:",
-      error
-    );
-
-  } finally {
-
-    setCarregandoPresencas(
-      false
-    );
-  }
-};
-
-useEffect(() => {
-  carregarPresencas();
-}, [
-  professor,
-  carregandoProfessor,
-  mesString,
-]);
-
-  // =========================
+  // =====================================================
   // AULAS DO DIA
-  // =========================
-const aulasDoDia =
-  horariosPlanilha
-    .filter((aula) => {
+  // =====================================================
 
-      // ==========================================
-      // AULA EXPERIMENTAL
-      // Só aparece na data específica
-      // ==========================================
+  const aulasDoDia =
+    horariosPlanilha
+      .filter((aula) => {
 
-      if (aula.tipo === "experimental") {
-        if (!aula.dataExperimental) {
+        if (
+          !dataSelecionada
+        ) {
           return false;
         }
 
-        const [dia, mes] =
-          aula.dataExperimental.split("/");
+        // ==========================================
+        // AULA EXPERIMENTAL
+        // Só aparece na data específica
+        // ==========================================
 
-        const dataAE =
-          `${dataSelecionada.getFullYear()}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+        if (
+          aula.tipo ===
+          "experimental"
+        ) {
 
-        return dataAE === dataString;
-      }
+          if (
+            !aula.dataExperimental
+          ) {
+            return false;
+          }
 
-      // ==========================================
-      // ALUNO NORMAL
-      // Continua recorrente semanalmente
-      // ==========================================
+          const [
+            dia,
+            mes,
+          ] =
+            aula.dataExperimental.split(
+              "/"
+            );
 
-      // Se esse aluno foi substituído por uma AE
-      // nessa data, ele não aparece nesse dia.
-      if (aula.dataBloqueada) {
-        const [dia, mes] =
-          aula.dataBloqueada.split("/");
+          const dataAE =
+            `${dataSelecionada.getFullYear()}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
 
-        const dataBloqueada =
-          `${dataSelecionada.getFullYear()}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
-
-        if (dataBloqueada === dataString) {
-          return false;
+          return (
+            dataAE ===
+            dataString
+          );
         }
-      }
 
-      return (
-        Number(aula.diaSemana) ===
-        diaSelecionado
+        // ==========================================
+        // ALUNO NORMAL
+        // Continua recorrente semanalmente
+        // ==========================================
+
+        if (
+          aula.dataBloqueada
+        ) {
+
+          const [
+            dia,
+            mes,
+          ] =
+            aula.dataBloqueada.split(
+              "/"
+            );
+
+          const dataBloqueada =
+            `${dataSelecionada.getFullYear()}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+
+          if (
+            dataBloqueada ===
+            dataString
+          ) {
+            return false;
+          }
+        }
+
+        return (
+          Number(
+            aula.diaSemana
+          ) ===
+          diaSelecionado
+        );
+      })
+      .sort(
+        (a, b) =>
+          a.horario.localeCompare(
+            b.horario
+          )
       );
-    })
-    .sort(
-      (a, b) =>
-        a.horario.localeCompare(
-          b.horario
-        )
-    );
- // =========================
-// ENCONTRAR PRESENÇA
-// =========================
 
-const encontrarPresenca = (aulaId) => {
-  return presencas.find(
-    (presenca) =>
-      presenca.celula === aulaId &&
-      presenca.data === dataString
-  );
-};
+  // =========================
+  // ENCONTRAR PRESENÇA
+  // =========================
+
+  const encontrarPresenca = (
+    aulaId
+  ) => {
+    return presencas.find(
+      (presenca) =>
+        presenca.celula ===
+          aulaId &&
+        presenca.data ===
+          dataString
+    );
+  };
 
   // =====================================================
   // REGISTRAR PRESENÇA
   // =====================================================
 
-  const registrarPresenca = async (
-  aula,
-  status
-) => {
+  const registrarPresenca =
+    async (
+      aula,
+      status
+    ) => {
 
-  try {
+      if (!isProfessor) {
+        return;
+      }
 
-    if (!aula?.id) {
-      console.error(
-        "❌ Aula sem célula da planilha:",
-        aula
-      );
+      try {
 
-      return;
-    }
+        if (!aula?.id) {
 
+          console.error(
+            "❌ Aula sem célula da planilha:",
+            aula
+          );
 
-    // =================================================
-    // DATA DA CHAMADA
-    // Usa o dia que esta selecionado na lista
-    // =================================================
-
-    const data = dataString;
-
-    // =================================================
-    // REGISTRAR
-    // =================================================
-
-    const response =
-      await fetch(
-        `${API_URL}/presencas`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          credentials: "include",
-
-          body: JSON.stringify({
-            celula: aula.id,
-            data,
-            status,
-          }),
+          return;
         }
-      );
 
+        // =================================================
+        // DATA DA CHAMADA
+        // =================================================
 
-    const resultado =
-      await response.json();
+        const data =
+          dataString;
 
+        // =================================================
+        // REGISTRAR
+        // =================================================
 
-    if (!response.ok) {
+        const response =
+          await fetch(
+            `${API_URL}/presencas`,
+            {
+              method: "POST",
 
-      throw new Error(
-        resultado.mensagem ||
-        "Erro ao registrar presença."
-      );
-    }
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
 
+              credentials:
+                "include",
 
-    console.log(
-      "✅ Presença registrada:",
-      resultado
-    );
+              body:
+                JSON.stringify({
+                  celula:
+                    aula.id,
+                  data,
+                  status,
+                }),
+            }
+          );
 
+        const resultado =
+          await response.json();
 
-    // =================================================
-    // ATUALIZAR PRESENÇAS DA TELA
-    // =================================================
+        if (!response.ok) {
 
-    setPresencas((anteriores) => {
-  const dataAtual = data;
+          throw new Error(
+            resultado.mensagem ||
+              "Erro ao registrar presença."
+          );
+        }
 
-  const existente = anteriores.find(
-    (presenca) =>
-      presenca.celula === aula.id &&
-      presenca.data === dataAtual
-  );
+        console.log(
+          "✅ Presença registrada:",
+          resultado
+        );
 
-  if (existente) {
-    return anteriores.map((presenca) =>
-      presenca.id === existente.id
-        ? {
-            ...presenca,
-            status,
+        // =================================================
+        // ATUALIZAR PRESENÇAS DA TELA
+        // =================================================
+
+        setPresencas(
+          (anteriores) => {
+
+            const dataAtual =
+              data;
+
+            const existente =
+              anteriores.find(
+                (presenca) =>
+                  presenca.celula ===
+                    aula.id &&
+                  presenca.data ===
+                    dataAtual
+              );
+
+            if (
+              existente
+            ) {
+
+              return anteriores.map(
+                (presenca) =>
+                  presenca.id ===
+                  existente.id
+                    ? {
+                        ...presenca,
+                        status,
+                      }
+                    : presenca
+              );
+            }
+
+            return [
+              ...anteriores,
+              {
+                id:
+                  resultado
+                    .presenca.id,
+                celula:
+                  aula.id,
+                data:
+                  dataAtual,
+                status,
+              },
+            ];
           }
-        : presenca
-    );
-  }
+        );
 
-  return [
-    ...anteriores,
-    {
-      id: resultado.presenca.id,
-      celula: aula.id,
-      data: dataAtual,
-      status,
-    },
-  ];
-});
+      } catch (error) {
 
+        console.error(
+          "❌ Erro ao registrar presença:",
+          error
+        );
 
-  } catch (error) {
-
-    console.error(
-      "❌ Erro ao registrar presença:",
-      error
-    );
-
-    alert(
-      error.message ||
-      "Não foi possível registrar a presença."
-    );
-  }
-
-};
+        alert(
+          error.message ||
+            "Não foi possível registrar a presença."
+        );
+      }
+    };
 
   // =========================
   // TROCAR SEMANA
   // =========================
 
-  const selecionarSemana = (
-    index
-  ) => {
-    setSemanaSelecionada(
-      index
-    );
+  const selecionarSemana =
+    (index) => {
 
-    const novaSemana =
-      semanas[index];
+      setSemanaSelecionada(
+        index
+      );
 
-    if (!novaSemana) {
-      return;
-    }
+      const novaSemana =
+        semanas[index];
 
-    for (
-      let dia = 1;
-      dia <= 6;
-      dia++
-    ) {
-      const data =
-        obterDataDoDia(
-          novaSemana,
-          dia
-        );
-
-      if (
-        data >=
-          primeiroDiaMes &&
-        data <=
-          ultimoDiaMes
-      ) {
-        setDiaSelecionado(
-          dia
-        );
-
-        break;
+      if (!novaSemana) {
+        return;
       }
-    }
-  };
 
+      for (
+        let dia = 1;
+        dia <= 6;
+        dia++
+      ) {
+
+        const data =
+          obterDataDoDia(
+            novaSemana,
+            dia
+          );
+
+        if (
+          data >=
+            primeiroDiaMes &&
+          data <=
+            ultimoDiaMes
+        ) {
+
+          setDiaSelecionado(
+            dia
+          );
+
+          break;
+        }
+      }
+    };
 
   // =====================================================
   // TROCAR MÊS
   // =====================================================
 
-  const trocarMes = (
-    quantidade
-  ) => {
-    setMesSelecionado(
-      new Date(
-        anoAtual,
-        mesAtual +
-          quantidade,
+  const trocarMes =
+    (quantidade) => {
+
+      setMesSelecionado(
+        new Date(
+          anoAtual,
+          mesAtual +
+            quantidade,
+          1
+        )
+      );
+
+      setSemanaSelecionada(
+        0
+      );
+
+      setDiaSelecionado(
         1
-      )
-    );
-
-    setSemanaSelecionada(
-      0
-    );
-
-    setDiaSelecionado(1);
-  };
+      );
+    };
 
   // =========================
   // NOME DO MÊS
@@ -920,6 +1140,7 @@ const encontrarPresenca = (aulaId) => {
   // =====================================================
 
   if (carregando) {
+
     return (
       <div className="presenca">
         <p>
@@ -930,7 +1151,45 @@ const encontrarPresenca = (aulaId) => {
   }
 
   // =====================================================
-  // RENDER
+  // TELA ADMIN / DEV
+  // =====================================================
+
+  if (isAdminOuDev) {
+
+    return (
+      <div className="presenca">
+
+        <div className="presenca-bloqueada">
+
+          <div className="presenca-bloqueada-icon">
+            <FaRegHourglassHalf />
+          </div>
+
+          <h1>
+            Presença
+          </h1>
+
+          <p>
+            Esta página é destinada aos
+            professores que possuem alunos
+            e realizam o acompanhamento
+            de presença.
+          </p>
+
+          <span>
+            Entre com uma conta de professor
+            para visualizar e registrar as
+            presenças.
+          </span>
+
+        </div>
+
+      </div>
+    );
+  }
+
+  // =====================================================
+  // RENDER PROFESSOR
   // =====================================================
 
   return (
@@ -941,6 +1200,7 @@ const encontrarPresenca = (aulaId) => {
       <div className="presenca-header">
 
         <div>
+
           <h1>
             Presença
           </h1>
@@ -948,6 +1208,7 @@ const encontrarPresenca = (aulaId) => {
           <p>
             Controle das aulas individuais
           </p>
+
         </div>
 
         <div
@@ -957,31 +1218,34 @@ const encontrarPresenca = (aulaId) => {
           }}
         >
 
-              <button
-          type="button"
-          className="btn-sincronizar"
-          onClick={sincronizarAgora}
-          disabled={sincronizando}
-        >
-          {sincronizando ? (
-            <>
-              <FaRegHourglassHalf />
-              Atualizando...
-            </>
-          ) : (
-            <>
-              <IoReloadSharp />
-              Atualizar Alunos
-            </>
-          )}
-        </button>
+          <button
+            type="button"
+            className="btn-sincronizar"
+            onClick={
+              sincronizarAgora
+            }
+            disabled={
+              sincronizando
+            }
+          >
 
-         
+            {sincronizando ? (
+              <>
+                <FaRegHourglassHalf />
+                Atualizando...
+              </>
+            ) : (
+              <>
+                <IoReloadSharp />
+                Atualizar Alunos
+              </>
+            )}
+
+          </button>
 
         </div>
 
       </div>
-
 
       {/* SEMANAS */}
 
@@ -990,8 +1254,12 @@ const encontrarPresenca = (aulaId) => {
         semanaSelecionada={
           semanaSelecionada
         }
-        nomeMes={nomeMes}
-        trocarMes={trocarMes}
+        nomeMes={
+          nomeMes
+        }
+        trocarMes={
+          trocarMes
+        }
         obterIdSemana={
           obterIdSemana
         }
@@ -1001,7 +1269,6 @@ const encontrarPresenca = (aulaId) => {
         selecionarSemana={
           selecionarSemana
         }
-        
       />
 
       {/* ABAS DOS DIAS */}
@@ -1010,6 +1277,7 @@ const encontrarPresenca = (aulaId) => {
 
         {dias.map(
           (dia) => {
+
             const disponivel =
               diaEstaDisponivel(
                 dia.numero
@@ -1034,6 +1302,7 @@ const encontrarPresenca = (aulaId) => {
                     : "aba"
                 }
                 onClick={() => {
+
                   if (
                     !disponivel
                   ) {
@@ -1113,6 +1382,7 @@ const encontrarPresenca = (aulaId) => {
 
           {aulasDoDia.length ===
           0 ? (
+
             <div className="presenca-vazia">
 
               <p>
@@ -1121,9 +1391,12 @@ const encontrarPresenca = (aulaId) => {
               </p>
 
             </div>
+
           ) : (
+
             aulasDoDia.map(
               (aula) => {
+
                 const presenca =
                   encontrarPresenca(
                     aula.id
@@ -1151,11 +1424,15 @@ const encontrarPresenca = (aulaId) => {
                         {aula.nome}
                       </strong>
 
-                     <span>
-                      {nomesInstrumentos[aula.instrumento] ||
-                        aula.instrumento ||
-                        "Não informado"}
-                    </span>
+                      <span>
+                        {
+                          nomesInstrumentos[
+                            aula.instrumento
+                          ] ||
+                          aula.instrumento ||
+                          "Não informado"
+                        }
+                      </span>
 
                     </div>
 
@@ -1197,8 +1474,6 @@ const encontrarPresenca = (aulaId) => {
                         ✕ Falta
                       </button>
 
-                     
-
                     </div>
 
                   </div>
@@ -1216,3 +1491,5 @@ const encontrarPresenca = (aulaId) => {
 }
 
 export default Presenca;
+
+

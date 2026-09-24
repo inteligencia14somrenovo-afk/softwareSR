@@ -507,3 +507,788 @@
     align-items: flex-start;
   }
 }
+
+/* =====================================================
+   RELATÓRIO DE PRESENÇA
+===================================================== */
+
+.relatorio-admin-percentual {
+  color: #374151;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.relatorio-admin-mini-loading {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* =====================================================
+   GRÁFICO
+===================================================== */
+
+.relatorio-admin-grafico {
+  width: 100%;
+}
+
+.relatorio-admin-grafico-barra {
+  width: 100%;
+  min-height: 54px;
+  display: grid;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #f3f4f6;
+}
+
+.relatorio-admin-grafico-barra > div {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.grafico-presente {
+  background: #374151;
+}
+
+.grafico-falta {
+  background: #9ca3af;
+}
+
+.grafico-pendente {
+  background: #d1d5db;
+  color: #374151 !important;
+}
+
+.relatorio-admin-grafico-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 14px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.relatorio-admin-grafico-info strong {
+  color: #111827;
+}
+
+.relatorio-admin-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.relatorio-admin-legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.relatorio-admin-legenda i {
+  width: 9px;
+  height: 9px;
+  display: block;
+  border-radius: 50%;
+}
+
+.legenda-presente {
+  background: #374151;
+}
+
+.legenda-falta {
+  background: #9ca3af;
+}
+
+.legenda-pendente {
+  background: #d1d5db;
+}
+
+/* =====================================================
+   FREQUÊNCIA DO PROFESSOR
+===================================================== */
+
+.relatorio-admin-professor-frequencia {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-left: auto;
+}
+
+.relatorio-admin-professor-frequencia span {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.relatorio-admin-professor-frequencia .presente {
+  color: #374151;
+}
+
+.relatorio-admin-professor-frequencia .falta {
+  color: #6b7280;
+}
+
+.relatorio-admin-professor-frequencia .pendente {
+  color: #9ca3af;
+}
+
+/* =====================================================
+   DETALHE DO PROFESSOR
+===================================================== */
+
+.relatorio-admin-voltar {
+  margin-bottom: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.relatorio-admin-voltar:hover {
+  color: #111827;
+}
+
+.relatorio-admin-professor-detalhe {
+  margin-bottom: 24px;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.relatorio-admin-detalhe-identidade {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.relatorio-admin-detalhe-avatar {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.relatorio-admin-detalhe-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.relatorio-admin-detalhe-identidade > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.relatorio-admin-detalhe-identidade strong {
+  color: #111827;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.relatorio-admin-detalhe-identidade span {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.relatorio-admin-detalhe-cards {
+  display: flex;
+  gap: 10px;
+}
+
+.relatorio-admin-detalhe-card {
+  min-width: 100px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.relatorio-admin-detalhe-card span {
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.relatorio-admin-detalhe-card strong {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.relatorio-admin-detalhe-card strong.presente {
+  color: #374151;
+}
+
+.relatorio-admin-detalhe-card strong.falta {
+  color: #6b7280;
+}
+
+.relatorio-admin-detalhe-card strong.pendente {
+  color: #9ca3af;
+}
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.relatorio-admin-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.relatorio-admin-status i {
+  width: 7px;
+  height: 7px;
+  display: block;
+  border-radius: 50%;
+}
+
+.relatorio-admin-status.presente {
+  color: #374151;
+}
+
+.relatorio-admin-status.presente i {
+  background: #374151;
+}
+
+.relatorio-admin-status.falta {
+  color: #6b7280;
+}
+
+.relatorio-admin-status.falta i {
+  background: #9ca3af;
+}
+
+.relatorio-admin-status.pendente {
+  color: #9ca3af;
+}
+
+.relatorio-admin-status.pendente i {
+  background: #d1d5db;
+}
+
+/* =====================================================
+   TABELA
+===================================================== */
+
+.relatorio-admin-tabela-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.relatorio-admin-tabela {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.relatorio-admin-tabela th {
+  padding: 11px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.relatorio-admin-tabela td {
+  padding: 13px 12px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.relatorio-admin-tabela tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.relatorio-admin-tabela tbody tr:hover {
+  background: #fafafa;
+}
+
+/* =====================================================
+   RESPONSIVO
+===================================================== */
+
+@media (max-width: 900px) {
+  .relatorio-admin-professor-frequencia {
+    gap: 6px;
+  }
+
+  .relatorio-admin-professor-total {
+    display: none;
+  }
+
+  .relatorio-admin-professor-detalhe {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .relatorio-admin-detalhe-cards {
+    width: 100%;
+  }
+
+  .relatorio-admin-detalhe-card {
+    flex: 1;
+  }
+}
+
+@media (max-width: 650px) {
+  .relatorio-admin-professor {
+    flex-wrap: wrap;
+  }
+
+  .relatorio-admin-professor-frequencia {
+    width: 100%;
+    margin-left: 58px;
+    padding-top: 2px;
+  }
+
+  .relatorio-admin-professor-frequencia span {
+    font-size: 11px;
+  }
+
+  .relatorio-admin-detalhe-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .relatorio-admin-detalhe-card {
+    min-width: 0;
+  }
+
+  .relatorio-admin-grafico-info {
+    gap: 10px 16px;
+  }
+}
+
+@media (max-width: 450px) {
+  .relatorio-admin-detalhe-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .relatorio-admin-detalhe-card {
+    padding: 11px 13px;
+  }
+
+  .relatorio-admin-tabela th,
+  .relatorio-admin-tabela td {
+    padding: 10px 8px;
+  }
+}
+/* =====================================================
+   ALUNOS CONSOLIDADOS DO PROFESSOR
+===================================================== */
+
+.relatorio-admin-alunos-consolidados {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.relatorio-admin-aluno {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 14px;
+  box-sizing: border-box;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.relatorio-admin-aluno:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.relatorio-admin-aluno-avatar {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.relatorio-admin-aluno-info {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.relatorio-admin-aluno-info strong {
+  overflow: hidden;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-aluno-info span {
+  overflow: hidden;
+  color: #9ca3af;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-aluno-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.relatorio-admin-aluno-status span {
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.relatorio-admin-aluno-status .presente {
+  color: #374151;
+}
+
+.relatorio-admin-aluno-status .falta {
+  color: #6b7280;
+}
+
+.relatorio-admin-aluno-status .pendente {
+  color: #9ca3af;
+}
+
+.relatorio-admin-aluno-seta {
+  flex: 0 0 auto;
+  color: #9ca3af;
+  font-size: 17px;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.relatorio-admin-aluno:hover
+  .relatorio-admin-aluno-seta {
+  color: #374151;
+  transform: translateX(2px);
+}
+
+/* =====================================================
+   RESPONSIVO — ALUNOS
+===================================================== */
+
+@media (max-width: 650px) {
+  .relatorio-admin-aluno {
+    flex-wrap: wrap;
+    gap: 10px 12px;
+  }
+
+  .relatorio-admin-aluno-info {
+    flex: 1;
+    min-width: calc(100% - 110px);
+  }
+
+  .relatorio-admin-aluno-status {
+    width: 100%;
+    margin-left: 54px;
+    padding-top: 1px;
+  }
+
+  .relatorio-admin-aluno-seta {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 450px) {
+  .relatorio-admin-aluno {
+    padding: 12px;
+  }
+
+  .relatorio-admin-aluno-avatar {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .relatorio-admin-aluno-status {
+    margin-left: 50px;
+    gap: 10px;
+  }
+
+  .relatorio-admin-aluno-status span {
+    font-size: 11px;
+  }
+}
+
+/* =====================================================
+   ANÁLISE HISTÓRICA
+===================================================== */
+
+.relatorio-admin-historico-link {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.relatorio-admin-futuro[role="button"] {
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.relatorio-admin-futuro[role="button"]:hover {
+  border-color: #d1d5db;
+  background: #fafafa;
+}
+
+.relatorio-admin-futuro[role="button"]:hover
+  .relatorio-admin-historico-link {
+  color: #111827;
+}
+
+/* =====================================================
+   LISTA DE MESES
+===================================================== */
+
+.relatorio-admin-historico-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.relatorio-admin-historico-mes {
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.relatorio-admin-historico-mes-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.relatorio-admin-historico-mes-topo strong {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.relatorio-admin-historico-mes-topo span {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* =====================================================
+   BARRA HISTÓRICA
+===================================================== */
+
+.relatorio-admin-historico-mes
+  .relatorio-admin-grafico {
+  padding: 0;
+}
+
+.relatorio-admin-historico-mes
+  .relatorio-admin-grafico-barra {
+  min-height: 30px;
+  overflow: hidden;
+  border-radius: 7px;
+}
+
+.relatorio-admin-historico-mes
+  .relatorio-admin-grafico-barra > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* =====================================================
+   INFORMAÇÕES DO MÊS
+===================================================== */
+
+.relatorio-admin-historico-mes-info {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 10px;
+}
+
+.relatorio-admin-historico-mes-info span {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.relatorio-admin-historico-mes-info strong {
+  margin-left: auto;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* =====================================================
+   DESTAQUE HISTÓRICO
+===================================================== */
+
+.relatorio-admin-historico-destaque {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.relatorio-admin-historico-destaque > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.relatorio-admin-historico-destaque span {
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.relatorio-admin-historico-destaque strong {
+  color: #111827;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* =====================================================
+   TABELA HISTÓRICA
+===================================================== */
+
+.relatorio-admin-section
+  .relatorio-admin-tabela-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.relatorio-admin-section
+  .relatorio-admin-tabela {
+  width: 100%;
+  min-width: 650px;
+}
+
+/* =====================================================
+   RESPONSIVO
+===================================================== */
+
+@media (max-width: 800px) {
+  .relatorio-admin-historico-destaque {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .relatorio-admin-historico-link {
+    font-size: 12px;
+  }
+
+  .relatorio-admin-historico-mes {
+    padding: 13px;
+  }
+
+  .relatorio-admin-historico-mes-info {
+    gap: 12px;
+  }
+
+  .relatorio-admin-historico-destaque {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .relatorio-admin-historico-destaque > div {
+    padding: 13px;
+  }
+
+  .relatorio-admin-historico-destaque strong {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 420px) {
+  .relatorio-admin-historico-mes-info {
+    flex-wrap: wrap;
+    gap: 8px 14px;
+  }
+
+  .relatorio-admin-historico-mes-info strong {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .relatorio-admin-historico-destaque {
+    grid-template-columns: 1fr;
+  }
+}

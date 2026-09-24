@@ -433,6 +433,18 @@ const Professores = () => {
     }
 
 
+    // Exclusão definitiva só é permitida
+    // quando o usuário estiver desativado.
+    if (professor.planilha_ativa !== false) {
+
+      alert(
+        "Este usuário precisa estar desativado antes de ser excluído definitivamente."
+      );
+
+      return;
+    }
+
+
     const confirmacao = window.confirm(
       `Tem certeza que deseja excluir definitivamente ${professor.nome}?\n\nEssa ação não poderá ser desfeita.`
     );
@@ -766,7 +778,9 @@ const Professores = () => {
           )}
 
 
-          {(ehDev || ehAdmin) && (
+          {/* Exclusão definitiva só aparece
+              para usuários desativados. */}
+          {(ehDev || ehAdmin) && !ativo && (
 
             <button
               type="button"
@@ -918,8 +932,7 @@ const Professores = () => {
 
         <>
 
-          
-           {/* ============================================
+          {/* ============================================
               PROFESSORES
           ============================================ */}
 
@@ -977,115 +990,113 @@ const Professores = () => {
       )}
 
 
-          {/* ============================================
-              ADMINISTRADORES
-          ============================================ */}
+      {/* ============================================
+          ADMINISTRADORES
+      ============================================ */}
 
-          {administradores.length > 0 && (
+      {administradores.length > 0 && (
 
-            <section className="professores-grupo">
+        <section className="professores-grupo">
 
-              <div className="professores-grupo-header">
+          <div className="professores-grupo-header">
 
-                <div className="professores-grupo-titulo">
+            <div className="professores-grupo-titulo">
 
-                  <div className="professores-grupo-icone">
-                    <FaUserShield />
-                  </div>
+              <div className="professores-grupo-icone">
+                <FaUserShield />
+              </div>
 
-                  <div>
+              <div>
 
-                    <h2>
-                      Administradores
-                    </h2>
+                <h2>
+                  Administradores
+                </h2>
 
-                    <p>
-                      Contas com acesso administrativo ao sistema.
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                <span className="professores-grupo-contador">
-                  {administradores.length}{" "}
-                  {administradores.length === 1
-                    ? "conta"
-                    : "contas"}
-                </span>
+                <p>
+                  Contas com acesso administrativo ao sistema.
+                </p>
 
               </div>
 
+            </div>
 
-              <div className="professores-grid">
 
-                {administradores.map(
-                  renderizarCard
-                )}
+            <span className="professores-grupo-contador">
+              {administradores.length}{" "}
+              {administradores.length === 1
+                ? "conta"
+                : "contas"}
+            </span>
+
+          </div>
+
+
+          <div className="professores-grid">
+
+            {administradores.map(
+              renderizarCard
+            )}
+
+          </div>
+
+        </section>
+
+      )}
+
+
+      {/* ============================================
+          DESENVOLVEDORES
+      ============================================ */}
+
+      {desenvolvedores.length > 0 && (
+
+        <section className="professores-grupo">
+
+          <div className="professores-grupo-header">
+
+            <div className="professores-grupo-titulo">
+
+              <div className="professores-grupo-icone">
+                <FaCode />
+              </div>
+
+              <div>
+
+                <h2>
+                  Desenvolvedores
+                </h2>
+
+                <p>
+                  Contas com acesso de desenvolvimento.
+                </p>
 
               </div>
 
-            </section>
-
-          )}
+            </div>
 
 
-          {/* ============================================
-              DESENVOLVEDORES
-          ============================================ */}
+            <span className="professores-grupo-contador">
+              {desenvolvedores.length}{" "}
+              {desenvolvedores.length === 1
+                ? "conta"
+                : "contas"}
+            </span>
 
-          {desenvolvedores.length > 0 && (
-
-            <section className="professores-grupo">
-
-              <div className="professores-grupo-header">
-
-                <div className="professores-grupo-titulo">
-
-                  <div className="professores-grupo-icone">
-                    <FaCode />
-                  </div>
-
-                  <div>
-
-                    <h2>
-                      Desenvolvedores
-                    </h2>
-
-                    <p>
-                      Contas com acesso de desenvolvimento.
-                    </p>
-
-                  </div>
-
-                </div>
+          </div>
 
 
-                <span className="professores-grupo-contador">
-                  {desenvolvedores.length}{" "}
-                  {desenvolvedores.length === 1
-                    ? "conta"
-                    : "contas"}
-                </span>
+          <div className="professores-grid">
 
-              </div>
+            {desenvolvedores.map(
+              renderizarCard
+            )}
 
+          </div>
 
-              <div className="professores-grid">
+        </section>
 
-                {desenvolvedores.map(
-                  renderizarCard
-                )}
+      )}
 
-              </div>
-
-            </section>
-
-          )}
-
-
-         
 
       {/* =================================================
           MODAL
@@ -1343,3 +1354,4 @@ const Professores = () => {
 
 
 export default Professores;
+

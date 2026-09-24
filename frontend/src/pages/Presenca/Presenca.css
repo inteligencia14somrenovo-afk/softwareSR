@@ -997,3 +997,66 @@
 .btn-sincronizar svg {
   font-size: 17px;
 }
+
+/* =====================================================
+   TELA DE PRESENÇA — ADMIN / DEV
+   ===================================================== */
+
+.presenca-bloqueada {
+  min-height: 60vh;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  padding: 40px 24px;
+}
+
+.presenca-bloqueada-icon {
+  width: 64px;
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 20px;
+
+  border-radius: 18px;
+
+  background: rgba(0, 0, 0, 0.05);
+
+  font-size: 26px;
+}
+
+.presenca-bloqueada h1 {
+  margin: 0;
+
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.presenca-bloqueada p {
+  max-width: 520px;
+
+  margin: 12px 0 8px;
+
+  font-size: 15px;
+  line-height: 1.6;
+
+  opacity: 0.7;
+}
+
+.presenca-bloqueada span {
+  max-width: 500px;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  opacity: 0.5;
+}
+

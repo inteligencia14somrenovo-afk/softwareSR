@@ -124,6 +124,577 @@ router.get("/", async (req, res) => {
 
 });
 
+// =====================================================
+// GET /presencas/relatorio-admin
+//
+// Relatório de presença para ADMIN / DEV.
+//
+// Exemplo:
+// GET /presencas/relatorio-admin?mes=2026-09
+// =====================================================
+
+router.get("/relatorio-admin", async (req, res) => {
+  try {
+    if (!req.session.professorId) {
+      return res.status(401).json({
+        sucesso: false,
+        mensagem: "Usuário não autenticado."
+      });
+    }
+
+    // =================================================
+    // VERIFICAR USUÁRIO
+    // =================================================
+
+    const usuarioResult = await pool.query(
+      `
+      SELECT
+        id,
+        nome,
+        email,
+        role,
+        foto_url
+      FROM professores
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [req.session.professorId]
+    );
+
+    if (usuarioResult.rows.length === 0) {
+      return res.status(401).json({
+        sucesso: false,
+        mensagem: "Usuário não encontrado."
+      });
+    }
+
+    const usuario = usuarioResult.rows[0];
+
+    if (
+      usuario.role !== "admin" &&
+      usuario.role !== "dev"
+    ) {
+      return res.status(403).json({
+        sucesso: false,
+        mensagem: "Acesso permitido somente para administração."
+      });
+    }
+
+    // =================================================
+    // VALIDAR MÊS
+    // =================================================
+
+    const { mes } = req.query;
+
+    if (!mes || !/^\d{4}-\d{2}$/.test(mes)) {
+      return res.status(400).json({
+        sucesso: false,
+        mensagem: "Informe o mês no formato YYYY-MM."
+      });
+    }
+
+    const [ano, mesNumero] = mes
+      .split("-")
+      .map(Number);
+
+    // =================================================
+    // PROFESSORES
+    // =================================================
+
+    const professoresResult = await pool.query(
+      `
+      SELECT
+        p.id,
+        p.nome,
+        p.email,
+        p.foto_url,
+        pp.id AS professores_planilha_id
+      FROM professores p
+
+      LEFT JOIN professores_planilha pp
+        ON LOWER(TRIM(p.email))
+         =
+           LOWER(TRIM(pp.email))
+        AND pp.ativo = TRUE
+
+      WHERE
+        p.role = 'professor'
+
+      ORDER BY
+        p.nome ASC
+      `
+    );
+
+    // =================================================
+    // ALUNOS
+    // =================================================
+
+    const alunosResult = await pool.query(
+      `
+      SELECT
+        id,
+        professor_id,
+        nome,
+        instrumento,
+        status
+      FROM alunos
+      `
+    );
+
+    const alunosPorProfessor = new Map();
+
+    alunosResult.rows.forEach((aluno) => {
+      const professorId = Number(aluno.professor_id);
+
+      if (!alunosPorProfessor.has(professorId)) {
+        alunosPorProfessor.set(professorId, []);
+      }
+
+      alunosPorProfessor
+        .get(professorId)
+        .push(aluno);
+    });
+
+    // =================================================
+    // HORÁRIOS DA PLANILHA
+    //
+    // Aqui professor_id é o ID de
+    // professores_planilha.
+    // =================================================
+
+    const horariosResult = await pool.query(
+      `
+      SELECT
+        ph.id,
+        ph.professor_id AS professores_planilha_id,
+        ph.celula,
+        ph.horario,
+        ph.conteudo
+      FROM planilha_horarios ph
+      WHERE
+        ph.celula ~ '^[B-G][0-9]+$'
+        AND ph.conteudo IS NOT NULL
+        AND TRIM(ph.conteudo) <> ''
+      ORDER BY
+        ph.professor_id,
+        ph.celula
+      `
+    );
+
+    // =================================================
+    // PRESENÇAS DO MÊS
+    // =================================================
+
+    const presencasResult = await pool.query(
+      `
+      SELECT
+        id,
+        professor_id,
+        celula,
+        data,
+        status,
+        created_at,
+        updated_at
+      FROM presencas_planilha
+
+      WHERE
+        data >= $1::date
+        AND data < ($1::date + INTERVAL '1 month')
+
+      ORDER BY
+        data ASC,
+        celula ASC
+      `,
+      [`${mes}-01`]
+    );
+
+    // =================================================
+    // MAPA DAS PRESENÇAS
+    // =================================================
+
+    const mapaPresencas = new Map();
+
+    presencasResult.rows.forEach((presenca) => {
+      const data =
+        presenca.data instanceof Date
+          ? presenca.data.toISOString().slice(0, 10)
+          : String(presenca.data).slice(0, 10);
+
+      const chave =
+        `${presenca.professor_id}|${presenca.celula}|${data}`;
+
+      mapaPresencas.set(chave, presenca);
+    });
+
+    // =================================================
+    // MAPA DOS HORÁRIOS DA COLUNA A
+    //
+    // A70 = horário da linha 70
+    // E70 = aluno da quinta-feira
+    // =================================================
+
+    const horariosPorLinha = new Map();
+
+    const linhasHorarioResult = await pool.query(
+      `
+      SELECT
+        professor_id,
+        celula,
+        conteudo
+      FROM planilha_horarios
+      WHERE
+        celula ~ '^A[0-9]+$'
+      `
+    );
+
+    linhasHorarioResult.rows.forEach((item) => {
+      const linha =
+        String(item.celula).match(/^A([0-9]+)$/i)?.[1];
+
+      if (!linha) {
+        return;
+      }
+
+      const chave =
+        `${item.professor_id}|${linha}`;
+
+      horariosPorLinha.set(
+        chave,
+        String(item.conteudo || "")
+          .trim()
+      );
+    });
+
+    // =================================================
+    // DATAS DO MÊS
+    // =================================================
+
+    function gerarDatasDoMes(ano, mesNumero) {
+      const datas = [];
+
+      const data = new Date(
+        Date.UTC(
+          ano,
+          mesNumero - 1,
+          1
+        )
+      );
+
+      while (
+        data.getUTCMonth() === mesNumero - 1
+      ) {
+        datas.push(
+          data.toISOString().slice(0, 10)
+        );
+
+        data.setUTCDate(
+          data.getUTCDate() + 1
+        );
+      }
+
+      return datas;
+    }
+
+    const datasDoMes =
+      gerarDatasDoMes(
+        ano,
+        mesNumero
+      );
+
+    // =================================================
+    // COLUNA DA PLANILHA → DIA DA SEMANA
+    //
+    // B = segunda
+    // C = terça
+    // D = quarta
+    // E = quinta
+    // F = sexta
+    // G = sábado
+    // =================================================
+
+    const diaPorColuna = {
+      B: 1,
+      C: 2,
+      D: 3,
+      E: 4,
+      F: 5,
+      G: 6
+    };
+
+    // =================================================
+    // IDENTIFICAR SE É ALUNO / AULA VÁLIDA
+    //
+    // Evita transformar células como:
+    // "18h"
+    // em uma aula.
+    //
+    // Código de aluno = 4 dígitos
+    // Experimental = AE
+    // =================================================
+
+    function ehAulaValida(conteudo) {
+      const texto = String(conteudo || "");
+
+      return (
+        /\b\d{4}\b/.test(texto) ||
+        /\bAE\b/i.test(texto)
+      );
+    }
+
+    // =================================================
+    // DATA DE AULA EXPERIMENTAL
+    //
+    // Exemplo:
+    // "AE Ana Júlia 15a Guitarra 30/09"
+    // =================================================
+
+    function obterDataExperimental(
+      conteudo,
+      mesSelecionado
+    ) {
+      const texto = String(conteudo || "");
+
+      if (!/\bAE\b/i.test(texto)) {
+        return null;
+      }
+
+      const encontrado =
+        texto.match(/(\d{1,2})\/(\d{1,2})/);
+
+      if (!encontrado) {
+        return null;
+      }
+
+      const dia = Number(encontrado[1]);
+      const mes = Number(encontrado[2]);
+
+      if (mes !== mesSelecionado) {
+        return null;
+      }
+
+      return `${ano}-${String(mes).padStart(2, "0")}-${String(
+        dia
+      ).padStart(2, "0")}`;
+    }
+
+    // =================================================
+    // GERAR RELATÓRIO DE CADA PROFESSOR
+    // =================================================
+
+    const relatorios = [];
+
+    for (const professor of professoresResult.rows) {
+      const professorId =
+        Number(professor.id);
+
+      const planilhaId =
+        professor.professores_planilha_id
+          ? Number(professor.professores_planilha_id)
+          : null;
+
+      const alunosProfessor =
+        alunosPorProfessor.get(professorId) || [];
+
+      let presentes = 0;
+      let faltas = 0;
+      let pendentes = 0;
+
+      const detalhes = [];
+
+      // -----------------------------------------------
+      // Professor sem planilha
+      // -----------------------------------------------
+
+      if (planilhaId) {
+        const horariosProfessor =
+          horariosResult.rows.filter(
+            (horario) =>
+              Number(
+                horario.professores_planilha_id
+              ) === planilhaId
+          );
+
+        for (const horario of horariosProfessor) {
+          const celula =
+            String(horario.celula || "")
+              .toUpperCase();
+
+          const match =
+            celula.match(/^([B-G])([0-9]+)$/);
+
+          if (!match) {
+            continue;
+          }
+
+          const coluna = match[1];
+          const linha = match[2];
+
+          if (!ehAulaValida(horario.conteudo)) {
+            continue;
+          }
+
+          const diaSemana =
+            diaPorColuna[coluna];
+
+          const horarioLinha =
+            horariosPorLinha.get(
+              `${planilhaId}|${linha}`
+            ) || horario.horario || "";
+
+          const dataExperimental =
+            obterDataExperimental(
+              horario.conteudo,
+              mesNumero
+            );
+
+          // ---------------------------------------------
+          // Verificar cada dia do mês
+          // ---------------------------------------------
+
+          for (const data of datasDoMes) {
+            const dataObj =
+              new Date(`${data}T00:00:00Z`);
+
+            const diaReal =
+              dataObj.getUTCDay();
+
+            // Experimental:
+            // somente na data informada.
+            if (dataExperimental) {
+              if (data !== dataExperimental) {
+                continue;
+              }
+            } else {
+              // Aula normal:
+              // somente no dia da semana.
+              if (diaReal !== diaSemana) {
+                continue;
+              }
+            }
+
+            const chave =
+              `${professorId}|${celula}|${data}`;
+
+            const registro =
+              mapaPresencas.get(chave);
+
+            let status = "pendente";
+
+            if (registro) {
+              if (registro.status === "presente") {
+                status = "presente";
+                presentes++;
+              } else if (registro.status === "falta") {
+                status = "falta";
+                faltas++;
+              }
+            } else {
+              pendentes++;
+            }
+
+            detalhes.push({
+              data,
+              celula,
+              horario: horarioLinha,
+              conteudo: horario.conteudo,
+              status
+            });
+          }
+        }
+      }
+
+      detalhes.sort((a, b) => {
+        if (a.data !== b.data) {
+          return a.data.localeCompare(b.data);
+        }
+
+        return String(a.horario)
+          .localeCompare(
+            String(b.horario)
+          );
+      });
+
+      relatorios.push({
+        professor: {
+          id: professor.id,
+          nome: professor.nome,
+          email: professor.email,
+          foto_url: professor.foto_url
+        },
+
+        totalAlunos:
+          alunosProfessor.length,
+
+        alunosAtivos:
+          alunosProfessor.filter(
+            (aluno) =>
+              !aluno.status ||
+              String(aluno.status)
+                .toLowerCase() === "ativo"
+          ).length,
+
+        presentes,
+        faltas,
+        pendentes,
+
+        totalAulas:
+          presentes +
+          faltas +
+          pendentes,
+
+        detalhes
+      });
+    }
+
+    // =================================================
+    // RESUMO GERAL
+    // =================================================
+
+    const resumo =
+      relatorios.reduce(
+        (resultado, professor) => {
+          resultado.presentes +=
+            professor.presentes;
+
+          resultado.faltas +=
+            professor.faltas;
+
+          resultado.pendentes +=
+            professor.pendentes;
+
+          resultado.totalAulas +=
+            professor.totalAulas;
+
+          return resultado;
+        },
+        {
+          presentes: 0,
+          faltas: 0,
+          pendentes: 0,
+          totalAulas: 0
+        }
+      );
+
+    res.json({
+      sucesso: true,
+      mes,
+      resumo,
+      professores: relatorios
+    });
+
+  } catch (error) {
+    console.error(
+      "❌ Erro no relatório administrativo:",
+      error
+    );
+
+    res.status(500).json({
+      sucesso: false,
+      mensagem:
+        "Erro ao gerar relatório administrativo."
+    });
+  }
+});
 
 // =====================================================
 // GET /presencas/:id

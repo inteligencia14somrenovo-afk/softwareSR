@@ -182,7 +182,7 @@ function interpretarCelula(conteudo) {
 
       if (texto.includes("🎸"))
         instrumentoAluno =
-          "guitarra";
+          "guitarra/violao";
 
       else if (texto.includes("🥁"))
         instrumentoAluno =
@@ -301,7 +301,7 @@ function interpretarCelula(conteudo) {
 
 
     if (texto.includes("🎸"))
-      instrumento = "guitarra";
+      instrumento = "guitarra/violao";
 
     else if (texto.includes("🥁"))
       instrumento = "bateria";
@@ -384,7 +384,7 @@ function interpretarCelula(conteudo) {
 
 
   if (texto.includes("🎸"))
-    instrumento = "guitarra";
+    instrumento = "guitarra/violao";
 
   else if (texto.includes("🥁"))
     instrumento = "bateria";

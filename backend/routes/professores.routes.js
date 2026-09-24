@@ -1193,62 +1193,41 @@ router.delete("/:id", async (req, res) => {
     }
 
 
-    // -------------------------------------------------
-    // VERIFICA DEPENDÊNCIAS
-    // -------------------------------------------------
+// -------------------------------------------------
+// VERIFICA SE O PROFESSOR ESTÁ DESATIVADO
+// -------------------------------------------------
 
-    const dependencias =
-      await client.query(
-        `
-        SELECT
-
-          (
-            SELECT COUNT(*)
-            FROM alunos
-            WHERE professor_id = $1
-          )::integer AS alunos,
-
-          (
-            SELECT COUNT(*)
-            FROM aulas
-            WHERE professor_id = $1
-          )::integer AS aulas,
-
-          (
-            SELECT COUNT(*)
-            FROM presencas
-            WHERE professor_id = $1
-          )::integer AS presencas,
-
-          (
-            SELECT COUNT(*)
-            FROM presencas_planilha
-            WHERE professor_id = $1
-          )::integer AS presencas_planilha
-        `,
-        [professorId]
-      );
+const statusPlanilha =
+  await client.query(
+    `
+    SELECT
+      ativo
+    FROM professores_planilha
+    WHERE
+      LOWER(TRIM(email)) =
+      LOWER(TRIM($1))
+    ORDER BY id DESC
+    LIMIT 1
+    `,
+    [professor.rows[0].email]
+  );
 
 
-    const dados =
-      dependencias.rows[0];
+const estaAtivo =
+  statusPlanilha.rows.length === 0
+    ? true
+    : statusPlanilha.rows[0].ativo;
 
 
-    if (
-      dados.alunos > 0 ||
-      dados.aulas > 0 ||
-      dados.presencas > 0 ||
-      dados.presencas_planilha > 0
-    ) {
+if (estaAtivo) {
 
-      return res.status(409).json({
-        sucesso: false,
-        mensagem:
-          "Este usuário possui registros vinculados e não pode ser excluído definitivamente. Desative o professor em vez disso.",
-        dependencias: dados,
-      });
+  return res.status(409).json({
+    sucesso: false,
+    mensagem:
+      "Este usuário precisa estar desativado antes de ser excluído definitivamente.",
+  });
 
-    }
+}
 
 
     await client.query("BEGIN");
