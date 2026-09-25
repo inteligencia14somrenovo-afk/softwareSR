@@ -3,7 +3,6 @@ import Login from "./components/Login/Login";
 import Dashboard from "./layouts/Dashboard";
 import TelaInicial from "./pages/TelaInicial/TelaInicial";
 import Alunos from "./pages/Alunos/Alunos";
-import Bandas from "./pages/Bandas/Bandas";
 import Presenca from "./pages/Presenca/Presenca";
 import Relatorio from "./pages/Relatorio/Relatorio";
 import Configuração from "./pages/Configuração/Configuração";
@@ -49,7 +48,6 @@ function App() {
                 element={<ProfessorDetalhes />}
               />
 
-          <Route path="bandas" element={<Bandas />} />
 
           <Route path="presenca" element={<Presenca />} />
 

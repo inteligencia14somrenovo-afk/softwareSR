@@ -1,0 +1,51 @@
+/* Fundo da Tela Inicial */
+.tela-inicial {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Feixe de luz */
+.tela-inicial::before {
+  content: "";
+  position: absolute;
+
+  width: 180px;
+  height: 150%;
+  
+  top: -25%;
+  left: -220px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(176, 0, 0, 0.035),
+    rgba(176, 0, 0, 0.10),
+    rgba(176, 0, 0, 0.035),
+    transparent
+  );
+
+  transform: rotate(18deg);
+
+  filter: blur(12px);
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  animation: feixeVermelho 12s ease-in-out infinite;
+}
+
+@keyframes feixeVermelho {
+  0% {
+    left: -220px;
+  }
+
+  50% {
+    left: 75%;
+  }
+
+  100% {
+    left: 120%;
+  }
+}

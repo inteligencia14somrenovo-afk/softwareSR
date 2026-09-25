@@ -80,10 +80,7 @@ const podeGerenciarProfessores =
           </NavLink>
         )}
 
-        <NavLink to="/bandas">
-          <FaDrum />
-          {!collapsed && <span>Bandas (Manutenção)</span>}
-        </NavLink>
+       
 
 
         <NavLink to="/presenca">
