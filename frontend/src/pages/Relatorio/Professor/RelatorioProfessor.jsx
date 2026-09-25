@@ -300,6 +300,12 @@ const normalizarHorario = (
     item.aluno?.instrumento ??
     "";
 
+  const instrumentoEspecifico =
+    item.instrumento_especifico ??
+    item.instrumentoEspecifico ?? 
+    item.aluno?.instrumento_especifico ??
+    "";
+
   const codigoAluno =
     item.codigoAluno ??
     item.codigo ??
@@ -336,6 +342,11 @@ const normalizarHorario = (
     instrumento:
       String(
         instrumento
+      ).trim(),
+
+    instrumentoEspecifico:
+      String(
+        instrumentoEspecifico
       ).trim(),
 
     codigoAluno:
@@ -763,100 +774,103 @@ function Relatorio() {
             );
 
           /*
- * AULA EXPERIMENTAL
- * -----------------
- * A AE acontece somente na
- * data definida em dataExperimental.
- */
-if (ehExperimental) {
-  if (
-    !horario.dataExperimental
-  ) {
-    return;
-  }
+           * AULA EXPERIMENTAL
+           * -----------------
+           * A AE acontece somente na
+           * data definida em dataExperimental.
+           */
+          if (ehExperimental) {
+            if (
+              !horario.dataExperimental
+            ) {
+              return;
+            }
 
-  const partesData =
-    String(
-      horario.dataExperimental
-    ).split("/");
+            const partesData =
+              String(
+                horario.dataExperimental
+              ).split("/");
 
-  if (
-    partesData.length !== 2
-  ) {
-    return;
-  }
+            if (
+              partesData.length !== 2
+            ) {
+              return;
+            }
 
-  const diaExperimental =
-    String(
-      partesData[0]
-    ).padStart(2, "0");
+            const diaExperimental =
+              String(
+                partesData[0]
+              ).padStart(2, "0");
 
-  const mesExperimental =
-    String(
-      partesData[1]
-    ).padStart(2, "0");
+            const mesExperimental =
+              String(
+                partesData[1]
+              ).padStart(2, "0");
 
-  const dataExperimentalISO =
-    `${ano}-${mesExperimental}-${diaExperimental}`;
+            const dataExperimentalISO =
+              `${ano}-${mesExperimental}-${diaExperimental}`;
 
-  diasDoMes.forEach(
-    (dia) => {
-      if (
-        dia.dataString !==
-        dataExperimentalISO
-      ) {
-        return;
-      }
+            diasDoMes.forEach(
+              (dia) => {
+                if (
+                  dia.dataString !==
+                  dataExperimentalISO
+                ) {
+                  return;
+                }
 
-      const presenca =
-        presencas.find(
-          (item) =>
-            item.celula ===
-              horario.celula &&
-            item.data ===
-              dia.dataString
-        );
+                const presenca =
+                  presencas.find(
+                    (item) =>
+                      item.celula ===
+                        horario.celula &&
+                      item.data ===
+                        dia.dataString
+                  );
 
-      aulas.push({
-        id:
-          `${horario.celula}-${dia.dataString}`,
+                aulas.push({
+                  id:
+                    `${horario.celula}-${dia.dataString}`,
 
-        celula:
-          horario.celula,
+                  celula:
+                    horario.celula,
 
-        data:
-          dia.dataString,
+                  data:
+                    dia.dataString,
 
-        horario:
-          horario.horario,
+                  horario:
+                    horario.horario,
 
-        nome:
-          horario.nome,
+                  nome:
+                    horario.nome,
 
-        instrumento:
-          horario.instrumento,
+                  instrumento:
+                    horario.instrumento,
 
-        codigoAluno:
-          horario.codigoAluno,
+                  instrumentoEspecifico:
+                    horario.instrumentoEspecifico,
 
-        foto:
-          horario.foto,
+                  codigoAluno:
+                    horario.codigoAluno,
 
-        tipo:
-          horario.tipo,
+                  foto:
+                    horario.foto,
 
-        dataExperimental:
-          horario.dataExperimental,
+                  tipo:
+                    horario.tipo,
 
-        status:
-          presenca?.status ||
-          "pendente",
-      });
-    }
-  );
+                  dataExperimental:
+                    horario.dataExperimental,
 
-  return;
-}
+                  status:
+                    presenca?.status ||
+                    "pendente",
+                });
+              }
+            );
+
+            return;
+          }
 
           /*
            * AULA NORMAL
@@ -907,6 +921,9 @@ if (ehExperimental) {
                 instrumento:
                   horario.instrumento,
 
+                instrumentoEspecifico:
+                  horario.instrumentoEspecifico,
+
                 codigoAluno:
                   horario.codigoAluno,
 
@@ -950,7 +967,7 @@ if (ehExperimental) {
       ano,
       mes,
     ]);
-    
+
   /* =====================================================
      ALUNOS
   ===================================================== */
@@ -983,6 +1000,9 @@ if (ehExperimental) {
 
                 instrumento:
                   aula.instrumento,
+
+                instrumentoEspecifico:
+                  aula.instrumentoEspecifico,
 
                 foto:
                   aula.foto,
@@ -1314,12 +1334,41 @@ if (ehExperimental) {
       );
     };
 
-
 /* =====================================================
    PDF
 ===================================================== */
 
-const obterNomeInstrumento = (instrumento) => {
+const obterNomeInstrumento = (
+  instrumento,
+  instrumentoEspecifico
+) => {
+  const especifico =
+    instrumentoEspecifico
+      ?.toString()
+      .trim()
+      .toLowerCase();
+
+  const nomesEspecificos = {
+    guitarra: "Guitarra",
+    violao: "Violão",
+    ukulele: "Ukulele",
+    contrabaixo: "Contrabaixo",
+    teclado: "Teclado",
+    piano: "Piano",
+    violino: "Violino",
+    bateria: "Bateria",
+    canto: "Canto",
+  };
+
+  if (
+    especifico &&
+    nomesEspecificos[especifico]
+  ) {
+    return nomesEspecificos[
+      especifico
+    ];
+  }
+
   if (!instrumento) {
     return "Não informado";
   }
@@ -1331,7 +1380,27 @@ const obterNomeInstrumento = (instrumento) => {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
 
-  return nomesInstrumentos[chave] || instrumento;
+  if (
+    chave ===
+      "guitarra/violao/ukulele/contrabaixo" ||
+    chave ===
+      "guitarra/violao"
+  ) {
+    return "Guitarra, Violão, Ukulele ou Contrabaixo";
+  }
+
+  if (
+    chave ===
+      "teclado/piano"
+  ) {
+    return "Teclado ou Piano";
+  }
+
+  return (
+    nomesInstrumentos[chave] ||
+    instrumento ||
+    "Não informado"
+  );
 };
 
 const obterNomeMesPDF = () => {
@@ -2081,7 +2150,8 @@ const gerarRelatorioPDF = () => {
           (aluno) => [
             aluno.nome,
             obterNomeInstrumento(
-              aluno.instrumento
+              aluno.instrumento,
+              aluno.instrumentoEspecifico
             ),
             aluno.totalAulas,
             aluno.presentes,
@@ -2654,7 +2724,8 @@ const gerarRelatorioPDF = () => {
 
                       <span>
                         {obterNomeInstrumento(
-                          aluno.instrumento
+                          aluno.instrumento,
+                          aluno.instrumentoEspecifico
                         )}
                       </span>
 
@@ -2790,8 +2861,10 @@ const gerarRelatorioPDF = () => {
                 </h2>
 
                 <p>
-                  {alunoSelecionado.instrumento ||
-                    "Sem instrumento"}
+                  {obterNomeInstrumento(
+                    alunoSelecionado.instrumento,
+                    alunoSelecionado.instrumentoEspecifico
+                  )}
                 </p>
               </div>
 
@@ -2921,7 +2994,8 @@ const gerarRelatorioPDF = () => {
 
                       <span>
                         {obterNomeInstrumento(
-                          aula.instrumento
+                          aula.instrumento,
+                          aula.instrumentoEspecifico
                         )}
                       </span>
 
@@ -3059,7 +3133,8 @@ const gerarRelatorioPDF = () => {
 
                   <span>
                     {obterNomeInstrumento(
-                      aula.instrumento
+                      aula.instrumento,
+                      aula.instrumentoEspecifico
                     )}
                   </span>
 

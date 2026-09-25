@@ -69,11 +69,6 @@ function Presenca() {
   // ESTADO DE CARREGAMENTO
   // =========================
 
-  /*
-   * Para Admin/DEV não esperamos o carregamento
-   * de aulas/presenças, pois essa tela não é usada
-   * por esses perfis.
-   */
   const carregando =
     carregandoProfessor ||
     (
@@ -447,6 +442,64 @@ function Presenca() {
   };
 
   // =====================================================
+  // NOME DO INSTRUMENTO
+  // =====================================================
+
+  const obterNomeInstrumento = (
+    instrumento,
+    instrumentoEspecifico
+  ) => {
+
+    if (
+      instrumentoEspecifico
+    ) {
+
+      const nomesEspecificos = {
+        guitarra: "Guitarra",
+        violao: "Violão",
+        ukulele: "Ukulele",
+        contrabaixo: "Contrabaixo",
+        teclado: "Teclado",
+        piano: "Piano",
+        violino: "Violino",
+        bateria: "Bateria",
+        canto: "Canto",
+      };
+
+      return (
+        nomesEspecificos[
+          instrumentoEspecifico
+        ] ||
+        instrumentoEspecifico
+      );
+    }
+
+    if (
+      instrumento ===
+      "guitarra/violao/ukulele/contrabaixo" ||
+      instrumento ===
+      "guitarra/violao"
+    ) {
+      return "Guitarra, Violão, Ukulele ou Contrabaixo";
+    }
+
+    if (
+      instrumento ===
+      "teclado/piano"
+    ) {
+      return "Teclado ou Piano";
+    }
+
+    return (
+      nomesInstrumentos[
+        instrumento
+      ] ||
+      instrumento ||
+      "Não informado"
+    );
+  };
+
+  // =====================================================
   // CARREGAR HORÁRIOS DA PLANILHA
   // =====================================================
 
@@ -474,6 +527,7 @@ function Presenca() {
       }
 
       try {
+
         if (
           mostrarCarregamento
         ) {
@@ -518,28 +572,44 @@ function Presenca() {
             (item) => ({
               id:
                 item.celula,
+
               alunoId:
                 item.codigoAluno,
+
               nome:
                 item.nome,
+
               instrumento:
                 item.instrumento,
+
+              instrumentoEspecifico:
+              item.instrumento_especifico ||
+              item.instrumentoEspecifico ||
+              null,
+
               diaSemana:
                 mapaDias[
                   item.diaSemana
                 ],
+
               horario:
                 item.horario,
+
               dataExperimental:
                 item.dataExperimental,
+
               dataBloqueada:
                 item.dataBloqueada,
+
               tipo:
                 item.tipo,
+
               cancelado:
                 item.cancelado,
+
               foto:
                 item.foto,
+
               conteudoOriginal:
                 item.conteudoOriginal,
             })
@@ -1425,13 +1495,10 @@ function Presenca() {
                       </strong>
 
                       <span>
-                        {
-                          nomesInstrumentos[
-                            aula.instrumento
-                          ] ||
-                          aula.instrumento ||
-                          "Não informado"
-                        }
+                        {obterNomeInstrumento(
+                          aula.instrumento,
+                          aula.instrumentoEspecifico
+                        )}
                       </span>
 
                     </div>
@@ -1491,5 +1558,3 @@ function Presenca() {
 }
 
 export default Presenca;
-
-

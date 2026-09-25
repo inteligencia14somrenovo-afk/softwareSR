@@ -4,7 +4,7 @@ const sheets = require("../config/googleSheets");
 const SPREADSHEET_ID =
   "1bbzbHCy5_tHx2mjI7KW6xl1f_K7dPFK5QWVWeXbAnco";
 
-  let statusSincronizacao = {
+let statusSincronizacao = {
   status: "aguardando",
   inicio: null,
   fim: null,
@@ -182,7 +182,7 @@ function interpretarCelula(conteudo) {
 
       if (texto.includes("🎸"))
         instrumentoAluno =
-          "guitarra/violao";
+          "guitarra/violao/ukulele/contrabaixo";
 
       else if (texto.includes("🥁"))
         instrumentoAluno =
@@ -1003,42 +1003,44 @@ async function executarSincronizacao() {
     }
 
 
-   await client.query("COMMIT");
+    await client.query("COMMIT");
 
-const resultado = {
-  sucesso: true,
-  professores: professores.rows.length,
-  celulas: totalCelulas,
-  alunosNovos: totalAlunosNovos,
-  alunosAtualizados: totalAlunosAtualizados,
-};
+    const resultado = {
+      sucesso: true,
+      professores: professores.rows.length,
+      celulas: totalCelulas,
+      alunosNovos: totalAlunosNovos,
+      alunosAtualizados: totalAlunosAtualizados,
+    };
 
-statusSincronizacao = {
-  status: "sucesso",
-  inicio: statusSincronizacao.inicio,
-  fim: new Date().toISOString(),
-  duracao: Date.now() - inicio,
-  resultado,
-  erro: null,
-};
+    statusSincronizacao = {
+      status: "sucesso",
+      inicio: statusSincronizacao.inicio,
+      fim: new Date().toISOString(),
+      duracao: Date.now() - inicio,
+      resultado,
+      erro: null,
+    };
 
-return resultado;
+    return resultado;
 
 
   } catch (error) {
-  await client.query("ROLLBACK");
 
-  statusSincronizacao = {
-    status: "erro",
-    inicio: statusSincronizacao.inicio,
-    fim: new Date().toISOString(),
-    duracao: Date.now() - inicio,
-    resultado: null,
-    erro: error.message,
-  };
+    await client.query("ROLLBACK");
 
-  throw error;
-} finally {
+    statusSincronizacao = {
+      status: "erro",
+      inicio: statusSincronizacao.inicio,
+      fim: new Date().toISOString(),
+      duracao: Date.now() - inicio,
+      resultado: null,
+      erro: error.message,
+    };
+
+    throw error;
+
+  } finally {
 
     client.release();
 
@@ -1304,6 +1306,48 @@ async function buscarHorariosOrganizados(
       );
 
 
+    // ===================================================
+    // BUSCAR INSTRUMENTO ESPECÍFICO DOS ALUNOS
+    // ===================================================
+
+    const alunosResultado =
+      await pool.query(
+        `
+        SELECT
+          codigo_aluno,
+          instrumento_especifico
+        FROM alunos
+        WHERE professor_id = $1
+        `,
+        [Number(professorId)]
+      );
+
+
+    const instrumentosEspecificos =
+      new Map();
+
+
+    for (
+      const aluno
+      of alunosResultado.rows
+    ) {
+
+      if (
+        aluno.codigo_aluno === null ||
+        aluno.codigo_aluno === undefined
+      ) {
+        continue;
+      }
+
+
+      instrumentosEspecificos.set(
+        Number(aluno.codigo_aluno),
+        aluno.instrumento_especifico || null
+      );
+
+    }
+
+
     const diasSemana = {
 
       2: "SEGUNDA",
@@ -1346,6 +1390,14 @@ async function buscarHorariosOrganizados(
       }
 
 
+      const instrumentoEspecifico =
+        horario.codigoAluno
+          ? instrumentosEspecificos.get(
+              Number(horario.codigoAluno)
+            ) || null
+          : null;
+
+
       dados.push({
 
         celula:
@@ -1359,13 +1411,30 @@ async function buscarHorariosOrganizados(
 
         ...horario,
 
+        instrumento_especifico:
+          instrumentoEspecifico,
+
       });
 
+
+      // =================================================
+      // ALUNO FIXO SUBSTITUÍDO POR AE
+      // =================================================
 
       if (
         horario.tipo === "experimental" &&
         horario.alunoSubstituido
       ) {
+
+        const codigoAluno =
+          horario.alunoSubstituido.codigoAluno;
+
+
+        const instrumentoEspecificoSubstituido =
+          instrumentosEspecificos.get(
+            Number(codigoAluno)
+          ) || null;
+
 
         dados.push({
 
@@ -1385,13 +1454,16 @@ async function buscarHorariosOrganizados(
             "aluno",
 
           codigoAluno:
-            horario.alunoSubstituido.codigoAluno,
+            codigoAluno,
 
           nome:
             horario.alunoSubstituido.nome,
 
           instrumento:
             horario.alunoSubstituido.instrumento,
+
+          instrumento_especifico:
+            instrumentoEspecificoSubstituido,
 
           foto:
             false,
@@ -1569,6 +1641,7 @@ async function buscarAlunosProfessor(
 // =====================================================
 // EXPORTS
 // =====================================================
+
 function getStatusSincronizacao() {
   return statusSincronizacao;
 }

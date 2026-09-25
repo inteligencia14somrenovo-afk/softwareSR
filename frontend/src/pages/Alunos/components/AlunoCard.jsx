@@ -5,30 +5,118 @@ function AlunoCard({
   abrirDetalhes
 }) {
 
-  // Normaliza o instrumento para usar nas classes do CSS
-const mapaInstrumentos = {
-  "teclado/piano": "teclado",
-  "guitarra/violao": "guitarra",
-};
+  // =====================================================
+  // INSTRUMENTO → CLASSE CSS
+  //
+  // Quando existe instrumento_especifico, ele tem
+  // prioridade sobre o instrumento base da planilha.
+  //
+  // Isso permite que a cor do card acompanhe a escolha
+  // feita pelo professor.
+  // =====================================================
 
-const classeInstrumento =
-  mapaInstrumentos[aluno.instrumento] || aluno.instrumento || "";
-    
+  const mapaInstrumentos = {
+    // Instrumentos específicos
+    guitarra: "guitarra",
+    violao: "violao",
+    ukulele: "ukulele",
+    contrabaixo: "contrabaixo",
 
-  // Como a planilha atualmente não possui data de nascimento,
-  // evita mostrar uma idade inválida.
+    teclado: "teclado",
+    piano: "piano",
+
+    violino: "violino",
+    canto: "canto",
+    bateria: "bateria",
+
+    // Categorias vindas da planilha
+    "teclado/piano": "teclado",
+    "guitarra/violao/ukulele/contrabaixo": "guitarra",
+    "guitarra/violao": "guitarra"
+  };
+
+
+  const instrumentoParaCor =
+    aluno.instrumento_especifico ||
+    aluno.instrumento ||
+    "";
+
+
+  const classeInstrumento =
+    mapaInstrumentos[instrumentoParaCor] ||
+    "";
+
+
+  // =====================================================
+  // INSTRUMENTO EXIBIDO
+  // =====================================================
+
+  let nomeInstrumento =
+    nomesInstrumentos[aluno.instrumento] ||
+    aluno.instrumento ||
+    "Não informado";
+
+
+  // =====================================================
+  // 🎸 GUITARRA / VIOLÃO / UKULELE / CONTRABAIXO
+  // =====================================================
+
+  if (
+    aluno.instrumento ===
+      "guitarra/violao/ukulele/contrabaixo" ||
+    aluno.instrumento === "guitarra/violao"
+  ) {
+
+    nomeInstrumento =
+      aluno.instrumento_especifico === "guitarra"
+        ? "Guitarra"
+        : aluno.instrumento_especifico === "violao"
+          ? "Violão"
+          : aluno.instrumento_especifico === "ukulele"
+            ? "Ukulele"
+            : aluno.instrumento_especifico === "contrabaixo"
+              ? "Contrabaixo"
+              : "Guitarra, Violão, Ukulele ou Contrabaixo";
+  }
+
+
+  // =====================================================
+  // 🎹 TECLADO / PIANO
+  // =====================================================
+
+  if (
+    aluno.instrumento === "teclado/piano"
+  ) {
+
+    nomeInstrumento =
+      aluno.instrumento_especifico === "teclado"
+        ? "Teclado"
+        : aluno.instrumento_especifico === "piano"
+          ? "Piano"
+          : "Teclado ou Piano";
+  }
+
+
+  // =====================================================
+  // IDADE
+  // =====================================================
+
   const idade =
     aluno.nascimento
       ? calcularIdade(aluno.nascimento)
       : null;
 
+
   return (
+
     <div
       className={`card-aluno ${classeInstrumento}`}
       onClick={() => abrirDetalhes(aluno)}
     >
 
-      {/* NOME + FOTO */}
+      {/* =====================================================
+          NOME + FOTO
+      ===================================================== */}
 
       <div className="card-top">
 
@@ -39,6 +127,7 @@ const classeInstrumento =
           </h2>
 
         </div>
+
 
         <div className="foto-aluno">
 
@@ -60,7 +149,9 @@ const classeInstrumento =
       </div>
 
 
-      {/* INFORMAÇÕES */}
+      {/* =====================================================
+          INFORMAÇÕES
+      ===================================================== */}
 
       <div className="card-info">
 
@@ -70,9 +161,7 @@ const classeInstrumento =
             Instrumento
           </span>
 
-          {nomesInstrumentos[aluno.instrumento] ||
-            aluno.instrumento ||
-            "Não informado"}
+          {nomeInstrumento}
 
         </p>
 
@@ -103,7 +192,9 @@ const classeInstrumento =
       </div>
 
 
-      {/* MAIS */}
+      {/* =====================================================
+          MAIS
+      ===================================================== */}
 
       <button
         className="card-more"
@@ -122,7 +213,9 @@ const classeInstrumento =
       </button>
 
     </div>
+
   );
+
 }
 
 

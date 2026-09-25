@@ -10,6 +10,9 @@ const pool = require("../config/database");
 // - experimental
 // - presenca
 // - proxima_aula
+// - aniversario_5_dias
+// - aniversario_2_dias
+// - aniversario_hoje
 //
 // As notificações ainda são geradas dinamicamente.
 // =====================================================
@@ -37,30 +40,94 @@ async function buscarNotificacoes(req, res) {
 
     // ===================================================
     // DATA E HORA ATUAIS
+    //
+    // Som Renovo usa America/Porto_Velho
     // ===================================================
 
     const agora = new Date();
 
+    const partesData =
+      new Intl.DateTimeFormat(
+        "en-CA",
+        {
+          timeZone: "America/Porto_Velho",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }
+      ).formatToParts(agora);
+
+
+    const obterParteData = (tipo) => {
+
+      const parte =
+        partesData.find(
+          item =>
+            item.type === tipo
+        );
+
+      return parte
+        ? parte.value
+        : null;
+
+    };
+
+
     const ano =
-      agora.getFullYear();
+      Number(
+        obterParteData("year")
+      );
 
     const mes =
-      String(
-        agora.getMonth() + 1
-      ).padStart(2, "0");
+      Number(
+        obterParteData("month")
+      );
 
     const dia =
-      String(
-        agora.getDate()
-      ).padStart(2, "0");
+      Number(
+        obterParteData("day")
+      );
+
 
     const dataHoje =
-      `${ano}-${mes}-${dia}`;
+      `${ano}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+
+
+    // Para horário atual, usamos Intl para respeitar
+    // America/Porto_Velho.
+
+    const partesHora =
+      new Intl.DateTimeFormat(
+        "en-US",
+        {
+          timeZone: "America/Porto_Velho",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        }
+      ).formatToParts(agora);
+
+
+    const horaAtual =
+      Number(
+        partesHora.find(
+          item =>
+            item.type === "hour"
+        )?.value || 0
+      );
+
+    const minutoAtual =
+      Number(
+        partesHora.find(
+          item =>
+            item.type === "minute"
+        )?.value || 0
+      );
 
 
     const minutosAgora =
-      agora.getHours() * 60 +
-      agora.getMinutes();
+      horaAtual * 60 +
+      minutoAtual;
 
 
     // ===================================================
@@ -77,17 +144,21 @@ async function buscarNotificacoes(req, res) {
       "SÁBADO"
     ];
 
+
+    const dataPortoVelho =
+      new Date(
+        `${dataHoje}T12:00:00-04:00`
+      );
+
+
     const diaHoje =
       diasSemana[
-        agora.getDay()
+        dataPortoVelho.getDay()
       ];
 
 
     // ===================================================
     // BUSCAR HORÁRIOS
-    //
-    // Usamos diretamente a estrutura da tabela
-    // planilha_horarios.
     // ===================================================
 
     const resultadoHorarios =
@@ -174,15 +245,6 @@ async function buscarNotificacoes(req, res) {
 
     // ===================================================
     // INTERPRETAR CONTEÚDO
-    //
-    // Aqui usamos a mesma estrutura já existente
-    // no sistema para identificar:
-    //
-    // - aluno
-    // - experimental
-    // - horário
-    // - nome
-    // - instrumento
     // ===================================================
 
     const interpretarCelula = (
@@ -670,25 +732,218 @@ async function buscarNotificacoes(req, res) {
     }
 
 
+// ===================================================
+// 4. ANIVERSÁRIOS
+//
+// Avisos:
+// - 5 dias antes
+// - 2 dias antes
+// - no dia
+// ===================================================
+
+const resultadoAniversarios =
+  await pool.query(
+    `
+    SELECT
+      id,
+      nome,
+      nascimento,
+
+      CASE
+        WHEN
+          TO_DATE(
+            EXTRACT(YEAR FROM CURRENT_DATE)::text
+            || '-' ||
+            TO_CHAR(nascimento, 'MM-DD'),
+            'YYYY-MM-DD'
+          ) < CURRENT_DATE
+        THEN
+          TO_DATE(
+            (
+              EXTRACT(YEAR FROM CURRENT_DATE) + 1
+            )::text
+            || '-' ||
+            TO_CHAR(nascimento, 'MM-DD'),
+            'YYYY-MM-DD'
+          )
+
+        ELSE
+          TO_DATE(
+            EXTRACT(YEAR FROM CURRENT_DATE)::text
+            || '-' ||
+            TO_CHAR(nascimento, 'MM-DD'),
+            'YYYY-MM-DD'
+          )
+      END AS proximo_aniversario
+
+    FROM alunos
+
+    WHERE
+      professor_id = $1
+      AND nascimento IS NOT NULL
+
+    ORDER BY nome ASC
+    `,
+    [
+      professorId
+    ]
+  );
+
+
+// ---------------------------------------------------
+// Criar notificações
+// ---------------------------------------------------
+
+resultadoAniversarios.rows.forEach(
+  (aluno) => {
+
+    const diferencaDias =
+      Math.round(
+        (
+          new Date(aluno.proximo_aniversario)
+            .getTime()
+          -
+          new Date(dataHoje)
+            .getTime()
+        )
+        /
+        (
+          1000 *
+          60 *
+          60 *
+          24
+        )
+      );
+
+
+    // ===============================================
+    // 5 DIAS ANTES
+    // ===============================================
+
+    if (diferencaDias === 5) {
+
+      notificacoes.push({
+
+        id:
+          `aniversario-5-${aluno.id}-${dataHoje}`,
+
+        tipo:
+          "aniversario_5_dias",
+
+        icone:
+          "🎂",
+
+        titulo:
+          "Aniversário em 5 dias",
+
+        mensagem:
+          `O aniversário de ${aluno.nome} será em 5 dias.`,
+
+        data:
+          dataHoje,
+
+        lida:
+          false
+
+      });
+
+    }
+
+
+    // ===============================================
+    // 2 DIAS ANTES
+    // ===============================================
+
+    if (diferencaDias === 2) {
+
+      notificacoes.push({
+
+        id:
+          `aniversario-2-${aluno.id}-${dataHoje}`,
+
+        tipo:
+          "aniversario_2_dias",
+
+        icone:
+          "🎂",
+
+        titulo:
+          "Aniversário em 2 dias",
+
+        mensagem:
+          `O aniversário de ${aluno.nome} será em 2 dias.`,
+
+        data:
+          dataHoje,
+
+        lida:
+          false
+
+      });
+
+    }
+
+
+    // ===============================================
+    // NO DIA
+    // ===============================================
+
+    if (diferencaDias === 0) {
+
+      notificacoes.push({
+
+        id:
+          `aniversario-hoje-${aluno.id}-${dataHoje}`,
+
+        tipo:
+          "aniversario_hoje",
+
+        icone:
+          "🎉",
+
+        titulo:
+          "Aniversário hoje",
+
+        mensagem:
+          `Hoje é aniversário de ${aluno.nome}!`,
+
+        data:
+          dataHoje,
+
+        lida:
+          false
+
+      });
+
+    }
+
+  }
+);
+
     // ===================================================
     // ORDEM
     // ===================================================
 
     const prioridade = {
 
-      experimental: 1,
-
-      presenca: 2,
-
-      proxima_aula: 3
+      aniversario_hoje: 1,
+      aniversario_2_dias: 2,
+      aniversario_5_dias: 3,
+      experimental: 4,
+      presenca: 5,
+      proxima_aula: 6
 
     };
 
 
     notificacoes.sort(
       (a, b) =>
-        prioridade[a.tipo] -
-        prioridade[b.tipo]
+        (
+          prioridade[a.tipo] || 99
+        ) -
+        (
+          prioridade[b.tipo] || 99
+        )
     );
 
 

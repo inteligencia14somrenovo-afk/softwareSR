@@ -129,11 +129,15 @@
 }
 
 .card-aluno.guitarra {
-    --cor-instrumento: #f57e00;
+    --cor-instrumento: #ff8400;
 }
 
 .card-aluno.ukulele {
-    --cor-instrumento: #c9b6ff;
+    --cor-instrumento: #f75524f1;
+}
+
+.card-aluno.contrabaixo {
+    --cor-instrumento: #854500;
 }
 
 .card-aluno.violino {
@@ -577,5 +581,298 @@
     .detalhes-actions {
         flex-direction: column;
     }
+
+}
+
+
+/* =====================================================
+   DATA DE NASCIMENTO - DETALHES DO ALUNO
+===================================================== */
+
+.campo-nascimento {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 12px;
+  background: var(--card-background, #fafafa);
+}
+
+.campo-nascimento label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.campo-nascimento input[type="date"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 8px;
+  background: #fff;
+  color: inherit;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.campo-nascimento input[type="date"]:focus {
+  border-color: #555;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.campo-nascimento input[type="date"]:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   AÇÕES - DATA DE NASCIMENTO
+===================================================== */
+
+.nascimento-acoes {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.nascimento-acoes button {
+  border: none;
+  border-radius: 8px;
+  padding: 9px 15px;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.nascimento-acoes button:hover {
+  transform: translateY(-1px);
+}
+
+.nascimento-acoes button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* Botão salvar */
+
+.nascimento-btn-salvar {
+  background: #222;
+  color: #fff;
+}
+
+
+/* Botão cancelar */
+
+.nascimento-btn-cancelar {
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--border-color, #ccc) !important;
+}
+
+
+/* =====================================================
+   BOTÃO EDITAR - DATA DE NASCIMENTO
+===================================================== */
+
+.nascimento-btn-editar {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.nascimento-btn-editar:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+
+/* =====================================================
+   INSTRUMENTO - DETALHES DO ALUNO
+===================================================== */
+
+.campo-instrumento {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 12px;
+  background: var(--card-background, #fafafa);
+}
+
+.campo-instrumento label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.instrumento-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.instrumento-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.instrumento-opcao {
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 8px;
+  padding: 9px 14px;
+  background: #fff;
+  color: #333;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.instrumento-opcao:hover {
+  background: #f5f5f5;
+  transform: translateY(-1px);
+}
+
+.instrumento-opcao.selecionado {
+  background: #222;
+  border-color: #222;
+  color: #fff;
+}
+
+.instrumento-acoes {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.instrumento-acoes button {
+  border: none;
+  border-radius: 8px;
+  padding: 9px 15px;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.instrumento-acoes button:hover {
+  transform: translateY(-1px);
+}
+
+.instrumento-acoes button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* Botão salvar instrumento */
+
+.instrumento-btn-salvar {
+  background: #222;
+  color: #fff;
+}
+
+
+/* Botão cancelar instrumento */
+
+.instrumento-btn-cancelar {
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--border-color, #ccc) !important;
+}
+
+
+/* Botão editar instrumento */
+
+.instrumento-btn-editar {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.instrumento-btn-editar:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+
+/* =====================================================
+   MENSAGENS
+===================================================== */
+
+.nascimento-mensagem {
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+.nascimento-erro {
+  color: #c62828;
+}
+
+.nascimento-sucesso {
+  color: #2e7d32;
+}
+
+
+/* =====================================================
+   RESPONSIVIDADE - INSTRUMENTO
+===================================================== */
+
+@media (max-width: 768px) {
+
+  .instrumento-opcoes {
+    flex-direction: column;
+  }
+
+  .instrumento-opcao {
+    width: 100%;
+  }
+
+  .instrumento-acoes {
+    flex-direction: column;
+  }
+
+  .instrumento-acoes button {
+    width: 100%;
+  }
 
 }

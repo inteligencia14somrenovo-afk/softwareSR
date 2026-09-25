@@ -321,6 +321,109 @@ function RelatorioAdmin() {
   }, [alunos, professores]);
 
   // =====================================================
+  // NOME DO INSTRUMENTO
+  // =====================================================
+
+  function obterNomeInstrumento(
+    instrumento,
+    instrumentoEspecifico
+  ) {
+    const nomesEspecificos = {
+      guitarra: "Guitarra",
+      violao: "Violão",
+      ukulele: "Ukulele",
+      contrabaixo: "Contrabaixo",
+      teclado: "Teclado",
+      piano: "Piano",
+      violino: "Violino",
+      bateria: "Bateria",
+      canto: "Canto"
+    };
+
+    const especifico =
+      instrumentoEspecifico
+        ?.toString()
+        .trim()
+        .toLowerCase();
+
+    if (
+      especifico &&
+      nomesEspecificos[especifico]
+    ) {
+      return nomesEspecificos[especifico];
+    }
+
+    let valorInstrumento = instrumento;
+
+    if (
+      typeof valorInstrumento === "object" &&
+      valorInstrumento !== null
+    ) {
+      valorInstrumento =
+        valorInstrumento.nome ||
+        valorInstrumento.label ||
+        valorInstrumento.instrumento ||
+        "";
+    }
+
+    const chave = String(
+      valorInstrumento || ""
+    )
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+    if (
+      chave ===
+        "guitarra/violao/ukulele/contrabaixo" ||
+      chave === "guitarra/violao"
+    ) {
+      return "Guitarra, Violão, Ukulele ou Contrabaixo";
+    }
+
+    if (
+      chave === "teclado/piano"
+    ) {
+      return "Teclado ou Piano";
+    }
+
+    const nomesBase = {
+      violao: "Violão",
+      guitarra: "Guitarra",
+      ukulele: "Ukulele",
+      contrabaixo: "Contrabaixo",
+      teclado: "Teclado",
+      piano: "Piano",
+      violino: "Violino",
+      bateria: "Bateria",
+      canto: "Canto"
+    };
+
+    return (
+      nomesBase[chave] ||
+      valorInstrumento ||
+      "Não informado"
+    );
+  }
+
+  function obterInstrumentoDoAluno(aluno) {
+    if (!aluno) {
+      return "Não informado";
+    }
+
+    return obterNomeInstrumento(
+      aluno.instrumento ??
+        aluno.instrumento_nome ??
+        aluno.nomeInstrumento ??
+        "",
+      aluno.instrumento_especifico ??
+        aluno.instrumentoEspecifico ??
+        ""
+    );
+  }
+
+  // =====================================================
   // ALUNOS POR INSTRUMENTO
   // =====================================================
 
@@ -328,28 +431,8 @@ function RelatorioAdmin() {
     const mapa = {};
 
     alunos.forEach((aluno) => {
-      let instrumento =
-        aluno?.instrumento ??
-        aluno?.instrumento_nome ??
-        aluno?.nomeInstrumento ??
-        "";
-
-      if (
-        typeof instrumento === "object" &&
-        instrumento !== null
-      ) {
-        instrumento =
-          instrumento.nome ||
-          instrumento.label ||
-          instrumento.instrumento ||
-          "";
-      }
-
-      instrumento = String(instrumento).trim();
-
-      if (!instrumento) {
-        instrumento = "Não informado";
-      }
+      const instrumento =
+        obterInstrumentoDoAluno(aluno);
 
       const chave =
         instrumento.toLocaleLowerCase("pt-BR");
@@ -531,6 +614,10 @@ function RelatorioAdmin() {
             aluno?.instrumento_nome ||
             aluno?.nomeInstrumento ||
             "",
+          instrumento_especifico:
+            aluno?.instrumento_especifico ||
+            aluno?.instrumentoEspecifico ||
+            "",
           presente: 0,
           falta: 0,
           pendente: 0,
@@ -699,27 +786,7 @@ function RelatorioAdmin() {
   }
 
   function obterInstrumento(aluno) {
-    let instrumento =
-      aluno?.instrumento ??
-      aluno?.instrumento_nome ??
-      aluno?.nomeInstrumento ??
-      "";
-
-    if (
-      typeof instrumento === "object" &&
-      instrumento !== null
-    ) {
-      instrumento =
-        instrumento.nome ||
-        instrumento.label ||
-        instrumento.instrumento ||
-        "";
-    }
-
-    return (
-      String(instrumento).trim() ||
-      "Não informado"
-    );
+    return obterInstrumentoDoAluno(aluno);
   }
 
   // =====================================================
@@ -835,30 +902,30 @@ function RelatorioAdmin() {
           </div>
 
           {paginaRelatorio === "principal" && (
-  <div className="relatorio-admin-periodo">
-            <button
-              type="button"
-              onClick={() =>
-                mudarMes(-1)
-              }
-              aria-label="Mês anterior"
-            >
-              ‹
-            </button>
+            <div className="relatorio-admin-periodo">
+              <button
+                type="button"
+                onClick={() =>
+                  mudarMes(-1)
+                }
+                aria-label="Mês anterior"
+              >
+                ‹
+              </button>
 
-            <span>{nomeMes}</span>
+              <span>{nomeMes}</span>
 
-            <button
-              type="button"
-              onClick={() =>
-                mudarMes(1)
-              }
-              aria-label="Próximo mês"
-            >
-              ›
-            </button>
-          </div> 
-        )}
+              <button
+                type="button"
+                onClick={() =>
+                  mudarMes(1)
+                }
+                aria-label="Próximo mês"
+              >
+                ›
+              </button>
+            </div>
+          )}
         </header>
 
         {erroHistorico && (
@@ -873,10 +940,6 @@ function RelatorioAdmin() {
           </div>
         ) : (
           <>
-            {/* =========================================
-                RESUMO HISTÓRICO
-            ========================================= */}
-
             <section className="relatorio-admin-resumo">
               <div className="relatorio-admin-card">
                 <span>
@@ -943,10 +1006,6 @@ function RelatorioAdmin() {
                 </small>
               </div>
             </section>
-
-            {/* =========================================
-                EVOLUÇÃO MENSAL
-            ========================================= */}
 
             <section className="relatorio-admin-section">
               <div className="relatorio-admin-section-header">
@@ -1091,10 +1150,6 @@ function RelatorioAdmin() {
               )}
             </section>
 
-            {/* =========================================
-                DESTAQUE DO PERÍODO
-            ========================================= */}
-
             <section className="relatorio-admin-section">
               <div className="relatorio-admin-section-header">
                 <div>
@@ -1171,10 +1226,6 @@ function RelatorioAdmin() {
                 </p>
               )}
             </section>
-
-            {/* =========================================
-                TABELA HISTÓRICA
-            ========================================= */}
 
             <section className="relatorio-admin-section">
               <div className="relatorio-admin-section-header">

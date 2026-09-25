@@ -56,7 +56,24 @@ function Alunos() {
 
 
   // =========================================================
-  // CARREGAR ALUNOS DA PLANILHA
+  // OPÇÕES DE INSTRUMENTOS
+  // =========================================================
+
+  const opcoesInstrumentos = [
+    { valor: "guitarra", nome: "Guitarra" },
+    { valor: "violao", nome: "Violão" },
+    { valor: "ukulele", nome: "Ukulele" },
+    { valor: "contrabaixo", nome: "Contrabaixo" },
+    { valor: "violino", nome: "Violino" },
+    { valor: "teclado", nome: "Teclado" },
+    { valor: "piano", nome: "Piano" },
+    { valor: "canto", nome: "Canto" },
+    { valor: "bateria", nome: "Bateria" }
+  ];
+
+
+  // =========================================================
+  // CARREGAR ALUNOS
   // =========================================================
 
   useEffect(() => {
@@ -107,37 +124,35 @@ function Alunos() {
 
 
         // =====================================================
-        // NORMALIZA OS DADOS DA PLANILHA
+        // NORMALIZA OS DADOS
         // =====================================================
 
-        const alunosPlanilha =
-          (data.alunos || []).map(
-            (aluno) => ({
+        const alunosPlanilha = (data.alunos || []).map(
+          (aluno) => ({
+            ...aluno,
 
-              ...aluno,
+            codigoAluno:
+              aluno.codigoAluno ??
+              aluno.codigo_aluno ??
+              aluno.id,
 
-              // A planilha ainda não possui
-              // uma URL de foto.
-              foto: null,
+            nascimento:
+              aluno.nascimento || null,
 
-              // A planilha ainda não possui
-              // data de nascimento.
-              nascimento: null,
+            foto:
+              aluno.foto || null,
 
-              // Mantém compatibilidade
-              // com o componente de detalhes.
-              responsaveis:
-                aluno.responsaveis || []
-
-            })
-          );
+            responsaveis:
+              aluno.responsaveis || []
+          })
+        );
 
 
         setAlunos(alunosPlanilha);
 
 
         console.log(
-          "✅ Alunos carregados da planilha:",
+          "✅ Alunos carregados:",
           alunosPlanilha
         );
 
@@ -145,7 +160,7 @@ function Alunos() {
       } catch (error) {
 
         console.error(
-          "❌ Erro ao carregar alunos da planilha:",
+          "❌ Erro ao carregar alunos:",
           error
         );
 
@@ -167,6 +182,36 @@ function Alunos() {
     professor,
     carregandoProfessor
   ]);
+
+
+  // =========================================================
+  // ATUALIZAR ALUNO
+  // =========================================================
+
+  const atualizarAluno = (alunoAtualizado) => {
+
+    setAlunos((alunosAtuais) =>
+      alunosAtuais.map((aluno) =>
+        aluno.id === alunoAtualizado.id
+          ? {
+              ...aluno,
+              ...alunoAtualizado
+            }
+          : aluno
+      )
+    );
+
+
+    setAlunoSelecionado((alunoAtual) =>
+      alunoAtual
+        ? {
+            ...alunoAtual,
+            ...alunoAtualizado
+          }
+        : alunoAtual
+    );
+
+  };
 
 
   // =========================================================
@@ -193,33 +238,50 @@ function Alunos() {
     }
 
 
-    const hoje = new Date();
+    const dataString = String(nascimento)
+      .split("T")[0];
 
-    const dataNascimento =
-      new Date(nascimento);
+
+    const partes = dataString.split("-");
+
+
+    if (partes.length !== 3) {
+      return "";
+    }
+
+
+    const anoNascimento = Number(partes[0]);
+    const mesNascimento = Number(partes[1]);
+    const diaNascimento = Number(partes[2]);
+
+
+    if (
+      !anoNascimento ||
+      !mesNascimento ||
+      !diaNascimento
+    ) {
+      return "";
+    }
+
+
+    const hoje = new Date();
 
 
     let idade =
       hoje.getFullYear() -
-      dataNascimento.getFullYear();
+      anoNascimento;
 
 
-    const mes =
-      hoje.getMonth() -
-      dataNascimento.getMonth();
-
-
-    if (
-      mes < 0 ||
+    const aniversarioAindaNaoChegou =
+      hoje.getMonth() + 1 < mesNascimento ||
       (
-        mes === 0 &&
-        hoje.getDate() <
-        dataNascimento.getDate()
-      )
-    ) {
+        hoje.getMonth() + 1 === mesNascimento &&
+        hoje.getDate() < diaNascimento
+      );
 
+
+    if (aniversarioAindaNaoChegou) {
       idade--;
-
     }
 
 
@@ -281,28 +343,84 @@ function Alunos() {
 
 
   // =========================================================
+  // NOME DO INSTRUMENTO PARA BUSCA
+  // =========================================================
+
+  const obterTextoInstrumento = (aluno) => {
+
+    if (!aluno) {
+      return "";
+    }
+
+
+    const instrumentoEspecifico =
+      aluno.instrumento_especifico;
+
+
+    if (instrumentoEspecifico) {
+
+      const nomeEspecifico =
+        opcoesInstrumentos.find(
+          (opcao) =>
+            opcao.valor ===
+            instrumentoEspecifico
+        )?.nome;
+
+
+      if (nomeEspecifico) {
+        return nomeEspecifico;
+      }
+
+    }
+
+
+    return (
+      nomesInstrumentos[aluno.instrumento] ||
+      aluno.instrumento ||
+      ""
+    );
+
+  };
+
+
+  // =========================================================
   // FILTRAGEM
   // =========================================================
 
- const alunosFiltrados =
-  alunos.filter((aluno) => {
+  const alunosFiltrados =
+    alunos.filter((aluno) => {
 
-    // Não exibir alunos de aula experimental (AE)
-    if (
-      (aluno.nome || "")
-        .trim()
-        .toUpperCase()
-        .startsWith("AE")
-    ) {
-      return false;
-    }
+      // Não exibir alunos de aula experimental
+      if (
+        (aluno.nome || "")
+          .trim()
+          .toUpperCase()
+          .startsWith("AE")
+      ) {
+        return false;
+      }
 
-    const textoPesquisa =
-      pesquisa
-        .toLowerCase()
-        .trim();
 
-    // restante...
+      const textoPesquisa =
+        pesquisa
+          .toLowerCase()
+          .trim();
+
+
+      const textoInstrumento =
+        obterTextoInstrumento(aluno)
+          .toLowerCase();
+
+
+      const nomeInstrumentoBase =
+        (
+          nomesInstrumentos[
+            aluno.instrumento
+          ] ||
+          ""
+        )
+          .toLowerCase();
+
 
       const correspondePesquisa =
 
@@ -312,20 +430,12 @@ function Alunos() {
 
         ||
 
-        (
-          nomesInstrumentos[
-            aluno.instrumento
-          ]
+        textoInstrumento
+          .includes(textoPesquisa)
 
-          ||
+        ||
 
-          aluno.instrumento
-
-          ||
-
-          ""
-        )
-          .toLowerCase()
+        nomeInstrumentoBase
           .includes(textoPesquisa)
 
         ||
@@ -343,21 +453,76 @@ function Alunos() {
         filtroUnidade;
 
 
-      const correspondeInstrumento =
+     const instrumentoBase =
+  String(aluno.instrumento || "")
+    .trim()
+    .toLowerCase();
 
-        !filtroInstrumento ||
+const instrumentoEspecifico =
+  String(aluno.instrumento_especifico || "")
+    .trim()
+    .toLowerCase();
 
-        aluno.instrumento ===
-        filtroInstrumento;
 
+const correspondeInstrumento =
 
-      // =====================================================
-      // IDADE
-      //
-      // Como a planilha atualmente não possui
-      // nascimento, esse filtro só funcionará
-      // quando essa informação existir.
-      // =====================================================
+  !filtroInstrumento ||
+
+  // Já possui instrumento específico:
+  // aparece somente no instrumento escolhido.
+  (
+    instrumentoEspecifico &&
+    instrumentoEspecifico ===
+      filtroInstrumento
+  )
+
+  ||
+
+  // Ainda não possui específico:
+  // 🎸 pode ser qualquer instrumento da família.
+  (
+    !instrumentoEspecifico &&
+    (
+      (
+        (
+          instrumentoBase ===
+            "guitarra/violao" ||
+          instrumentoBase ===
+            "guitarra/violao/ukulele/contrabaixo"
+        ) &&
+        [
+          "guitarra",
+          "violao",
+          "ukulele",
+          "contrabaixo"
+        ].includes(
+          filtroInstrumento
+        )
+      )
+
+      ||
+
+      // 🎹 pode ser Teclado ou Piano.
+      (
+        instrumentoBase ===
+          "teclado/piano" &&
+        [
+          "teclado",
+          "piano"
+        ].includes(
+          filtroInstrumento
+        )
+      )
+
+      ||
+
+      // Registros antigos que já possuem
+      // instrumento específico na própria categoria.
+      instrumentoBase ===
+        filtroInstrumento
+    )
+  );
+
 
       const correspondeIdade =
 
@@ -384,6 +549,7 @@ function Alunos() {
 
     });
 
+    
 
   // =========================================================
   // STATUS
@@ -522,16 +688,14 @@ function Alunos() {
           </option>
 
 
-          {Object.entries(
-            nomesInstrumentos
-          ).map(
-            ([valor, nome]) => (
+          {opcoesInstrumentos.map(
+            (instrumento) => (
 
               <option
-                key={valor}
-                value={valor}
+                key={instrumento.valor}
+                value={instrumento.valor}
               >
-                {nome}
+                {instrumento.nome}
               </option>
 
             )
@@ -581,7 +745,7 @@ function Alunos() {
           (aluno) => (
 
             <AlunoCard
-              key={aluno.codigoAluno || aluno.id}
+              key={aluno.id}
               aluno={aluno}
               nomesInstrumentos={
                 nomesInstrumentos
@@ -649,6 +813,10 @@ function Alunos() {
 
             statusAluno={
               statusAluno
+            }
+
+            onAlunoAtualizado={
+              atualizarAluno
             }
 
 

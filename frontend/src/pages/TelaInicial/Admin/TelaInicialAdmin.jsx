@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FiUsers,
@@ -17,7 +17,10 @@ import "./TelaInicialAdmin.css";
 function TelaInicialAdmin() {
   const navigate = useNavigate();
 
-  const { professor, carregando: carregandoProfessor } = useAuth();
+  const {
+    professor,
+    carregando: carregandoProfessor
+  } = useAuth();
 
   const [alunos, setAlunos] = useState([]);
   const [professores, setProfessores] = useState([]);
@@ -32,23 +35,29 @@ function TelaInicialAdmin() {
       try {
         setCarregando(true);
 
-        const [respostaAlunos, respostaProfessores] =
-          await Promise.all([
-            fetch(`${API_URL}/alunos`, {
-              credentials: "include"
-            }),
+        const [
+          respostaAlunos,
+          respostaProfessores
+        ] = await Promise.all([
+          fetch(`${API_URL}/alunos`, {
+            credentials: "include"
+          }),
 
-            fetch(`${API_URL}/professores`, {
-              credentials: "include"
-            })
-          ]);
+          fetch(`${API_URL}/professores`, {
+            credentials: "include"
+          })
+        ]);
 
-        const dadosAlunos = await respostaAlunos.json();
+        const dadosAlunos =
+          await respostaAlunos.json();
+
         const dadosProfessores =
           await respostaProfessores.json();
 
         if (respostaAlunos.ok) {
-          setAlunos(dadosAlunos.alunos || []);
+          setAlunos(
+            dadosAlunos.alunos || []
+          );
         } else {
           setAlunos([]);
         }
@@ -60,6 +69,7 @@ function TelaInicialAdmin() {
         } else {
           setProfessores([]);
         }
+
       } catch (error) {
         console.error(
           "❌ Erro ao carregar dados do Admin:",
@@ -68,45 +78,184 @@ function TelaInicialAdmin() {
 
         setAlunos([]);
         setProfessores([]);
+
       } finally {
         setCarregando(false);
       }
     };
 
     carregarDados();
-  }, [professor, carregandoProfessor]);
 
-  const totalAlunos = alunos.length;
-  const totalProfessores = professores.filter(
-  (professor) => professor.role === "professor"
-).length;
+  }, [
+    professor,
+    carregandoProfessor
+  ]);
 
-  const alunosAtivos = alunos.filter(
-    (aluno) =>
-      !aluno.status ||
-      aluno.status.toString().toLowerCase() === "ativo"
-  ).length;
 
-  const alunosPorInstrumento = alunos.reduce(
-    (resultado, aluno) => {
-      const instrumento =
-        aluno.instrumento || "Não informado";
+  /*
+   * =====================================================
+   * PROFESSORES
+   * =====================================================
+   *
+   * A lista e o contador usam exatamente o mesmo filtro.
+   */
+  const professoresAtivos = useMemo(() => {
 
-      resultado[instrumento] =
-        (resultado[instrumento] || 0) + 1;
+    return professores.filter(
+      item =>
+        item.role === "professor"
+    );
 
-      return resultado;
-    },
-    {}
-  );
+  }, [
+    professores
+  ]);
 
-  const instrumentosOrdenados = Object.entries(
-    alunosPorInstrumento
-  )
-    .sort(([, quantidadeA], [, quantidadeB]) =>
-      quantidadeB - quantidadeA
+
+  const totalAlunos =
+    alunos.length;
+
+
+  const totalProfessores =
+    professoresAtivos.length;
+
+
+  const alunosAtivos =
+    alunos.filter(
+      aluno =>
+        !aluno.status ||
+        aluno.status
+          .toString()
+          .toLowerCase() === "ativo"
+    ).length;
+
+
+  /*
+   * =====================================================
+   * NOME DO INSTRUMENTO
+   * =====================================================
+   */
+  const obterNomeInstrumento = (
+    instrumento,
+    instrumentoEspecifico
+  ) => {
+
+    const especifico =
+      instrumentoEspecifico
+        ?.toString()
+        .trim()
+        .toLowerCase();
+
+    const base =
+      instrumento
+        ?.toString()
+        .trim()
+        .toLowerCase();
+
+    if (especifico) {
+
+      const nomesEspecificos = {
+        guitarra: "Guitarra",
+        violao: "Violão",
+        ukulele: "Ukulele",
+        contrabaixo: "Contrabaixo",
+        teclado: "Teclado",
+        piano: "Piano",
+        violino: "Violino",
+        bateria: "Bateria",
+        canto: "Canto"
+      };
+
+      return (
+        nomesEspecificos[especifico] ||
+        instrumentoEspecifico
+      );
+
+    }
+
+
+    if (
+      base ===
+        "guitarra/violao/ukulele/contrabaixo" ||
+      base === "guitarra/violao"
+    ) {
+
+      return (
+        "Guitarra, Violão, Ukulele ou Contrabaixo"
+      );
+
+    }
+
+
+    if (
+      base === "teclado/piano"
+    ) {
+
+      return "Teclado ou Piano";
+
+    }
+
+
+    const nomesBase = {
+      guitarra: "Guitarra",
+      violao: "Violão",
+      ukulele: "Ukulele",
+      contrabaixo: "Contrabaixo",
+      teclado: "Teclado",
+      piano: "Piano",
+      violino: "Violino",
+      bateria: "Bateria",
+      canto: "Canto"
+    };
+
+    return (
+      nomesBase[base] ||
+      instrumento ||
+      "Não informado"
+    );
+
+  };
+
+
+  /*
+   * =====================================================
+   * ALUNOS POR INSTRUMENTO
+   * =====================================================
+   */
+  const alunosPorInstrumento = useMemo(() => {
+
+    return alunos.reduce(
+      (resultado, aluno) => {
+
+        const instrumento =
+          obterNomeInstrumento(
+            aluno.instrumento,
+            aluno.instrumento_especifico
+          );
+
+        resultado[instrumento] =
+          (resultado[instrumento] || 0) + 1;
+
+        return resultado;
+
+      },
+      {}
+    );
+
+  }, [
+    alunos
+  ]);
+
+
+  const instrumentosOrdenados =
+    Object.entries(
+      alunosPorInstrumento
     )
-    .slice(0, 6);
+      .sort(
+        ([, quantidadeA], [, quantidadeB]) =>
+          quantidadeB - quantidadeA
+      )
+      .slice(0, 6);
+
 
   return (
     <div className="admin-inicio">
@@ -118,6 +267,7 @@ function TelaInicialAdmin() {
       <div className="admin-inicio-header">
 
         <div>
+
           <h1>
             Olá, {professor?.nome || "Admin"}!
           </h1>
@@ -125,6 +275,7 @@ function TelaInicialAdmin() {
           <p>
             Visão geral da escola
           </p>
+
         </div>
 
       </div>
@@ -143,11 +294,17 @@ function TelaInicialAdmin() {
           </div>
 
           <div>
-            <span>Alunos</span>
+
+            <span>
+              Alunos
+            </span>
 
             <strong>
-              {carregando ? "..." : totalAlunos}
+              {carregando
+                ? "..."
+                : totalAlunos}
             </strong>
+
           </div>
 
         </div>
@@ -160,11 +317,17 @@ function TelaInicialAdmin() {
           </div>
 
           <div>
-            <span>Professores</span>
+
+            <span>
+              Professores
+            </span>
 
             <strong>
-              {carregando ? "..." : totalProfessores}
+              {carregando
+                ? "..."
+                : totalProfessores}
             </strong>
+
           </div>
 
         </div>
@@ -177,11 +340,17 @@ function TelaInicialAdmin() {
           </div>
 
           <div>
-            <span>Alunos ativos</span>
+
+            <span>
+              Alunos ativos
+            </span>
 
             <strong>
-              {carregando ? "..." : alunosAtivos}
+              {carregando
+                ? "..."
+                : alunosAtivos}
             </strong>
+
           </div>
 
         </div>
@@ -194,13 +363,19 @@ function TelaInicialAdmin() {
           </div>
 
           <div>
-            <span>Instrumentos</span>
+
+            <span>
+              Instrumentos
+            </span>
 
             <strong>
               {carregando
                 ? "..."
-                : Object.keys(alunosPorInstrumento).length}
+                : Object.keys(
+                    alunosPorInstrumento
+                  ).length}
             </strong>
+
           </div>
 
         </div>
@@ -221,11 +396,15 @@ function TelaInicialAdmin() {
           <div className="admin-painel-header">
 
             <div>
-              <h2>Professores</h2>
+
+              <h2>
+                Professores
+              </h2>
 
               <p>
                 Professores e quantidade de alunos
               </p>
+
             </div>
 
             <button
@@ -248,7 +427,7 @@ function TelaInicialAdmin() {
                 Carregando professores...
               </div>
 
-            ) : professores.length === 0 ? (
+            ) : professoresAtivos.length === 0 ? (
 
               <div className="admin-estado">
                 Nenhum professor encontrado.
@@ -256,75 +435,77 @@ function TelaInicialAdmin() {
 
             ) : (
 
-              professores.map((item) => (
+              professoresAtivos.map(
+                item => (
 
-                <button
-                  key={item.id}
-                  className="admin-professor-item"
-                  onClick={() =>
-                    navigate(
-                      `/professores/${item.id}`
-                    )
-                  }
-                >
+                  <button
+                    key={item.id}
+                    className="admin-professor-item"
+                    onClick={() =>
+                      navigate(
+                        `/professores/${item.id}`
+                      )
+                    }
+                  >
 
-                  <div className="admin-professor-avatar">
+                    <div className="admin-professor-avatar">
 
-                    {item.foto_url ? (
+                      {item.foto_url ? (
 
-                      <img
-                        src={item.foto_url}
-                        alt={item.nome}
-                      />
+                        <img
+                          src={item.foto_url}
+                          alt={item.nome}
+                        />
 
-                    ) : (
+                      ) : (
+
+                        <span>
+                          {item.nome
+                            ? item.nome
+                                .charAt(0)
+                                .toUpperCase()
+                            : "?"}
+                        </span>
+
+                      )}
+
+                    </div>
+
+
+                    <div className="admin-professor-info">
+
+                      <strong>
+                        {item.nome || "Sem nome"}
+                      </strong>
 
                       <span>
-                        {item.nome
-                          ? item.nome
-                              .charAt(0)
-                              .toUpperCase()
-                          : "?"}
+                        {item.email}
                       </span>
 
-                    )}
-
-                  </div>
+                    </div>
 
 
-                  <div className="admin-professor-info">
+                    <div className="admin-professor-alunos">
 
-                    <strong>
-                      {item.nome || "Sem nome"}
-                    </strong>
+                      <strong>
+                        {item.total_alunos || 0}
+                      </strong>
 
-                    <span>
-                      {item.email}
-                    </span>
+                      <span>
+                        {item.total_alunos === 1
+                          ? "aluno"
+                          : "alunos"}
+                      </span>
 
-                  </div>
-
-
-                  <div className="admin-professor-alunos">
-
-                    <strong>
-                      {item.total_alunos || 0}
-                    </strong>
-
-                    <span>
-                      {item.total_alunos === 1
-                        ? "aluno"
-                        : "alunos"}
-                    </span>
-
-                  </div>
+                    </div>
 
 
-                  <FiArrowRight />
+                    <FiArrowRight />
 
-                </button>
+                  </button>
 
-              ))
+                )
+              )
 
             )}
 
@@ -340,11 +521,15 @@ function TelaInicialAdmin() {
           <div className="admin-painel-header">
 
             <div>
-              <h2>Alunos por instrumento</h2>
+
+              <h2>
+                Alunos por instrumento
+              </h2>
 
               <p>
                 Distribuição dos alunos
               </p>
+
             </div>
 
           </div>
@@ -411,11 +596,15 @@ function TelaInicialAdmin() {
         <div className="admin-painel-header">
 
           <div>
-            <h2>Acessos rápidos</h2>
+
+            <h2>
+              Acessos rápidos
+            </h2>
 
             <p>
               Acesse as principais áreas administrativas
             </p>
+
           </div>
 
         </div>
@@ -432,11 +621,15 @@ function TelaInicialAdmin() {
             <FiUsers />
 
             <div>
-              <strong>Alunos</strong>
+
+              <strong>
+                Alunos
+              </strong>
 
               <span>
                 Ver todos os alunos
               </span>
+
             </div>
 
             <FiArrowRight />
@@ -453,17 +646,20 @@ function TelaInicialAdmin() {
             <FiUserCheck />
 
             <div>
-              <strong>Professores</strong>
+
+              <strong>
+                Professores
+              </strong>
 
               <span>
                 Gerenciar professores
               </span>
+
             </div>
 
             <FiArrowRight />
 
           </button>
-
 
 
           <button
@@ -475,11 +671,15 @@ function TelaInicialAdmin() {
             <FiCheckCircle />
 
             <div>
-              <strong>Relatórios</strong>
+
+              <strong>
+                Relatórios
+              </strong>
 
               <span>
                 Consultar relatórios
               </span>
+
             </div>
 
             <FiArrowRight />

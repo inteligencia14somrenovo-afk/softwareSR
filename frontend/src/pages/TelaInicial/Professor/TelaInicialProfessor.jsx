@@ -59,70 +59,162 @@ function TelaInicial() {
 
   const diaHoje = diasSemana[hoje.getDay()];
 
+
   /*
    * =====================================================
    * NOME DO INSTRUMENTO
    * =====================================================
+   *
+   * Prioriza instrumento_especifico quando existir.
+   *
+   * Se o instrumento ainda for ambíguo:
+   *
+   * 🎸 → Guitarra, Violão, Ukulele ou Contrabaixo
+   * 🎹 → Teclado ou Piano
    */
-  const obterNomeInstrumento = (instrumento) => {
-    if (!instrumento) {
-      return "Não informado";
+  const obterNomeInstrumento = (
+    instrumento,
+    instrumentoEspecifico
+  ) => {
+
+    const especifico =
+      instrumentoEspecifico
+        ?.toString()
+        .trim()
+        .toLowerCase();
+
+    const base =
+      instrumento
+        ?.toString()
+        .trim()
+        .toLowerCase();
+
+    if (especifico) {
+
+      const nomesEspecificos = {
+        guitarra: "Guitarra",
+        violao: "Violão",
+        ukulele: "Ukulele",
+        contrabaixo: "Contrabaixo",
+        teclado: "Teclado",
+        piano: "Piano",
+        violino: "Violino",
+        bateria: "Bateria",
+        canto: "Canto"
+      };
+
+      return (
+        nomesEspecificos[especifico] ||
+        instrumentoEspecifico
+      );
+
     }
 
-    const chave = instrumento
-      .toString()
-      .trim()
-      .toLowerCase();
+    if (
+      base ===
+        "guitarra/violao/ukulele/contrabaixo" ||
+      base === "guitarra/violao"
+    ) {
+
+      return (
+        "Guitarra, Violão, Ukulele ou Contrabaixo"
+      );
+
+    }
+
+    if (
+      base === "teclado/piano"
+    ) {
+
+      return "Teclado ou Piano";
+
+    }
 
     return (
-      nomesInstrumentos[chave] ||
-      instrumento
+      nomesInstrumentos[base] ||
+      instrumento ||
+      "Não informado"
     );
+
   };
+
 
   /*
    * =====================================================
    * ÍCONE DO INSTRUMENTO
    * =====================================================
+   *
+   * Prioriza instrumento_especifico quando existir.
    */
-  const obterIconeInstrumento = (instrumento) => {
+  const obterIconeInstrumento = (
+    instrumento,
+    instrumentoEspecifico
+  ) => {
 
-    if (!instrumento) {
-      return "🎵";
-    }
-
-    const chave = instrumento
-      .toString()
-      .trim()
-      .toLowerCase();
+    const chave =
+      (
+        instrumentoEspecifico ||
+        instrumento ||
+        ""
+      )
+        .toString()
+        .trim()
+        .toLowerCase();
 
     if (
       chave === "violao" ||
       chave === "violão" ||
       chave === "guitarra" ||
-      chave === "violino" ||
-      chave === "ukulele"
+      chave === "ukulele" ||
+      chave === "contrabaixo" ||
+      chave ===
+        "guitarra/violao" ||
+      chave ===
+        "guitarra/violao/ukulele/contrabaixo"
     ) {
+
       return "🎸";
+
     }
 
     if (
       chave === "piano" ||
-      chave === "teclado"
+      chave === "teclado" ||
+      chave === "teclado/piano"
     ) {
+
       return "🎹";
+
     }
 
-    if (chave === "bateria") {
+    if (
+      chave === "violino"
+    ) {
+
+      return "🎻";
+
+    }
+
+    if (
+      chave === "bateria"
+    ) {
+
       return "🥁";
+
     }
 
-    if (chave === "canto") {
+    if (
+      chave === "canto"
+    ) {
+
       return "🎤";
+
     }
 
     return "🎵";
+
   };
+
 
   useEffect(() => {
 
@@ -272,13 +364,6 @@ function TelaInicial() {
    * =====================================================
    * AULAS DE HOJE
    * =====================================================
-   *
-   * Somente aulas normais entram aqui.
-   *
-   * Aulas experimentais são separadas.
-   *
-   * Alunos fixos com dataBloqueada não aparecem
-   * na data em que foram substituídos.
    */
   const aulasHoje = useMemo(() => {
 
@@ -320,9 +405,6 @@ function TelaInicial() {
    * =====================================================
    * AULAS EXPERIMENTAIS DE HOJE
    * =====================================================
-   *
-   * A AE só aparece quando a dataExperimental
-   * corresponde exatamente ao dia de hoje.
    */
   const aulasExperimentaisHoje = useMemo(() => {
 
@@ -459,8 +541,6 @@ function TelaInicial() {
    * =====================================================
    * AULA ACONTECENDO AGORA
    * =====================================================
-   *
-   * AE já foi separada acima.
    */
   const aulaAtual = useMemo(() => {
 
@@ -723,7 +803,8 @@ function TelaInicial() {
 
                 <p>
                   {obterNomeInstrumento(
-                    aulaAtual.instrumento
+                    aulaAtual.instrumento,
+                    aulaAtual.instrumento_especifico
                   )}
                 </p>
 
@@ -756,7 +837,8 @@ function TelaInicial() {
 
                 <p>
                   {obterNomeInstrumento(
-                    proximaAula.instrumento
+                    proximaAula.instrumento,
+                    proximaAula.instrumento_especifico
                   )}
                 </p>
 
@@ -856,13 +938,15 @@ function TelaInicial() {
 
                     <span>
                       {obterIconeInstrumento(
-                        aula.instrumento
+                        aula.instrumento,
+                        aula.instrumento_especifico
                       )}
                     </span>
 
                     <span>
                       {obterNomeInstrumento(
-                        aula.instrumento
+                        aula.instrumento,
+                        aula.instrumento_especifico
                       )}
                     </span>
 
@@ -973,7 +1057,8 @@ function TelaInicial() {
 
                         <span>
                           {obterNomeInstrumento(
-                            aula.instrumento
+                            aula.instrumento,
+                            aula.instrumento_especifico
                           )}
                         </span>
 
