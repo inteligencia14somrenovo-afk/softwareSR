@@ -412,26 +412,135 @@ nav {
 }
 
 
-/* RESPONSIVIDADE */
+/* =====================================================
+   RESPONSIVIDADE
+   ===================================================== */
+
+.sidebar-overlay {
+    display: none;
+}
+
 
 @media (max-width: 768px) {
 
+    /* FUNDO SOBREPOSTO */
+
+    .sidebar-overlay {
+        display: block;
+
+        position: fixed;
+
+        inset: 0;
+
+        background: rgba(0, 0, 0, 0.25);
+
+        opacity: 0;
+
+        visibility: hidden;
+
+        pointer-events: none;
+
+        transition:
+            opacity .25s ease,
+            visibility .25s ease;
+
+        z-index: 999;
+    }
+
+
+    .sidebar-overlay.active {
+        opacity: 1;
+
+        visibility: visible;
+
+        pointer-events: auto;
+    }
+
+
+    /* SIDEBAR MOBILE */
+
     .sidebar {
-        width: 80px;
+        position: fixed;
+
+        top: 0;
+        left: 0;
+
+        width: 52vw;
+
+        min-width: 190px;
+        max-width: 300px;
 
         height: 100dvh;
+
+        z-index: 1000;
+
+        box-shadow:
+            8px 0 30px rgba(0, 0, 0, 0.35);
+
+        transition:
+            transform .3s ease,
+            width .3s ease;
+
+        overflow: hidden;
     }
 
+
+    /* SIDEBAR FECHADO */
+
+    .sidebar.collapsed {
+        width: 58px;
+
+        min-width: 58px;
+
+        max-width: 58px;
+
+        transform: translateX(0);
+
+        box-shadow:
+            4px 0 18px rgba(0, 0, 0, 0.22);
+    }
+
+
+    /* SIDEBAR ABERTO */
+
+    .sidebar:not(.collapsed) {
+        width: 52vw;
+
+        min-width: 190px;
+
+        max-width: 300px;
+    }
+
+
+    /* LOGO */
 
     .sidebar .logo {
+        display: block;
+
+        width: 135px;
+    }
+
+
+    .sidebar.collapsed .logo {
         display: none;
     }
 
 
-    .sidebar span {
-        display: none;
+    /* CABEÇALHO */
+
+    .logo-menu {
+        padding: 18px 12px;
     }
 
+
+    .sidebar.collapsed .logo-menu {
+        justify-content: center;
+
+        padding: 18px 0;
+    }
+
+
+    /* MENU */
 
     nav {
         padding: 12px 8px;
@@ -439,28 +548,56 @@ nav {
 
 
     .sidebar a {
+        justify-content: flex-start;
+
+        gap: 13px;
+
+        padding: 16px 12px;
+    }
+
+
+    .sidebar a span {
+        display: inline;
+    }
+
+
+    /* FECHADO */
+
+    .sidebar.collapsed a {
         justify-content: center;
 
         gap: 0;
 
-        padding: 18px 0;
+        padding: 17px 0;
     }
 
 
-    .sidebar a::before {
-        left: 0;
-    }
-
-
-    .sidebar .profile-info {
+    .sidebar.collapsed span {
         display: none;
     }
 
 
+    /* PERFIL */
+
     .sidebar .profile {
+        padding: 15px;
+    }
+
+
+    .sidebar.collapsed .profile {
         justify-content: center;
 
         padding: 18px 0;
+    }
+
+
+    .sidebar .profile-info {
+        display: block;
+    }
+
+
+    .sidebar.collapsed .profile-info {
+        display: none;
     }
 
 }
