@@ -1,10 +1,15 @@
+/* =====================================================
+   RELATÓRIO
+===================================================== */
+
 .relatorio {
   width: 100%;
+  max-width: 100%;
   min-height: 100%;
   padding: 32px;
   box-sizing: border-box;
+  min-width: 0;
 }
-
 
 /* =====================================================
    CABEÇALHO
@@ -16,6 +21,11 @@
   align-items: center;
   gap: 24px;
   margin-bottom: 24px;
+  min-width: 0;
+}
+
+.relatorio-header > div {
+  min-width: 0;
 }
 
 .relatorio-header h1 {
@@ -23,14 +33,15 @@
   font-size: 30px;
   font-weight: 700;
   color: #222;
+  line-height: 1.2;
 }
 
 .relatorio-header p {
   margin: 6px 0 0;
   color: #777;
   font-size: 14px;
+  line-height: 1.5;
 }
-
 
 /* =====================================================
    BOTÃO DOWNLOAD
@@ -41,6 +52,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+
+  flex-shrink: 0;
 
   border: none;
   padding: 10px 16px;
@@ -68,7 +81,6 @@
   transform: scale(0.97);
 }
 
-
 /* =====================================================
    MÊS
 ===================================================== */
@@ -81,6 +93,7 @@
   gap: 14px;
 
   width: fit-content;
+  max-width: 100%;
 
   margin-bottom: 28px;
 
@@ -91,6 +104,8 @@
   border-radius: 12px;
 
   padding: 8px 12px;
+
+  box-sizing: border-box;
 }
 
 .relatorio-mes strong {
@@ -103,11 +118,15 @@
   text-transform: capitalize;
 
   color: #333;
+
+  white-space: nowrap;
 }
 
 .relatorio-mes button {
   width: 34px;
   height: 34px;
+
+  flex-shrink: 0;
 
   border: none;
   border-radius: 8px;
@@ -126,7 +145,6 @@
   background: #e9e9e9;
 }
 
-
 /* =====================================================
    RESUMO
 ===================================================== */
@@ -140,9 +158,13 @@
   gap: 16px;
 
   margin-bottom: 28px;
+
+  min-width: 0;
 }
 
 .card-resumo {
+  min-width: 0;
+
   background: #fff;
 
   border: 1px solid #e8e8e8;
@@ -150,6 +172,8 @@
   border-radius: 14px;
 
   padding: 20px;
+
+  box-sizing: border-box;
 }
 
 .card-resumo span {
@@ -160,6 +184,8 @@
   font-size: 13px;
 
   margin-bottom: 8px;
+
+  overflow-wrap: anywhere;
 }
 
 .card-resumo strong {
@@ -174,7 +200,6 @@
   background: #fafafa;
 }
 
-
 /* =====================================================
    GRÁFICOS
 ===================================================== */
@@ -188,9 +213,12 @@
   gap: 20px;
 
   margin-bottom: 28px;
+
+  min-width: 0;
 }
 
 .grafico-card {
+  min-width: 0;
   min-height: 280px;
 
   background: #fff;
@@ -202,10 +230,13 @@
   padding: 22px;
 
   box-sizing: border-box;
+
+  overflow: hidden;
 }
 
 .grafico-header {
   margin-bottom: 20px;
+  min-width: 0;
 }
 
 .grafico-header h2 {
@@ -222,8 +253,9 @@
   color: #888;
 
   font-size: 13px;
-}
 
+  line-height: 1.5;
+}
 
 /* =====================================================
    GRÁFICO PRESENÇA X FALTA
@@ -241,12 +273,18 @@
   gap: 28px;
 
   padding: 10px 20px 0;
+
+  box-sizing: border-box;
+
+  min-width: 0;
 }
 
 .barra-grafico {
   width: 45px;
 
   height: 150px;
+
+  flex-shrink: 0;
 
   display: flex;
 
@@ -281,7 +319,6 @@
   background: #d09a00;
 }
 
-
 /* =====================================================
    LEGENDA
 ===================================================== */
@@ -308,6 +345,8 @@
   align-items: center;
 
   gap: 6px;
+
+  white-space: nowrap;
 }
 
 .legenda {
@@ -317,6 +356,8 @@
   border-radius: 50%;
 
   display: inline-block;
+
+  flex-shrink: 0;
 }
 
 .legenda.presente {
@@ -330,7 +371,6 @@
 .legenda.pendente {
   background: #d09a00;
 }
-
 
 /* =====================================================
    FREQUÊNCIA NO MÊS
@@ -347,13 +387,23 @@
 
   overflow-x: auto;
 
+  overflow-y: hidden;
+
   padding: 10px 4px 0;
+
+  box-sizing: border-box;
+
+  min-width: 0;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 .frequencia-coluna {
   min-width: 25px;
 
   height: 100%;
+
+  flex-shrink: 0;
 
   display: flex;
 
@@ -406,6 +456,8 @@
   font-size: 10px;
 
   color: #888;
+
+  white-space: nowrap;
 }
 
 .grafico-vazio {
@@ -422,12 +474,14 @@
   font-size: 13px;
 }
 
-
 /* =====================================================
    SEÇÕES
 ===================================================== */
 
 .relatorio-secao {
+  width: 100%;
+  min-width: 0;
+
   background: #fff;
 
   border: 1px solid #e8e8e8;
@@ -437,12 +491,16 @@
   overflow: hidden;
 
   margin-bottom: 28px;
+
+  box-sizing: border-box;
 }
 
 .secao-header {
   padding: 22px;
 
   border-bottom: 1px solid #eeeeee;
+
+  min-width: 0;
 }
 
 .secao-header h2 {
@@ -459,8 +517,9 @@
   color: #888;
 
   font-size: 13px;
-}
 
+  line-height: 1.5;
+}
 
 /* =====================================================
    PESQUISA
@@ -483,6 +542,10 @@
 
   border-radius: 10px;
 
+  box-sizing: border-box;
+
+  min-width: 0;
+
   transition:
     border-color 0.2s,
     background 0.2s;
@@ -504,6 +567,7 @@
 
 .relatorio-pesquisa input {
   width: 100%;
+  min-width: 0;
 
   border: none;
 
@@ -522,16 +586,27 @@
   color: #999;
 }
 
-
 /* =====================================================
    LISTA DE ALUNOS
 ===================================================== */
 
 .alunos-relatorio {
   width: 100%;
+
+  min-width: 0;
+
+  /*
+   * Permite rolagem horizontal no celular
+   * sem cortar as colunas.
+   */
+  overflow-x: auto;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 .aluno-relatorio {
+  min-width: 0;
+
   border-bottom: 1px solid #eeeeee;
 }
 
@@ -541,6 +616,7 @@
 
 .aluno-linha {
   width: 100%;
+  min-width: 850px;
 
   display: grid;
 
@@ -576,12 +652,13 @@
   background: #fafafa;
 }
 
-
 /* =====================================================
    INFORMAÇÕES DO ALUNO
 ===================================================== */
 
 .aluno-info {
+  min-width: 0;
+
   display: flex;
 
   flex-direction: column;
@@ -590,23 +667,36 @@
 }
 
 .aluno-info strong {
+  overflow: hidden;
+
   font-size: 14px;
 
   color: #222;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
 }
 
 .aluno-info span {
+  overflow: hidden;
+
   font-size: 12px;
 
   color: #888;
-}
 
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
 
 /* =====================================================
    NÚMEROS DO ALUNO
 ===================================================== */
 
 .aluno-numero {
+  min-width: 0;
+
   display: flex;
 
   flex-direction: column;
@@ -627,6 +717,8 @@
 }
 
 .aluno-frequencia {
+  min-width: 0;
+
   display: flex;
 
   flex-direction: column;
@@ -670,7 +762,6 @@
   text-align: center;
 }
 
-
 /* =====================================================
    BOTÃO VER TODOS
 ===================================================== */
@@ -712,7 +803,6 @@
   transform: scale(0.98);
 }
 
-
 /* =====================================================
    MODAL — HISTÓRICO DO ALUNO
 ===================================================== */
@@ -744,11 +834,15 @@
 .historico-modal {
   width: min(900px, 100%);
 
+  max-width: 100%;
+
   max-height: min(800px, 90vh);
 
   display: flex;
 
   flex-direction: column;
+
+  box-sizing: border-box;
 
   background: #fff;
 
@@ -774,6 +868,12 @@
   padding: 24px;
 
   border-bottom: 1px solid #eeeeee;
+
+  min-width: 0;
+}
+
+.historico-modal-header > div {
+  min-width: 0;
 }
 
 .historico-modal-header span {
@@ -796,6 +896,8 @@
   color: #222;
 
   font-size: 21px;
+
+  line-height: 1.3;
 }
 
 .historico-modal-header p {
@@ -804,6 +906,8 @@
   color: #888;
 
   font-size: 13px;
+
+  line-height: 1.5;
 }
 
 .historico-modal-fechar {
@@ -846,7 +950,6 @@
   transform: scale(0.94);
 }
 
-
 /* =====================================================
    RESUMO DO MODAL
 ===================================================== */
@@ -864,9 +967,13 @@
   background: #fafafa;
 
   border-bottom: 1px solid #eeeeee;
+
+  min-width: 0;
 }
 
 .historico-resumo > div {
+  min-width: 0;
+
   display: flex;
 
   flex-direction: column;
@@ -884,12 +991,13 @@
   color: #888;
 
   font-size: 10px;
+
+  overflow-wrap: anywhere;
 }
 
 .historico-resumo .destaque strong {
   color: #222;
 }
-
 
 /* =====================================================
    CONTEÚDO DO MODAL
@@ -899,6 +1007,12 @@
   padding: 20px 24px 24px;
 
   overflow-y: auto;
+
+  overflow-x: hidden;
+
+  min-width: 0;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 .historico-modal-conteudo
@@ -913,23 +1027,32 @@
   font-size: 14px;
 }
 
-
 /* =====================================================
    TABELA HISTÓRICO
 ===================================================== */
 
 .historico-tabela {
+  width: 100%;
+
+  min-width: 0;
+
   border: 1px solid #e5e5e5;
 
   border-radius: 10px;
 
-  overflow: hidden;
+  overflow-x: auto;
+
+  overflow-y: hidden;
 
   background: #fff;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 .historico-cabecalho,
 .historico-linha {
+  min-width: 560px;
+
   display: grid;
 
   grid-template-columns:
@@ -943,6 +1066,8 @@
   gap: 16px;
 
   padding: 13px 16px;
+
+  box-sizing: border-box;
 }
 
 .historico-cabecalho {
@@ -964,7 +1089,6 @@
 
   color: #444;
 }
-
 
 /* =====================================================
    STATUS
@@ -1008,17 +1132,24 @@
   color: #a77700;
 }
 
-
 /* =====================================================
    TABELA GERAL
 ===================================================== */
 
 .tabela-relatorio {
   width: 100%;
+
+  min-width: 0;
+
+  overflow-x: auto;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 .tabela-cabecalho,
 .tabela-linha {
+  min-width: 650px;
+
   display: grid;
 
   grid-template-columns:
@@ -1033,6 +1164,8 @@
   gap: 16px;
 
   padding: 14px 22px;
+
+  box-sizing: border-box;
 }
 
 .tabela-cabecalho {
@@ -1075,7 +1208,6 @@
   font-size: 13px;
 }
 
-
 /* =====================================================
    VAZIO
 ===================================================== */
@@ -1090,7 +1222,6 @@
   font-size: 14px;
 }
 
-
 /* =====================================================
    ERRO
 ===================================================== */
@@ -1099,6 +1230,8 @@
   margin-bottom: 24px;
 
   padding: 14px 18px;
+
+  box-sizing: border-box;
 
   border: 1px solid #f0d0d0;
 
@@ -1109,8 +1242,9 @@
   color: #a33;
 
   font-size: 13px;
-}
 
+  overflow-wrap: anywhere;
+}
 
 /* =====================================================
    LOADING
@@ -1129,7 +1263,6 @@
 
   font-size: 14px;
 }
-
 
 /* =====================================================
    ANIMAÇÕES DO MODAL
@@ -1163,7 +1296,6 @@
   }
 }
 
-
 /* =====================================================
    RESPONSIVO — 1200px
 ===================================================== */
@@ -1172,7 +1304,7 @@
 
   .relatorio-resumo {
     grid-template-columns:
-      repeat(3, 1fr);
+      repeat(3, minmax(0, 1fr));
   }
 
   .aluno-linha {
@@ -1188,7 +1320,6 @@
 
 }
 
-
 /* =====================================================
    RESPONSIVO — 1000px
 ===================================================== */
@@ -1196,7 +1327,8 @@
 @media (max-width: 1000px) {
 
   .relatorio-graficos {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      minmax(0, 1fr);
   }
 
   .aluno-linha {
@@ -1212,7 +1344,6 @@
 
 }
 
-
 /* =====================================================
    RESPONSIVO — 768px
 ===================================================== */
@@ -1226,7 +1357,7 @@
   .relatorio-header {
     flex-direction: column;
 
-    align-items: flex-start;
+    align-items: stretch;
 
     gap: 18px;
   }
@@ -1238,18 +1369,18 @@
   .relatorio-mes {
     width: 100%;
 
-    box-sizing: border-box;
-
     justify-content: space-between;
   }
 
   .relatorio-mes strong {
     flex: 1;
+
+    min-width: 0;
   }
 
   .relatorio-resumo {
     grid-template-columns:
-      repeat(2, 1fr);
+      repeat(2, minmax(0, 1fr));
 
     gap: 10px;
   }
@@ -1267,28 +1398,16 @@
   }
 
   /*
-   * Mantém a tabela horizontalmente rolável
-   * em telas pequenas.
+   * A lista mantém as colunas originais,
+   * mas passa a rolar horizontalmente.
    */
 
-  .relatorio-secao {
+  .alunos-relatorio {
     overflow-x: auto;
   }
 
-  .alunos-relatorio,
-  .tabela-relatorio {
+  .aluno-linha {
     min-width: 850px;
-  }
-
-  /*
-   * A pesquisa continua visível sem
-   * precisar da largura da tabela.
-   */
-
-  .relatorio-pesquisa {
-    min-width: 0;
-
-    box-sizing: border-box;
   }
 
   /*
@@ -1312,7 +1431,7 @@
 
   .historico-resumo {
     grid-template-columns:
-      repeat(3, 1fr);
+      repeat(3, minmax(0, 1fr));
 
     padding: 15px 18px;
   }
@@ -1323,12 +1442,46 @@
 
 }
 
-
 /* =====================================================
    RESPONSIVO — 600px
 ===================================================== */
 
 @media (max-width: 600px) {
+
+  .relatorio-header h1 {
+    font-size: 27px;
+  }
+
+  .relatorio-graficos {
+    gap: 14px;
+  }
+
+  .grafico-presenca {
+    gap: 20px;
+
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .barra-grafico {
+    width: 38px;
+  }
+
+  .legenda-grafico {
+    gap: 10px;
+
+    justify-content: flex-start;
+  }
+
+  .relatorio-pesquisa {
+    margin: 14px 15px;
+
+    padding: 9px 12px;
+  }
+
+  .btn-ver-todos {
+    width: calc(100% - 30px);
+  }
 
   .historico-modal-header h2 {
     font-size: 18px;
@@ -1336,7 +1489,7 @@
 
   .historico-resumo {
     grid-template-columns:
-      repeat(2, 1fr);
+      repeat(2, minmax(0, 1fr));
   }
 
   .historico-cabecalho,
@@ -1370,7 +1523,6 @@
 
 }
 
-
 /* =====================================================
    RESPONSIVO — 480px
 ===================================================== */
@@ -1378,16 +1530,34 @@
 @media (max-width: 480px) {
 
   .relatorio {
-    padding: 15px;
+    padding: 15px 12px;
   }
 
   .relatorio-header h1 {
-    font-size: 26px;
+    font-size: 25px;
+  }
+
+  .relatorio-header p {
+    font-size: 13px;
+  }
+
+  .relatorio-mes {
+    gap: 8px;
+  }
+
+  .relatorio-mes strong {
+    font-size: 13px;
+  }
+
+  .relatorio-mes button {
+    width: 32px;
+    height: 32px;
   }
 
   .relatorio-resumo {
     grid-template-columns:
-      1fr 1fr;
+      minmax(0, 1fr)
+      minmax(0, 1fr);
 
     gap: 8px;
   }
@@ -1404,32 +1574,54 @@
     font-size: 21px;
   }
 
-  .relatorio-graficos {
-    gap: 14px;
+  .grafico-card {
+    min-height: 260px;
+
+    padding: 15px;
   }
 
-  .grafico-presenca {
-    gap: 20px;
+  .grafico-header h2 {
+    font-size: 16px;
   }
 
-  .barra-grafico {
-    width: 38px;
+  .grafico-header p {
+    font-size: 12px;
   }
 
-  .legenda-grafico {
-    gap: 10px;
+  .frequencia-grafico {
+    gap: 6px;
+  }
 
-    justify-content: flex-start;
+  .relatorio-secao {
+    border-radius: 12px;
+  }
+
+  .secao-header {
+    padding: 17px 15px;
+  }
+
+  .secao-header h2 {
+    font-size: 17px;
+  }
+
+  .secao-header p {
+    font-size: 12px;
   }
 
   .relatorio-pesquisa {
-    margin: 14px 15px;
-
-    padding: 9px 12px;
+    margin: 13px 15px;
   }
 
-  .btn-ver-todos {
-    width: calc(100% - 30px);
+  /*
+   * Mantém largura suficiente para todas
+   * as colunas, permitindo arrastar.
+   */
+
+  .aluno-linha {
+    min-width: 850px;
+
+    padding-left: 15px;
+    padding-right: 15px;
   }
 
   .historico-modal-overlay {
@@ -1444,6 +1636,16 @@
 
   .historico-modal-header {
     padding: 16px;
+
+    gap: 10px;
+  }
+
+  .historico-modal-header h2 {
+    font-size: 17px;
+  }
+
+  .historico-modal-header p {
+    font-size: 12px;
   }
 
   .historico-resumo {
@@ -1454,6 +1656,51 @@
 
   .historico-modal-conteudo {
     padding: 14px 16px 18px;
+  }
+
+}
+
+/* =====================================================
+   RESPONSIVO — 380px
+===================================================== */
+
+@media (max-width: 380px) {
+
+  .relatorio {
+    padding: 12px 10px;
+  }
+
+  .relatorio-header h1 {
+    font-size: 23px;
+  }
+
+  .relatorio-mes {
+    padding: 6px 8px;
+  }
+
+  .relatorio-resumo {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .card-resumo {
+    min-height: auto;
+  }
+
+  .grafico-card {
+    padding: 13px;
+  }
+
+  .historico-modal-header {
+    padding: 14px;
+  }
+
+  .historico-resumo {
+    padding: 12px 14px;
+  }
+
+  .historico-modal-conteudo {
+    padding: 12px 14px 16px;
   }
 
 }

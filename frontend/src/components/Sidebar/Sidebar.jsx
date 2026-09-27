@@ -28,8 +28,32 @@ const Sidebar = () => {
     }
   };
 
+  const alternarMenu = () => {
+    setCollapsed((estado) => !estado);
+  };
+
   return (
     <>
+      {/* =================================================
+          BOTÃO HAMBÚRGUER MOBILE
+      ================================================= */}
+
+      <button
+        type="button"
+        className={`mobile-menu-button ${
+          collapsed ? "visible" : ""
+        }`}
+        onClick={() => setCollapsed(false)}
+        aria-label="Abrir menu"
+      >
+        <MdMenu />
+      </button>
+
+
+      {/* =================================================
+          OVERLAY MOBILE
+      ================================================= */}
+
       <div
         className={`sidebar-overlay ${
           collapsed ? "" : "active"
@@ -37,11 +61,20 @@ const Sidebar = () => {
         onClick={() => setCollapsed(true)}
       />
 
+
+      {/* =================================================
+          SIDEBAR
+      ================================================= */}
+
       <aside
         className={`sidebar ${
           collapsed ? "collapsed" : ""
         }`}
       >
+
+        {/* =================================================
+            LOGO + BOTÃO
+        ================================================= */}
 
         <div className="logo-menu">
 
@@ -53,19 +86,17 @@ const Sidebar = () => {
             />
           )}
 
-          {collapsed ? (
-            <MdMenu
-              className="menu-icon-2"
-              onClick={() => setCollapsed(false)}
-            />
-          ) : (
-            <MdMenuOpen
-              className="menu-icon"
-              onClick={() => setCollapsed(true)}
-            />
-          )}
+          <MdMenuOpen
+            className="menu-icon"
+            onClick={alternarMenu}
+          />
 
         </div>
+
+
+        {/* =================================================
+            MENU
+        ================================================= */}
 
         <nav>
 
@@ -74,16 +105,18 @@ const Sidebar = () => {
             onClick={fecharMenuMobile}
           >
             <FaHome />
-            {!collapsed && <span>Tela inicial</span>}
+            <span>Tela inicial</span>
           </NavLink>
+
 
           <NavLink
             to="/alunos"
             onClick={fecharMenuMobile}
           >
             <FaUserGraduate />
-            {!collapsed && <span>Alunos</span>}
+            <span>Alunos</span>
           </NavLink>
+
 
           {podeGerenciarProfessores && (
             <NavLink
@@ -91,75 +124,92 @@ const Sidebar = () => {
               onClick={fecharMenuMobile}
             >
               <FaChalkboardTeacher />
-              {!collapsed && <span>Professores</span>}
+              <span>Professores</span>
             </NavLink>
           )}
+
 
           <NavLink
             to="/presenca"
             onClick={fecharMenuMobile}
           >
             <FaClipboardCheck />
-            {!collapsed && <span>Presença</span>}
+            <span>Presença</span>
           </NavLink>
+
 
           <NavLink
             to="/relatorio"
             onClick={fecharMenuMobile}
           >
             <FaChartBar />
-            {!collapsed && <span>Relatório</span>}
+            <span>Relatório</span>
           </NavLink>
+
 
           <NavLink
             to="/config"
             onClick={fecharMenuMobile}
           >
             <FaCog />
-            {!collapsed && <span>Configuração</span>}
+            <span>Configuração</span>
           </NavLink>
 
         </nav>
 
+
+        {/* =================================================
+            PERFIL
+        ================================================= */}
+
         <div className="profile">
 
           <div className="profile-image">
+
             {professor?.foto_url ? (
+
               <img
                 src={professor.foto_url}
                 alt={professor.nome}
               />
+
             ) : (
+
               <span>
                 {professor?.nome
                   ? professor.nome.charAt(0).toUpperCase()
                   : "?"}
               </span>
+
             )}
+
           </div>
 
-          {!collapsed && (
-            <div className="profile-info">
 
-              <h4>
-                {professor?.nome
-                  ? professor.nome.trim().split(/\s+/)[0]
-                  : "Usuário"}{" "}
-                (
-                  {professor?.role === "dev"
-                    ? "Dev"
-                    : professor?.role === "admin"
-                    ? "Admin"
-                    : "Instrutor"}
-                )
-              </h4>
+          <div className="profile-info">
 
-              <p>
-                {professor?.email || ""}
-              </p>
+            <h4>
 
-            </div>
-          )}
+              {professor?.nome
+                ? professor.nome.trim().split(/\s+/)[0]
+                : "Usuário"}{" "}
+
+              (
+                {professor?.role === "dev"
+                  ? "Dev"
+                  : professor?.role === "admin"
+                  ? "Admin"
+                  : "Instrutor"}
+              )
+
+            </h4>
+
+
+            <p>
+              {professor?.email || ""}
+            </p>
+
+          </div>
 
         </div>
 

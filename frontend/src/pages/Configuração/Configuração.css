@@ -1,11 +1,22 @@
+/* =========================
+   CONFIGURAÇÃO
+========================= */
+
 .configuracao-page {
-  padding: 30px 30px 40px;
+  width: 100%;
   max-width: 1050px;
+  box-sizing: border-box;
+
+  padding: 30px 30px 40px;
+
   margin-left: 40px;
   margin-right: auto;
+
   color: #202020;
   background: #f6f7f8;
+
   position: relative;
+  min-width: 0;
 }
 
 
@@ -16,21 +27,29 @@
 .configuracao-header {
   margin-bottom: 25px;
   position: relative;
+  min-width: 0;
 }
 
 .configuracao-header h1 {
   margin: 0;
+
   font-size: 28px;
   font-weight: 700;
   letter-spacing: -0.6px;
+
   color: #171717;
+
+  overflow-wrap: anywhere;
 }
 
 .configuracao-header p {
   margin: 7px 0 0;
+
   color: #7b7b7b;
   font-size: 14px;
   line-height: 1.5;
+
+  overflow-wrap: anywhere;
 }
 
 
@@ -40,6 +59,11 @@
 
 .configuracao-card {
   position: relative;
+
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 
   background: rgba(255, 255, 255, 0.94);
 
@@ -61,7 +85,6 @@
     box-shadow 0.22s ease;
 }
 
-/* pequeno brilho superior */
 .configuracao-card::before {
   content: "";
 
@@ -107,8 +130,11 @@
 .card-title {
   display: flex;
   align-items: center;
+
   gap: 13px;
   margin-bottom: 25px;
+
+  min-width: 0;
 }
 
 .card-icon {
@@ -156,18 +182,30 @@
     0 5px 12px rgba(160, 0, 0, 0.08);
 }
 
+.card-title > div {
+  min-width: 0;
+}
+
 .card-title h2 {
   margin: 0;
+
   font-size: 18px;
   font-weight: 650;
   letter-spacing: -0.2px;
+
   color: #202020;
+
+  overflow-wrap: anywhere;
 }
 
 .card-title p {
   margin: 4px 0 0;
+
   font-size: 13px;
   color: #888;
+
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 
@@ -178,16 +216,20 @@
 .perfil-principal {
   display: flex;
   align-items: center;
+
   gap: 18px;
 
   padding-bottom: 25px;
   margin-bottom: 25px;
 
   border-bottom: 1px solid #eeeeef;
+
+  min-width: 0;
 }
 
 .foto-container {
   position: relative;
+  flex-shrink: 0;
 }
 
 .perfil-foto {
@@ -242,6 +284,7 @@
 
 .foto-editar {
   position: absolute;
+
   inset: auto 0 0 0;
 
   height: 30px;
@@ -264,12 +307,21 @@
   opacity: 1;
 }
 
+.perfil-identidade {
+  min-width: 0;
+  flex: 1;
+}
+
 .perfil-identidade h3 {
   margin: 0;
+
   font-size: 19px;
   font-weight: 650;
   letter-spacing: -0.2px;
+
   color: #202020;
+
+  overflow-wrap: anywhere;
 }
 
 .perfil-identidade span {
@@ -279,6 +331,8 @@
 
   color: #888;
   font-size: 13px;
+
+  overflow-wrap: anywhere;
 }
 
 
@@ -287,6 +341,10 @@
 ========================= */
 
 .campo-configuracao {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
   margin-bottom: 20px;
 }
 
@@ -297,11 +355,15 @@
 
   font-size: 14px;
   font-weight: 600;
+
   color: #333;
+
+  overflow-wrap: anywhere;
 }
 
 .campo-configuracao input {
   width: 100%;
+  max-width: 100%;
   height: 44px;
 
   box-sizing: border-box;
@@ -350,10 +412,15 @@
 
   color: #999;
   font-size: 12px;
+
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .input-com-icone {
   position: relative;
+  width: 100%;
+  min-width: 0;
 }
 
 .input-com-icone svg {
@@ -384,6 +451,9 @@
 ========================= */
 
 .mensagem-erro {
+  width: 100%;
+  box-sizing: border-box;
+
   padding: 11px 13px;
   margin-bottom: 18px;
 
@@ -394,12 +464,19 @@
   color: #b42318;
 
   font-size: 13px;
+  line-height: 1.45;
+
+  overflow-wrap: anywhere;
 }
 
 .mensagem-sucesso {
   display: flex;
   align-items: center;
+
   gap: 8px;
+
+  width: 100%;
+  box-sizing: border-box;
 
   padding: 11px 13px;
   margin-bottom: 18px;
@@ -411,6 +488,9 @@
   color: #237a3b;
 
   font-size: 13px;
+  line-height: 1.45;
+
+  overflow-wrap: anywhere;
 }
 
 
@@ -421,10 +501,14 @@
 .configuracao-acoes {
   display: flex;
   justify-content: flex-end;
+
   margin-top: 5px;
+
+  min-width: 0;
 }
 
 .btn-salvar {
+  min-height: 42px;
   height: 42px;
 
   padding: 0 20px;
@@ -484,11 +568,19 @@
 
 .conta-info {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr)
+    auto;
 
   align-items: center;
 
   gap: 25px;
+
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 
   padding: 18px;
 
@@ -516,7 +608,10 @@
 .conta-detalhe {
   display: flex;
   flex-direction: column;
+
   gap: 5px;
+
+  min-width: 0;
 }
 
 .conta-label {
@@ -527,24 +622,32 @@
 .conta-detalhe strong {
   font-size: 14px;
   font-weight: 600;
+
   color: #333;
+
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .conta-status-container {
   display: flex;
   justify-content: flex-end;
+
+  flex-shrink: 0;
 }
 
 .conta-status {
   display: flex;
   align-items: center;
+
   gap: 6px;
 
   color: #2e7d32;
 
   font-size: 13px;
   font-weight: 600;
+
+  white-space: nowrap;
 }
 
 .conta-status span {
@@ -554,14 +657,18 @@
 .conta-acoes {
   display: flex;
   justify-content: flex-end;
+
   margin-top: 18px;
 }
 
 .btn-sair {
   display: flex;
   align-items: center;
+  justify-content: center;
+
   gap: 8px;
 
+  min-height: 40px;
   height: 40px;
 
   padding: 0 16px;
@@ -607,6 +714,8 @@
 
   border-bottom: 1px solid transparent;
 
+  min-width: 0;
+
   transition: padding 0.2s ease;
 }
 
@@ -618,17 +727,26 @@
 .opcao-texto {
   display: flex;
   flex-direction: column;
+
   gap: 5px;
+
+  min-width: 0;
+  flex: 1;
 }
 
 .opcao-texto strong {
   font-size: 14px;
   color: #333;
+
+  overflow-wrap: anywhere;
 }
 
 .opcao-texto span {
   color: #888;
   font-size: 12px;
+  line-height: 1.45;
+
+  overflow-wrap: anywhere;
 }
 
 
@@ -641,6 +759,8 @@
   height: 26px;
 
   padding: 3px;
+
+  box-sizing: border-box;
 
   border: none;
   border-radius: 30px;
@@ -694,6 +814,10 @@
 
   gap: 18px;
 
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
   padding: 20px;
 
   background: linear-gradient(
@@ -746,6 +870,7 @@
 
 .sobre-texto {
   min-width: 0;
+  flex: 1;
 }
 
 .sobre-texto h3 {
@@ -754,6 +879,8 @@
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.2px;
+
+  overflow-wrap: anywhere;
 }
 
 .sobre-texto p {
@@ -763,6 +890,8 @@
 
   font-size: 13px;
   line-height: 1.5;
+
+  overflow-wrap: anywhere;
 }
 
 
@@ -775,6 +904,9 @@
   flex-direction: column;
 
   gap: 0;
+
+  width: 100%;
+  min-width: 0;
 
   margin-top: 24px;
 
@@ -804,6 +936,10 @@
 
   gap: 20px;
 
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
   padding: 14px 0;
 
   border-bottom: 1px solid #eeeeef;
@@ -823,14 +959,20 @@
 .sobre-detalhe span {
   color: #777;
   font-size: 13px;
+
+  min-width: 0;
 }
 
 .sobre-detalhe strong {
   font-size: 14px;
   font-weight: 600;
+
   color: #222;
 
   text-align: right;
+
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 
@@ -840,6 +982,7 @@
 
 .sobre-secao {
   margin-top: 28px;
+  min-width: 0;
 }
 
 .sobre-secao h4,
@@ -860,10 +1003,18 @@
 .sobre-links {
   display: flex;
   flex-direction: column;
+
   gap: 7px;
+
+  min-width: 0;
 }
 
 .sobre-link {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
   width: 100%;
   min-height: 46px;
 
@@ -883,6 +1034,7 @@
   text-align: left;
 
   cursor: pointer;
+  text-decoration: none;
 
   transition:
     border-color 0.2s ease,
@@ -907,6 +1059,57 @@
 
 .sobre-link:active {
   transform: translateX(3px) scale(0.99);
+}
+
+.sobre-link-icone {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 7px;
+
+  background: #faf1f1;
+  color: #a00000;
+
+  font-size: 15px;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.sobre-link:hover .sobre-link-icone {
+  background: #f8e6e6;
+  transform: translateY(-1px);
+}
+
+.sobre-link-texto {
+  flex: 1;
+  min-width: 0;
+
+  overflow-wrap: anywhere;
+}
+
+.sobre-link-seta {
+  color: #999;
+
+  font-size: 17px;
+
+  flex-shrink: 0;
+
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.sobre-link:hover .sobre-link-seta {
+  transform: translateX(3px);
+  color: #a00000;
 }
 
 
@@ -942,66 +1145,8 @@
 
   font-size: 11px;
   line-height: 1.5;
-}
 
-
-/* =========================
-   RESPONSIVO
-========================= */
-
-@media (max-width: 600px) {
-
-  .configuracao-page {
-    padding: 20px 15px;
-    margin-left: 0;
-  }
-
-  .configuracao-header h1 {
-    font-size: 25px;
-  }
-
-  .configuracao-card {
-    padding: 20px;
-    border-radius: 14px;
-  }
-
-  .sobre-conteudo {
-    align-items: flex-start;
-    padding: 18px;
-  }
-
-  .sobre-logo {
-    width: 52px;
-    height: 52px;
-    font-size: 17px;
-  }
-
-  .sobre-texto h3 {
-    font-size: 17px;
-  }
-
-  .sobre-detalhe {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .sobre-detalhe strong {
-    text-align: left;
-  }
-
-  .sobre-link {
-    min-height: 44px;
-  }
-
-  .conta-info {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .conta-status-container {
-    justify-content: flex-start;
-  }
+  overflow-wrap: anywhere;
 }
 
 
@@ -1010,15 +1155,24 @@
 ========================= */
 
 .documento-configuracao {
-  padding: 30px;
+  width: 100%;
   max-width: 900px;
+
+  box-sizing: border-box;
+
+  padding: 30px;
+
   margin: 0 auto;
+
   color: #222;
   background: #f6f7f8;
+
+  min-width: 0;
 }
 
 .documento-header {
   margin-bottom: 25px;
+  min-width: 0;
 }
 
 .documento-voltar {
@@ -1054,6 +1208,8 @@
   letter-spacing: -0.5px;
 
   color: #222;
+
+  overflow-wrap: anywhere;
 }
 
 .documento-header p {
@@ -1063,9 +1219,16 @@
 
   font-size: 14px;
   line-height: 1.5;
+
+  overflow-wrap: anywhere;
 }
 
 .documento-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
   background: rgba(255, 255, 255, 0.95);
 
   border: 1px solid #e9eaec;
@@ -1080,6 +1243,7 @@
 
 .documento-secao {
   margin-bottom: 28px;
+  min-width: 0;
 }
 
 .documento-secao:last-child {
@@ -1093,6 +1257,8 @@
   font-weight: 700;
 
   color: #222;
+
+  overflow-wrap: anywhere;
 }
 
 .documento-secao p {
@@ -1102,6 +1268,8 @@
 
   font-size: 14px;
   line-height: 1.75;
+
+  overflow-wrap: anywhere;
 }
 
 .documento-aviso {
@@ -1118,6 +1286,8 @@
   );
 
   border: 1px solid #e8e9eb;
+
+  box-sizing: border-box;
 }
 
 .documento-aviso strong {
@@ -1136,6 +1306,8 @@
 
   font-size: 13px;
   line-height: 1.6;
+
+  overflow-wrap: anywhere;
 }
 
 .documento-footer {
@@ -1149,31 +1321,8 @@
 
   font-size: 12px;
   line-height: 1.6;
-}
 
-@media (max-width: 600px) {
-
-  .documento-configuracao {
-    padding: 20px 15px;
-  }
-
-  .documento-header h1 {
-    font-size: 24px;
-  }
-
-  .documento-card {
-    padding: 22px 18px;
-    border-radius: 12px;
-  }
-
-  .documento-secao h2 {
-    font-size: 16px;
-  }
-
-  .documento-secao p {
-    font-size: 13px;
-    line-height: 1.7;
-  }
+  overflow-wrap: anywhere;
 }
 
 
@@ -1186,10 +1335,13 @@
   flex-direction: column;
 
   border-top: 1px solid #eee;
+
+  min-width: 0;
 }
 
 .ajuda-item {
   border-bottom: 1px solid #eee;
+  min-width: 0;
 }
 
 .ajuda-pergunta {
@@ -1203,6 +1355,8 @@
   justify-content: space-between;
 
   gap: 20px;
+
+  box-sizing: border-box;
 
   border: none;
   background: transparent;
@@ -1221,6 +1375,11 @@
 
 .ajuda-pergunta:hover {
   color: #a00000;
+}
+
+.ajuda-pergunta > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .ajuda-icone {
@@ -1263,6 +1422,8 @@
 
   font-size: 13px;
   line-height: 1.7;
+
+  overflow-wrap: anywhere;
 }
 
 .ajuda-acoes {
@@ -1271,6 +1432,8 @@
   gap: 10px;
 
   margin-top: 25px;
+
+  min-width: 0;
 }
 
 .ajuda-acao {
@@ -1324,25 +1487,35 @@
 .problema-formulario {
   display: flex;
   flex-direction: column;
+
   gap: 20px;
+
+  min-width: 0;
 }
 
 .problema-campo {
   display: flex;
   flex-direction: column;
+
   gap: 7px;
+
+  min-width: 0;
 }
 
 .problema-campo label {
   font-size: 14px;
   font-weight: 600;
+
   color: #222;
+
+  overflow-wrap: anywhere;
 }
 
 .problema-campo input,
 .problema-campo select,
 .problema-campo textarea {
   width: 100%;
+  max-width: 100%;
 
   box-sizing: border-box;
 
@@ -1398,6 +1571,8 @@
 
   background: #fafafa;
   border: 1px solid #eeeeef;
+
+  box-sizing: border-box;
 }
 
 .problema-aviso strong {
@@ -1416,6 +1591,8 @@
 
   font-size: 12px;
   line-height: 1.6;
+
+  overflow-wrap: anywhere;
 }
 
 .problema-acoes {
@@ -1426,6 +1603,8 @@
   gap: 10px;
 
   margin-top: 5px;
+
+  min-width: 0;
 }
 
 .problema-cancelar,
@@ -1501,6 +1680,9 @@
 
   gap: 15px;
 
+  width: 100%;
+  box-sizing: border-box;
+
   padding: 18px;
 
   border-radius: 10px;
@@ -1535,6 +1717,8 @@
 
   font-size: 14px;
   color: #246b2c;
+
+  overflow-wrap: anywhere;
 }
 
 .problema-sucesso p {
@@ -1544,6 +1728,8 @@
 
   font-size: 13px;
   line-height: 1.5;
+
+  overflow-wrap: anywhere;
 }
 
 .problema-novo {
@@ -1570,6 +1756,10 @@
   align-items: center;
 
   gap: 15px;
+
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 
   padding: 20px;
 
@@ -1611,11 +1801,17 @@
     0 5px 13px rgba(160, 0, 0, 0.12);
 }
 
+.suporte-perfil > div:last-child {
+  min-width: 0;
+}
+
 .suporte-perfil h2 {
   margin: 0;
 
   font-size: 17px;
   font-weight: 700;
+
+  overflow-wrap: anywhere;
 }
 
 .suporte-perfil p {
@@ -1624,6 +1820,8 @@
   color: #888;
 
   font-size: 12px;
+
+  overflow-wrap: anywhere;
 }
 
 .suporte-contatos {
@@ -1631,6 +1829,8 @@
   flex-direction: column;
 
   margin-top: 25px;
+
+  min-width: 0;
 }
 
 .suporte-contato {
@@ -1642,6 +1842,8 @@
   padding: 17px 0;
 
   border-bottom: 1px solid #eee;
+
+  min-width: 0;
 }
 
 .suporte-contato-icone {
@@ -1695,6 +1897,7 @@
   font-weight: 600;
 
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .suporte-contato-botao {
@@ -1721,6 +1924,8 @@
 
   white-space: nowrap;
 
+  flex-shrink: 0;
+
   transition:
     border-color 0.2s ease,
     background 0.2s ease,
@@ -1744,6 +1949,8 @@
 
   background: #fafafa;
   border: 1px solid #eeeeef;
+
+  box-sizing: border-box;
 }
 
 .suporte-aviso strong {
@@ -1762,6 +1969,8 @@
 
   font-size: 12px;
   line-height: 1.6;
+
+  overflow-wrap: anywhere;
 }
 
 .suporte-acoes {
@@ -1809,10 +2018,116 @@
 
 
 /* =========================
-   RESPONSIVO - AJUDA/SUPORTE
+   RESPONSIVO
 ========================= */
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
+
+  .configuracao-page {
+    margin-left: 0;
+    padding: 25px;
+  }
+
+  .conta-info {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+  }
+
+  .conta-status-container {
+    justify-content: flex-start;
+    grid-column: 1 / -1;
+  }
+}
+
+
+@media (max-width: 700px) {
+
+  .configuracao-page {
+    padding: 20px;
+  }
+
+  .configuracao-header h1 {
+    font-size: 25px;
+  }
+
+  .configuracao-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
+  .card-title {
+    align-items: flex-start;
+  }
+
+  .sobre-conteudo {
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .sobre-logo {
+    width: 52px;
+    height: 52px;
+    font-size: 17px;
+  }
+
+  .sobre-texto h3 {
+    font-size: 17px;
+  }
+
+  .sobre-detalhe {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sobre-detalhe strong {
+    text-align: left;
+  }
+
+  .sobre-link {
+    min-height: 44px;
+  }
+
+  .conta-info {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+  }
+
+  .conta-status-container {
+    grid-column: auto;
+    justify-content: flex-start;
+  }
+
+  .configuracao-acoes {
+    justify-content: stretch;
+  }
+
+  .btn-salvar {
+    width: 100%;
+  }
+
+  .documento-configuracao {
+    padding: 20px;
+  }
+
+  .documento-header h1 {
+    font-size: 24px;
+  }
+
+  .documento-card {
+    padding: 22px 18px;
+    border-radius: 12px;
+  }
+
+  .documento-secao h2 {
+    font-size: 16px;
+  }
+
+  .documento-secao p {
+    font-size: 13px;
+    line-height: 1.7;
+  }
 
   .ajuda-acoes {
     flex-direction: column;
@@ -1833,6 +2148,10 @@
 
   .problema-cancelar,
   .problema-enviar {
+    width: 100%;
+  }
+
+  .problema-novo {
     width: 100%;
   }
 
@@ -1861,63 +2180,221 @@
 }
 
 
-/* =========================
-   LINKS DO SOBRE - ÍCONE
-========================= */
+@media (max-width: 480px) {
 
-.sobre-link {
-  display: flex;
-  align-items: center;
+  .configuracao-page {
+    padding: 15px 12px 30px;
+  }
 
-  gap: 12px;
+  .configuracao-header {
+    margin-bottom: 18px;
+  }
 
-  text-decoration: none;
+  .configuracao-header h1 {
+    font-size: 23px;
+  }
+
+  .configuracao-header p {
+    font-size: 13px;
+  }
+
+  .configuracao-card {
+    padding: 16px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+  }
+
+  .card-title {
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .card-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 17px;
+  }
+
+  .card-title h2 {
+    font-size: 16px;
+  }
+
+  .card-title p {
+    font-size: 12px;
+  }
+
+  .perfil-principal {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+
+  .perfil-foto {
+    width: 78px;
+    height: 78px;
+
+    font-size: 29px;
+  }
+
+  .perfil-identidade h3 {
+    font-size: 17px;
+  }
+
+  .conta-info {
+    padding: 14px;
+  }
+
+  .configuracao-opcao {
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px 0;
+  }
+
+  .opcao-texto strong {
+    font-size: 13px;
+  }
+
+  .opcao-texto span {
+    font-size: 11px;
+  }
+
+  .sobre-conteudo {
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .sobre-logo {
+    width: 46px;
+    height: 46px;
+    font-size: 15px;
+  }
+
+  .sobre-texto h3 {
+    font-size: 16px;
+  }
+
+  .sobre-texto p {
+    font-size: 12px;
+  }
+
+  .sobre-detalhe {
+    gap: 5px;
+  }
+
+  .sobre-detalhe span,
+  .sobre-detalhe strong {
+    font-size: 12px;
+  }
+
+  .sobre-link {
+    gap: 9px;
+    padding: 8px;
+  }
+
+  .sobre-link-icone {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .sobre-link-seta {
+    font-size: 15px;
+  }
+
+  .ajuda-pergunta {
+    gap: 10px;
+    padding: 14px 2px;
+    font-size: 13px;
+  }
+
+  .ajuda-resposta {
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
+  .problema-sucesso {
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .problema-sucesso-icone {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  .suporte-perfil {
+    align-items: flex-start;
+    padding: 15px;
+  }
+
+  .suporte-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .suporte-perfil h2 {
+    font-size: 15px;
+  }
+
+  .suporte-contato-botao {
+    margin-left: 0;
+  }
+
+  .documento-configuracao {
+    padding: 15px 12px 30px;
+  }
+
+  .documento-header {
+    margin-bottom: 18px;
+  }
+
+  .documento-header h1 {
+    font-size: 22px;
+  }
+
+  .documento-card {
+    padding: 18px 15px;
+  }
+
+  .documento-aviso {
+    padding: 13px 14px;
+  }
 }
 
-.sobre-link-icone {
-  width: 30px;
-  height: 30px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+@media (max-width: 360px) {
 
-  flex-shrink: 0;
+  .configuracao-page {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 
-  border-radius: 7px;
+  .configuracao-card {
+    padding: 14px;
+  }
 
-  background: #faf1f1;
-  color: #a00000;
+  .perfil-foto {
+    width: 72px;
+    height: 72px;
+  }
 
-  font-size: 15px;
+  .btn-salvar,
+  .btn-sair,
+  .problema-cancelar,
+  .problema-enviar,
+  .problema-novo,
+  .suporte-acao-secundaria {
+    width: 100%;
+  }
 
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-.sobre-link:hover .sobre-link-icone {
-  background: #f8e6e6;
-  transform: translateY(-1px);
-}
-
-.sobre-link-texto {
-  flex: 1;
-}
-
-.sobre-link-seta {
-  color: #999;
-
-  font-size: 17px;
-
-  transition:
-    transform 0.2s ease,
-    color 0.2s ease;
-}
-
-.sobre-link:hover .sobre-link-seta {
-  transform: translateX(3px);
-  color: #a00000;
+  .conta-acoes {
+    justify-content: stretch;
+  }
 }
 
 

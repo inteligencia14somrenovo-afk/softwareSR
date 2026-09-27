@@ -1,25 +1,1477 @@
-.relatorio-dev-performance-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+/* =====================================================
+   RELATÓRIO ADMIN
+===================================================== */
+
+.relatorio-admin {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
-.relatorio-dev-performance-card {
-  padding: 18px;
+/* =========================
+   HEADER
+========================= */
+
+.relatorio-admin-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 30px;
+  min-width: 0;
+}
+
+.relatorio-admin-header > div {
+  min-width: 0;
+}
+
+.relatorio-admin-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.relatorio-admin-header h1 {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #111827;
+}
+
+.relatorio-admin-header p {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* =========================
+   PERÍODO
+========================= */
+
+.relatorio-admin-periodo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  background: #fff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  flex-shrink: 0;
 }
 
-.relatorio-dev-performance-card span {
+.relatorio-admin-periodo button {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #374151;
+
+  font-size: 22px;
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.relatorio-admin-periodo button:hover {
+  background: #f3f4f6;
+}
+
+.relatorio-admin-periodo span {
+  min-width: 150px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  text-transform: capitalize;
+}
+
+/* =========================
+   ERRO
+========================= */
+
+.relatorio-admin-erro {
+  margin-bottom: 24px;
+  padding: 14px 16px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+
+  background: #fef2f2;
+  color: #b91c1c;
+
+  font-size: 14px;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================
+   RESUMO
+========================= */
+
+.relatorio-admin-resumo {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+  min-width: 0;
+}
+
+.relatorio-admin-card {
+  min-width: 0;
+  min-height: 130px;
+
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.relatorio-admin-card span {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.relatorio-admin-card strong {
+  margin-top: 10px;
+  color: #111827;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.relatorio-admin-card small {
+  margin-top: 8px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* =========================
+   SEÇÕES
+========================= */
+
+.relatorio-admin-section {
+  min-width: 0;
+
+  margin-bottom: 24px;
+  padding: 24px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.relatorio-admin-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 20px;
+
+  min-width: 0;
+}
+
+.relatorio-admin-section-header > div {
+  min-width: 0;
+}
+
+.relatorio-admin-section-header span {
   display: block;
+  margin-bottom: 5px;
+
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.relatorio-admin-section-header h2 {
+  margin: 0;
+
+  color: #111827;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+/* =========================
+   PROFESSORES
+========================= */
+
+.relatorio-admin-professores {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+.relatorio-admin-professor {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  text-align: left;
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.relatorio-admin-professor:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.relatorio-admin-professor-avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+  background: #f3f4f6;
+
+  color: #374151;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.relatorio-admin-professor-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.relatorio-admin-professor-info {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.relatorio-admin-professor-info strong {
+  overflow: hidden;
+
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-professor-info span {
+  overflow: hidden;
+
+  color: #6b7280;
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-professor-total {
+  min-width: 50px;
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.relatorio-admin-professor-total strong {
+  color: #111827;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.relatorio-admin-professor-total span {
+  margin-top: 4px;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+/* =========================
+   INSTRUMENTOS
+========================= */
+
+.relatorio-admin-instrumentos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 28px;
+  min-width: 0;
+}
+
+.relatorio-admin-instrumento {
+  min-width: 0;
+}
+
+.relatorio-admin-instrumento-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+  margin-bottom: 8px;
+
+  min-width: 0;
+}
+
+.relatorio-admin-instrumento-topo span {
+  min-width: 0;
+  overflow: hidden;
+
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-instrumento-topo strong {
+  flex-shrink: 0;
+
+  color: #111827;
+  font-size: 14px;
+}
+
+.relatorio-admin-barra {
+  width: 100%;
+  height: 7px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+  background: #f3f4f6;
+}
+
+.relatorio-admin-barra div {
+  height: 100%;
+  min-width: 3px;
+
+  border-radius: inherit;
+  background: #374151;
+
+  transition: width 0.3s ease;
+}
+
+/* =========================
+   PLACEHOLDERS
+========================= */
+
+.relatorio-admin-placeholder {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+
+  background: #fafafa;
+
+  min-width: 0;
+}
+
+.relatorio-admin-placeholder-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  background: #f3f4f6;
+
+  color: #6b7280;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.relatorio-admin-placeholder > div {
+  min-width: 0;
+}
+
+.relatorio-admin-placeholder strong {
+  display: block;
+
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.relatorio-admin-placeholder p {
+  margin: 5px 0 0;
+
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+}
+
+.relatorio-admin-vazio {
+  margin: 0;
+  padding: 24px;
+
+  color: #9ca3af;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.relatorio-admin-loading {
+  min-height: 400px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.relatorio-admin-footer {
+  padding: 8px 2px 24px;
+
+  color: #9ca3af;
+  font-size: 12px;
+  text-align: right;
+}
+
+.relatorio-admin-footer strong {
+  color: #6b7280;
+  font-weight: 600;
+}
+
+/* =====================================================
+   RELATÓRIO DE PRESENÇA
+===================================================== */
+
+.relatorio-admin-percentual {
+  color: #374151;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.relatorio-admin-mini-loading {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* =========================
+   GRÁFICO
+========================= */
+
+.relatorio-admin-grafico {
+  width: 100%;
+  min-width: 0;
+}
+
+.relatorio-admin-grafico-barra {
+  width: 100%;
+  min-height: 54px;
+
+  display: grid;
+
+  overflow: hidden;
+
+  border-radius: 10px;
+  background: #f3f4f6;
+}
+
+.relatorio-admin-grafico-barra > div {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.grafico-presente {
+  background: #374151;
+}
+
+.grafico-falta {
+  background: #9ca3af;
+}
+
+.grafico-pendente {
+  background: #d1d5db;
+  color: #374151 !important;
+}
+
+.relatorio-admin-grafico-info {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 20px;
+  margin-top: 14px;
+
   color: #6b7280;
   font-size: 13px;
 }
 
+.relatorio-admin-grafico-info strong {
+  color: #111827;
+}
+
+.relatorio-admin-legenda {
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.relatorio-admin-legenda span {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.relatorio-admin-legenda i {
+  width: 9px;
+  height: 9px;
+
+  display: block;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+}
+
+.legenda-presente {
+  background: #374151;
+}
+
+.legenda-falta {
+  background: #9ca3af;
+}
+
+.legenda-pendente {
+  background: #d1d5db;
+}
+
+/* =====================================================
+   FREQUÊNCIA DO PROFESSOR
+===================================================== */
+
+.relatorio-admin-professor-frequencia {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+  margin-left: auto;
+
+  flex-shrink: 0;
+}
+
+.relatorio-admin-professor-frequencia span {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.relatorio-admin-professor-frequencia .presente {
+  color: #374151;
+}
+
+.relatorio-admin-professor-frequencia .falta {
+  color: #6b7280;
+}
+
+.relatorio-admin-professor-frequencia .pendente {
+  color: #9ca3af;
+}
+
+/* =====================================================
+   DETALHE DO PROFESSOR
+===================================================== */
+
+.relatorio-admin-voltar {
+  margin-bottom: 18px;
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.relatorio-admin-voltar:hover {
+  color: #111827;
+}
+
+.relatorio-admin-professor-detalhe {
+  min-width: 0;
+
+  margin-bottom: 24px;
+  padding: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.relatorio-admin-detalhe-identidade {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+}
+
+.relatorio-admin-detalhe-identidade > div:last-child {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.relatorio-admin-detalhe-avatar {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+  background: #f3f4f6;
+
+  color: #374151;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.relatorio-admin-detalhe-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.relatorio-admin-detalhe-identidade strong {
+  overflow: hidden;
+
+  color: #111827;
+  font-size: 18px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-detalhe-identidade span {
+  overflow: hidden;
+
+  color: #6b7280;
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-detalhe-cards {
+  display: flex;
+  gap: 10px;
+
+  flex-shrink: 0;
+}
+
+.relatorio-admin-detalhe-card {
+  min-width: 100px;
+
+  padding: 12px 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #fafafa;
+}
+
+.relatorio-admin-detalhe-card span {
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.relatorio-admin-detalhe-card strong {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.relatorio-admin-detalhe-card strong.presente {
+  color: #374151;
+}
+
+.relatorio-admin-detalhe-card strong.falta {
+  color: #6b7280;
+}
+
+.relatorio-admin-detalhe-card strong.pendente {
+  color: #9ca3af;
+}
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.relatorio-admin-status {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  white-space: nowrap;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.relatorio-admin-status i {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+
+  display: block;
+
+  border-radius: 50%;
+}
+
+.relatorio-admin-status.presente {
+  color: #374151;
+}
+
+.relatorio-admin-status.presente i {
+  background: #374151;
+}
+
+.relatorio-admin-status.falta {
+  color: #6b7280;
+}
+
+.relatorio-admin-status.falta i {
+  background: #9ca3af;
+}
+
+.relatorio-admin-status.pendente {
+  color: #9ca3af;
+}
+
+.relatorio-admin-status.pendente i {
+  background: #d1d5db;
+}
+
+/* =====================================================
+   TABELA
+===================================================== */
+
+.relatorio-admin-tabela-wrapper {
+  width: 100%;
+  min-width: 0;
+
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.relatorio-admin-tabela {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.relatorio-admin-tabela th {
+  padding: 11px 12px;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 600;
+
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+
+  white-space: nowrap;
+}
+
+.relatorio-admin-tabela td {
+  padding: 13px 12px;
+
+  border-bottom: 1px solid #f3f4f6;
+
+  color: #374151;
+  font-size: 13px;
+
+  vertical-align: middle;
+}
+
+.relatorio-admin-tabela tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.relatorio-admin-tabela tbody tr:hover {
+  background: #fafafa;
+}
+
+/* =====================================================
+   ALUNOS CONSOLIDADOS
+===================================================== */
+
+.relatorio-admin-alunos-consolidados {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  min-width: 0;
+}
+
+.relatorio-admin-aluno {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+  padding: 13px 14px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: #ffffff;
+
+  text-align: left;
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.relatorio-admin-aluno:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.relatorio-admin-aluno-avatar {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #f3f4f6;
+
+  color: #374151;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.relatorio-admin-aluno-info {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.relatorio-admin-aluno-info strong {
+  overflow: hidden;
+
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-aluno-info span {
+  overflow: hidden;
+
+  color: #9ca3af;
+  font-size: 12px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-aluno-status {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  flex-shrink: 0;
+}
+
+.relatorio-admin-aluno-status span {
+  white-space: nowrap;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.relatorio-admin-aluno-status .presente {
+  color: #374151;
+}
+
+.relatorio-admin-aluno-status .falta {
+  color: #6b7280;
+}
+
+.relatorio-admin-aluno-status .pendente {
+  color: #9ca3af;
+}
+
+.relatorio-admin-aluno-seta {
+  flex: 0 0 auto;
+
+  color: #9ca3af;
+  font-size: 17px;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.relatorio-admin-aluno:hover .relatorio-admin-aluno-seta {
+  color: #374151;
+  transform: translateX(2px);
+}
+
+/* =====================================================
+   ANÁLISE HISTÓRICA
+===================================================== */
+
+.relatorio-admin-historico-link {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.relatorio-admin-futuro[role="button"] {
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.relatorio-admin-futuro[role="button"]:hover {
+  border-color: #d1d5db;
+  background: #fafafa;
+}
+
+.relatorio-admin-futuro[role="button"]:hover
+  .relatorio-admin-historico-link {
+  color: #111827;
+}
+
+.relatorio-admin-historico-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  min-width: 0;
+}
+
+.relatorio-admin-historico-mes {
+  min-width: 0;
+
+  padding: 16px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: #ffffff;
+}
+
+.relatorio-admin-historico-mes-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 16px;
+  margin-bottom: 12px;
+
+  min-width: 0;
+}
+
+.relatorio-admin-historico-mes-topo strong {
+  min-width: 0;
+  overflow: hidden;
+
+  color: #111827;
+  font-size: 14px;
+  font-weight: 700;
+
+  text-transform: capitalize;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatorio-admin-historico-mes-topo span {
+  flex-shrink: 0;
+
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* =========================
+   BARRA HISTÓRICA
+========================= */
+
+.relatorio-admin-historico-mes .relatorio-admin-grafico {
+  padding: 0;
+}
+
+.relatorio-admin-historico-mes
+  .relatorio-admin-grafico-barra {
+  min-height: 30px;
+  overflow: hidden;
+  border-radius: 7px;
+}
+
+.relatorio-admin-historico-mes
+  .relatorio-admin-grafico-barra > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 2px;
+
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* =========================
+   INFORMAÇÕES DO MÊS
+========================= */
+
+.relatorio-admin-historico-mes-info {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+  margin-top: 10px;
+
+  flex-wrap: wrap;
+}
+
+.relatorio-admin-historico-mes-info span {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.relatorio-admin-historico-mes-info strong {
+  margin-left: auto;
+
+  color: #111827;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* =========================
+   DESTAQUE HISTÓRICO
+========================= */
+
+.relatorio-admin-historico-destaque {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 12px;
+
+  min-width: 0;
+}
+
+.relatorio-admin-historico-destaque > div {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 16px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: #ffffff;
+}
+
+.relatorio-admin-historico-destaque span {
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.relatorio-admin-historico-destaque strong {
+  color: #111827;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* =========================
+   TABELA HISTÓRICA
+========================= */
+
+.relatorio-admin-section .relatorio-admin-tabela-wrapper {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.relatorio-admin-section .relatorio-admin-tabela {
+  width: 100%;
+  min-width: 650px;
+}
+
+/* =====================================================
+   RELATÓRIO DEV
+===================================================== */
+
+.relatorio-dev {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.relatorio-dev-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 24px;
+  margin-bottom: 30px;
+
+  min-width: 0;
+}
+
+.relatorio-dev-header > div {
+  min-width: 0;
+}
+
+.relatorio-dev-label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.relatorio-dev-header h1 {
+  margin: 0;
+
+  color: #111827;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.relatorio-dev-header p {
+  margin: 8px 0 0;
+
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.relatorio-dev-atualizar {
+  flex-shrink: 0;
+
+  padding: 10px 16px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #fff;
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.relatorio-dev-atualizar:hover {
+  background: #f9fafb;
+}
+
+.relatorio-dev-atualizar:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+/* =========================
+   SEÇÕES DEV
+========================= */
+
+.relatorio-dev-section {
+  margin-bottom: 24px;
+  padding: 24px;
+
+  box-sizing: border-box;
+  min-width: 0;
+
+  background: #fff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
+}
+
+.relatorio-dev-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+  margin-bottom: 20px;
+
+  min-width: 0;
+}
+
+.relatorio-dev-section-header > div {
+  min-width: 0;
+}
+
+.relatorio-dev-section-header > div > span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 600;
+
+  text-transform: uppercase;
+}
+
+.relatorio-dev-section-header h2 {
+  margin: 0;
+
+  color: #111827;
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+/* =========================
+   GRIDS
+========================= */
+
+.relatorio-dev-status-grid,
+.relatorio-dev-dados-grid,
+.relatorio-dev-performance-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 14px;
+
+  min-width: 0;
+}
+
+.relatorio-dev-status-card,
+.relatorio-dev-dado,
+.relatorio-dev-performance-card {
+  min-width: 0;
+
+  padding: 18px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: #fff;
+}
+
+.relatorio-dev-status-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 14px;
+}
+
+.relatorio-dev-status-top span,
+.relatorio-dev-dado span,
+.relatorio-dev-performance-card span {
+  min-width: 0;
+
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.relatorio-dev-status-card strong,
+.relatorio-dev-dado strong {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #111827;
+  font-size: 21px;
+
+  overflow-wrap: anywhere;
+}
+
+.relatorio-dev-status-card small {
+  display: block;
+
+  margin-top: 6px;
+
+  overflow: hidden;
+
+  color: #9ca3af;
+  font-size: 11px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .relatorio-dev-performance-card strong {
   display: block;
+
   margin-top: 10px;
+
   color: #111827;
   font-size: 25px;
 }
@@ -38,260 +1490,22 @@
 
 .relatorio-dev-performance-card small {
   display: block;
+
   margin-top: 6px;
+
   color: #9ca3af;
   font-size: 11px;
 }
 
-.relatorio-dev-grafico {
-  margin-top: 18px;
-  padding: 18px;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background: #fafafa;
-}
-
-.relatorio-dev-grafico-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.relatorio-dev-grafico-header span {
-  color: #374151;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.relatorio-dev-grafico-header small {
-  color: #9ca3af;
-  font-size: 11px;
-}
-
-.relatorio-dev-grafico-area {
-  height: 150px;
-  display: flex;
-  align-items: flex-end;
-  gap: 5px;
-  padding: 10px 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.relatorio-dev-grafico-coluna {
-  flex: 1;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
-  min-width: 3px;
-}
-
-.relatorio-dev-grafico-barra {
-  width: 100%;
-  min-height: 4px;
-  border-radius: 4px 4px 0 0;
-  background: #374151;
-  transition: height 0.3s ease;
-}
-
-.relatorio-dev-grafico-barra.erro {
-  background: #ef4444;
-}
-
-.relatorio-dev-grafico-vazio {
-  width: 100%;
-  align-self: center;
-  text-align: center;
-  color: #9ca3af;
-  font-size: 12px;
-}
-
-.relatorio-dev-live {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.relatorio-dev-live span {
-  width: 7px;
-  height: 7px;
-  margin: 0;
-  border-radius: 50%;
-  background: #22c55e;
-}
-
-.relatorio-dev-live.problema span {
-  background: #ef4444;
-}
-
-.relatorio-dev-tecnico {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.relatorio-dev-tecnico > div {
-  padding: 14px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #fafafa;
-}
-
-.relatorio-dev-tecnico span {
-  display: block;
-  margin-bottom: 7px;
-  color: #6b7280;
-  font-size: 12px;
-}
-
-.relatorio-dev-tecnico code {
-  color: #111827;
-  font-family: monospace;
-  font-size: 12px;
-  word-break: break-all;
-}
-
-/* Os blocos abaixo podem permanecer iguais ao CSS anterior */
-
-.relatorio-dev {
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 32px;
-  box-sizing: border-box;
-}
-
-.relatorio-dev-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 30px;
-}
-
-.relatorio-dev-label {
-  display: block;
-  margin-bottom: 6px;
-  color: #6b7280;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-}
-
-.relatorio-dev-header h1 {
-  margin: 0;
-  color: #111827;
-  font-size: 30px;
-}
-
-.relatorio-dev-header p {
-  margin: 8px 0 0;
-  color: #6b7280;
-  font-size: 15px;
-}
-
-.relatorio-dev-atualizar {
-  padding: 10px 16px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  background: #fff;
-  color: #374151;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.relatorio-dev-atualizar:hover {
-  background: #f9fafb;
-}
-
-.relatorio-dev-atualizar:disabled {
-  opacity: .6;
-  cursor: default;
-}
-
-.relatorio-dev-section {
-  margin-bottom: 24px;
-  padding: 24px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
-}
-
-.relatorio-dev-section-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.relatorio-dev-section-header > div > span {
-  display: block;
-  margin-bottom: 5px;
-  color: #9ca3af;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.relatorio-dev-section-header h2 {
-  margin: 0;
-  color: #111827;
-  font-size: 20px;
-}
-
-.relatorio-dev-status-grid,
-.relatorio-dev-dados-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-.relatorio-dev-status-card,
-.relatorio-dev-dado {
-  padding: 18px;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-}
-
-.relatorio-dev-status-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.relatorio-dev-status-top span,
-.relatorio-dev-dado span {
-  color: #6b7280;
-  font-size: 13px;
-}
-
-.relatorio-dev-status-card strong,
-.relatorio-dev-dado strong {
-  display: block;
-  margin-top: 8px;
-  color: #111827;
-  font-size: 21px;
-}
-
-.relatorio-dev-status-card small {
-  display: block;
-  margin-top: 6px;
-  overflow: hidden;
-  color: #9ca3af;
-  font-size: 11px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+/* =========================
+   INDICADORES
+========================= */
 
 .relatorio-dev-indicador {
   width: 9px;
   height: 9px;
+  flex-shrink: 0;
+
   border-radius: 50%;
   background: #d1d5db;
 }
@@ -304,15 +1518,26 @@
   background: #ef4444;
 }
 
+/* =========================
+   ERRO
+========================= */
+
 .relatorio-dev-erro {
   display: flex;
   flex-direction: column;
+
   gap: 5px;
   margin-top: 16px;
   padding: 14px 16px;
+
+  box-sizing: border-box;
+
   border: 1px solid #fecaca;
   border-radius: 10px;
+
   background: #fef2f2;
+
+  overflow-wrap: anywhere;
 }
 
 .relatorio-dev-erro strong {
@@ -325,41 +1550,71 @@
   font-size: 13px;
 }
 
+/* =========================
+   INTEGRAÇÕES
+========================= */
+
 .relatorio-dev-integracoes {
   display: flex;
   flex-direction: column;
+
   gap: 10px;
+
+  min-width: 0;
 }
 
 .relatorio-dev-integracao {
+  min-width: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 16px;
   padding: 15px 16px;
+
+  box-sizing: border-box;
+
   border: 1px solid #e5e7eb;
   border-radius: 11px;
 }
 
+.relatorio-dev-integracao > div {
+  min-width: 0;
+}
+
 .relatorio-dev-integracao strong {
   display: block;
+
   color: #374151;
   font-size: 14px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .relatorio-dev-integracao span:not(.relatorio-dev-badge) {
   display: block;
+
   margin-top: 4px;
+
   color: #9ca3af;
   font-size: 12px;
+
+  overflow-wrap: anywhere;
 }
 
 .relatorio-dev-badge {
   flex-shrink: 0;
+
   padding: 5px 9px;
+
   border-radius: 999px;
+
   background: #f3f4f6;
   color: #6b7280;
+
   font-size: 11px;
   font-weight: 600;
 }
@@ -374,30 +1629,276 @@
   color: #b91c1c;
 }
 
-.relatorio-dev-footer {
-  padding: 8px 2px 24px;
+/* =========================
+   GRÁFICO DEV
+========================= */
+
+.relatorio-dev-grafico {
+  margin-top: 18px;
+  padding: 18px;
+
+  box-sizing: border-box;
+  min-width: 0;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  background: #fafafa;
+}
+
+.relatorio-dev-grafico-header {
+  display: flex;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 16px;
+
+  min-width: 0;
+}
+
+.relatorio-dev-grafico-header span {
+  min-width: 0;
+
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.relatorio-dev-grafico-header small {
+  flex-shrink: 0;
+
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+.relatorio-dev-grafico-area {
+  height: 150px;
+
+  display: flex;
+  align-items: flex-end;
+
+  gap: 5px;
+
+  padding: 10px 0;
+
+  box-sizing: border-box;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  overflow: hidden;
+}
+
+.relatorio-dev-grafico-coluna {
+  flex: 1;
+
+  height: 100%;
+
+  display: flex;
+  align-items: flex-end;
+
+  min-width: 3px;
+}
+
+.relatorio-dev-grafico-barra {
+  width: 100%;
+  min-height: 4px;
+
+  border-radius: 4px 4px 0 0;
+
+  background: #374151;
+
+  transition: height 0.3s ease;
+}
+
+.relatorio-dev-grafico-barra.erro {
+  background: #ef4444;
+}
+
+.relatorio-dev-grafico-vazio {
+  width: 100%;
+
+  align-self: center;
+
+  text-align: center;
+
   color: #9ca3af;
   font-size: 12px;
+}
+
+/* =========================
+   LIVE
+========================= */
+
+.relatorio-dev-live {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.relatorio-dev-live span {
+  width: 7px;
+  height: 7px;
+
+  flex-shrink: 0;
+
+  margin: 0;
+
+  border-radius: 50%;
+
+  background: #22c55e;
+}
+
+.relatorio-dev-live.problema span {
+  background: #ef4444;
+}
+
+/* =========================
+   TÉCNICO
+========================= */
+
+.relatorio-dev-tecnico {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+
+  min-width: 0;
+}
+
+.relatorio-dev-tecnico > div {
+  min-width: 0;
+
+  padding: 14px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+
+  background: #fafafa;
+}
+
+.relatorio-dev-tecnico span {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.relatorio-dev-tecnico code {
+  color: #111827;
+
+  font-family: monospace;
+  font-size: 12px;
+
+  word-break: break-all;
+}
+
+/* =========================
+   FOOTER / LOADING
+========================= */
+
+.relatorio-dev-footer {
+  padding: 8px 2px 24px;
+
+  color: #9ca3af;
+  font-size: 12px;
+
   text-align: right;
 }
 
 .relatorio-dev-loading {
   min-height: 400px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   color: #6b7280;
 }
 
+/* =====================================================
+   RESPONSIVO ADMIN
+===================================================== */
+
 @media (max-width: 1100px) {
+
+  .relatorio-admin-resumo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .relatorio-admin-professores {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+}
+
+/* =====================================================
+   RESPONSIVO DEV
+===================================================== */
+
+@media (max-width: 1100px) {
+
   .relatorio-dev-status-grid,
   .relatorio-dev-dados-grid,
   .relatorio-dev-performance-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
 }
 
+/* =====================================================
+   TABLET
+===================================================== */
+
 @media (max-width: 800px) {
+
+  .relatorio-admin {
+    padding: 24px 18px;
+  }
+
+  .relatorio-admin-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .relatorio-admin-periodo {
+    align-self: flex-start;
+  }
+
+  .relatorio-admin-instrumentos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .relatorio-admin-professor-total {
+    display: none;
+  }
+
+  .relatorio-admin-professor-detalhe {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .relatorio-admin-detalhe-cards {
+    width: 100%;
+  }
+
+  .relatorio-admin-detalhe-card {
+    flex: 1;
+  }
+
+  .relatorio-admin-historico-destaque {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .relatorio-dev {
     padding: 24px 18px;
   }
@@ -412,11 +1913,138 @@
   }
 
   .relatorio-dev-tecnico {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
+
 }
 
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 650px) {
+
+  .relatorio-admin-professor {
+    flex-wrap: wrap;
+  }
+
+  .relatorio-admin-professor-frequencia {
+    width: 100%;
+    margin-left: 58px;
+    padding-top: 2px;
+  }
+
+  .relatorio-admin-professor-frequencia span {
+    font-size: 11px;
+  }
+
+  .relatorio-admin-detalhe-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .relatorio-admin-detalhe-card {
+    min-width: 0;
+  }
+
+  .relatorio-admin-grafico-info {
+    gap: 10px 16px;
+  }
+
+  .relatorio-admin-aluno {
+    flex-wrap: wrap;
+    gap: 10px 12px;
+  }
+
+  .relatorio-admin-aluno-info {
+    flex: 1;
+    min-width: calc(100% - 110px);
+  }
+
+  .relatorio-admin-aluno-status {
+    width: 100%;
+    margin-left: 54px;
+    padding-top: 1px;
+  }
+
+  .relatorio-admin-aluno-seta {
+    margin-left: auto;
+  }
+
+  .relatorio-dev-status-grid,
+  .relatorio-dev-dados-grid,
+  .relatorio-dev-performance-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+/* =====================================================
+   CELULAR
+===================================================== */
+
 @media (max-width: 600px) {
+
+  .relatorio-admin {
+    padding: 20px 14px;
+  }
+
+  .relatorio-admin-header h1 {
+    font-size: 25px;
+  }
+
+  .relatorio-admin-header p {
+    font-size: 14px;
+  }
+
+  .relatorio-admin-resumo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .relatorio-admin-card {
+    min-height: 115px;
+    padding: 16px;
+  }
+
+  .relatorio-admin-card strong {
+    font-size: 26px;
+  }
+
+  .relatorio-admin-section {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .relatorio-admin-section-header h2 {
+    font-size: 18px;
+  }
+
+  .relatorio-admin-historico-link {
+    font-size: 12px;
+  }
+
+  .relatorio-admin-historico-mes {
+    padding: 13px;
+  }
+
+  .relatorio-admin-historico-mes-info {
+    gap: 12px;
+  }
+
+  .relatorio-admin-historico-destaque {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .relatorio-admin-historico-destaque > div {
+    padding: 13px;
+  }
+
+  .relatorio-admin-historico-destaque strong {
+    font-size: 18px;
+  }
+
   .relatorio-dev {
     padding: 20px 14px;
   }
@@ -429,22 +2057,135 @@
     font-size: 25px;
   }
 
-  .relatorio-dev-status-grid,
-  .relatorio-dev-dados-grid,
-  .relatorio-dev-performance-grid {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
+/* =====================================================
+   CELULAR PEQUENO
+===================================================== */
+
 @media (max-width: 450px) {
+
+  .relatorio-admin-resumo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .relatorio-admin-periodo {
+    width: 100%;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+
+  .relatorio-admin-periodo span {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .relatorio-admin-professor {
+    padding: 12px;
+  }
+
+  .relatorio-admin-professor-avatar {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .relatorio-admin-placeholder {
+    align-items: flex-start;
+  }
+
+  .relatorio-admin-detalhe-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .relatorio-admin-detalhe-card {
+    padding: 11px 13px;
+  }
+
+  .relatorio-admin-aluno {
+    padding: 12px;
+  }
+
+  .relatorio-admin-aluno-avatar {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .relatorio-admin-aluno-status {
+    margin-left: 50px;
+    gap: 10px;
+  }
+
+  .relatorio-admin-aluno-status span {
+    font-size: 11px;
+  }
+
+  .relatorio-admin-historico-destaque {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .relatorio-admin-historico-mes-info {
+    flex-wrap: wrap;
+    gap: 8px 14px;
+  }
+
+  .relatorio-admin-historico-mes-info strong {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .relatorio-admin-tabela th,
+  .relatorio-admin-tabela td {
+    padding: 10px 8px;
+  }
+
   .relatorio-dev-status-grid,
   .relatorio-dev-dados-grid,
   .relatorio-dev-performance-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .relatorio-dev-integracao {
     align-items: flex-start;
     flex-direction: column;
   }
+
+  .relatorio-dev-integracao strong {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+}
+
+/* =====================================================
+   CELULAR MUITO PEQUENO
+===================================================== */
+
+@media (max-width: 380px) {
+
+  .relatorio-admin {
+    padding: 16px 10px;
+  }
+
+  .relatorio-admin-section {
+    padding: 14px;
+  }
+
+  .relatorio-admin-header h1 {
+    font-size: 23px;
+  }
+
+  .relatorio-dev {
+    padding: 16px 10px;
+  }
+
+  .relatorio-dev-section {
+    padding: 14px;
+  }
+
+  .relatorio-dev-header h1 {
+    font-size: 23px;
+  }
+
 }

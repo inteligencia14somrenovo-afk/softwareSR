@@ -4,7 +4,10 @@
 
 .presenca {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     padding: 25px;
+    box-sizing: border-box;
 }
 
 
@@ -17,7 +20,11 @@
     justify-content: space-between;
     align-items: center;
 
+    gap: 15px;
+
     margin-bottom: 25px;
+
+    min-width: 0;
 }
 
 .presenca-header h1 {
@@ -45,12 +52,22 @@
     margin-bottom: 20px;
 
     overflow-x: auto;
+    overflow-y: hidden;
+
+    width: 100%;
+    max-width: 100%;
+
+    min-width: 0;
+
+    scrollbar-width: thin;
 }
 
 
 /* ABA */
 
 .presenca-abas .aba {
+    flex-shrink: 0;
+
     border: none;
 
     background: transparent;
@@ -112,11 +129,203 @@
 }
 
 
+/* ABA DESABILITADA */
+
+.presenca-abas .aba.desabilitada {
+    color: #ccc;
+
+    cursor: not-allowed;
+
+    opacity: 0.5;
+
+    background: transparent;
+
+    border-bottom-color: transparent;
+}
+
+.presenca-abas .aba.desabilitada small {
+    color: #ccc;
+}
+
+.presenca-abas .aba.desabilitada:hover {
+    background: transparent;
+    color: #ccc;
+}
+
+
+/* =========================
+   SEMANAS
+========================= */
+
+.presenca-semanas {
+    display: flex;
+
+    gap: 8px;
+
+    margin-bottom: 15px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    width: 100%;
+    max-width: 100%;
+
+    min-width: 0;
+
+    scrollbar-width: thin;
+}
+
+.presenca-semanas .semana {
+    flex-shrink: 0;
+
+    min-width: 120px;
+
+    border: 1px solid #ddd;
+
+    background: #fff;
+
+    border-radius: 8px;
+
+    padding: 10px 12px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 3px;
+
+    transition: 0.2s;
+
+    color: #777;
+}
+
+.presenca-semanas .semana:hover {
+    background: #f7f7f7;
+}
+
+.presenca-semanas .semana span {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.presenca-semanas .semana small {
+    font-size: 11px;
+    color: #999;
+}
+
+.presenca-semanas .semana em {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 10px;
+
+    color: #16803c;
+
+    font-style: normal;
+
+    font-weight: 600;
+}
+
+.presenca-semanas .semana.ativa {
+    color: #aa0505;
+
+    border-color: #aa0505;
+
+    background: #fff5f5;
+}
+
+.presenca-semanas .semana.ativa small {
+    color: #aa0505;
+}
+
+
+/* =========================
+   CONTROLE DA SEMANA
+========================= */
+
+.semana-controle {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 15px;
+
+    padding: 10px 14px;
+
+    background: #fafafa;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 8px;
+
+    min-width: 0;
+
+    box-sizing: border-box;
+}
+
+.semana-controle span {
+    min-width: 0;
+
+    font-size: 13px;
+
+    color: #777;
+
+    font-weight: 600;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+.semana-controle button {
+    flex-shrink: 0;
+
+    border: 1px solid #ddd;
+
+    background: #fff;
+
+    color: #555;
+
+    padding: 7px 12px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+.semana-controle button:hover {
+    color: #aa0505;
+
+    border-color: #aa0505;
+}
+
+
 /* =========================
    CABEÇALHO DO DIA
 ========================= */
 
 .presenca-dia {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
     background: #fff;
 
     border: 1px solid #e5e5e5;
@@ -124,6 +333,8 @@
     border-radius: 12px;
 
     overflow: hidden;
+
+    box-sizing: border-box;
 }
 
 
@@ -134,11 +345,15 @@
 
     align-items: center;
 
+    gap: 15px;
+
     padding: 18px 20px;
 
     background: #fafafa;
 
     border-bottom: 1px solid #eee;
+
+    min-width: 0;
 }
 
 
@@ -159,6 +374,8 @@
 
 
 .presenca-dia-header > span {
+    flex-shrink: 0;
+
     background: #eee;
 
     padding: 6px 10px;
@@ -179,6 +396,7 @@
 
 .presenca-lista {
     width: 100%;
+    min-width: 0;
 }
 
 
@@ -189,7 +407,7 @@
 .registro-presenca {
     display: grid;
 
-    grid-template-columns: 80px 1fr auto;
+    grid-template-columns: 80px minmax(0, 1fr) auto;
 
     align-items: center;
 
@@ -200,6 +418,10 @@
     border-bottom: 1px solid #eee;
 
     min-height: 65px;
+
+    min-width: 0;
+
+    box-sizing: border-box;
 
     transition: background 0.15s;
 }
@@ -223,6 +445,8 @@
     font-size: 15px;
 
     color: #444;
+
+    min-width: 0;
 }
 
 
@@ -243,6 +467,8 @@
     gap: 3px;
 
     min-width: 0;
+
+    overflow: hidden;
 }
 
 
@@ -263,6 +489,12 @@
     font-size: 12px;
 
     color: #888;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
 }
 
 
@@ -274,6 +506,10 @@
     display: flex;
 
     gap: 8px;
+
+    min-width: 0;
+
+    flex-shrink: 0;
 }
 
 
@@ -295,6 +531,8 @@
     font-weight: 600;
 
     transition: 0.2s;
+
+    box-sizing: border-box;
 }
 
 
@@ -344,6 +582,44 @@
 }
 
 
+/* EXCLUIR */
+
+.registro-acoes .botao-excluir {
+    width: 36px;
+    height: 36px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: 1px solid #ddd;
+
+    background: #fff;
+
+    color: #999;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.registro-acoes .botao-excluir:hover {
+    background: #d34e4e;
+
+    border-color: #ffbcbc;
+
+    color: #c00000;
+}
+
+
 /* =========================
    SEM AULAS
 ========================= */
@@ -354,6 +630,8 @@
     text-align: center;
 
     color: #888;
+
+    box-sizing: border-box;
 }
 
 
@@ -363,121 +641,12 @@
 
 
 /* =========================
-   TABLET
-========================= */
-
-@media (max-width: 800px) {
-
-    .presenca {
-        padding: 15px;
-    }
-
-
-    .registro-presenca {
-        grid-template-columns: 65px 1fr;
-
-        gap: 10px 15px;
-    }
-
-
-    .registro-acoes {
-        grid-column: 2;
-
-        width: 100%;
-    }
-
-
-    .registro-acoes button {
-        flex: 1;
-    }
-
-}
-
-
-/* =========================
-   CELULAR
-========================= */
-
-@media (max-width: 600px) {
-
-    .presenca {
-        padding: 10px;
-    }
-
-
-    .presenca-header h1 {
-        font-size: 24px;
-    }
-
-
-    .presenca-abas {
-        gap: 0;
-    }
-
-
-    .presenca-abas .aba {
-        padding: 10px 14px;
-    }
-
-
-    .presenca-abas .aba span {
-        font-size: 13px;
-    }
-
-
-    .presenca-dia-header {
-        padding: 15px;
-    }
-
-
-    .presenca-dia-header h2 {
-        font-size: 17px;
-    }
-
-
-    .registro-presenca {
-        padding: 14px;
-
-        grid-template-columns: 55px 1fr;
-
-        gap: 8px 12px;
-    }
-
-
-    .registro-horario {
-        font-size: 14px;
-    }
-
-
-    .registro-aluno strong {
-        font-size: 14px;
-    }
-
-
-    .registro-acoes {
-        grid-column: 1 / -1;
-
-        display: flex;
-
-        gap: 8px;
-
-        margin-top: 3px;
-    }
-
-
-    .registro-acoes button {
-        padding: 9px 8px;
-
-        font-size: 12px;
-    }
-
-}
-
-/* =========================
    BOTÃO CONFIGURAR HORÁRIO
 ========================= */
 
 .presenca-header > button {
+    flex-shrink: 0;
+
     border: none;
 
     background: #aa0505;
@@ -502,9 +671,9 @@
 }
 
 
-/* =========================
+/* =====================================================
    FORMULÁRIO DE HORÁRIO
-========================= */
+===================================================== */
 
 .presenca-form {
     display: flex;
@@ -524,6 +693,12 @@
     border-radius: 10px;
 
     flex-wrap: wrap;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
 }
 
 
@@ -549,6 +724,10 @@
     font-size: 13px;
 
     outline: none;
+
+    min-width: 0;
+
+    box-sizing: border-box;
 }
 
 
@@ -564,6 +743,8 @@
     display: flex;
 
     gap: 8px;
+
+    min-width: 0;
 }
 
 
@@ -612,16 +793,198 @@
 }
 
 
+/* =====================================================
+   BOTÃO SINCRONIZAR
+===================================================== */
+
+.btn-sincronizar {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 9px 16px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #333333;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+
+    box-sizing: border-box;
+}
+
+.btn-sincronizar:hover:not(:disabled) {
+    background: #f5f5f5;
+
+    border-color: #b8b8b8;
+}
+
+.btn-sincronizar:active:not(:disabled) {
+    transform: scale(0.97);
+}
+
+.btn-sincronizar:disabled {
+    opacity: 0.65;
+
+    cursor: not-allowed;
+}
+
+.btn-sincronizar svg {
+    font-size: 17px;
+}
+
+
+/* =====================================================
+   TELA DE PRESENÇA — ADMIN / DEV
+===================================================== */
+
+.presenca-bloqueada {
+    min-height: 60vh;
+
+    width: 100%;
+    max-width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 40px 24px;
+
+    box-sizing: border-box;
+
+    min-width: 0;
+}
+
+.presenca-bloqueada-icon {
+    width: 64px;
+    height: 64px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 20px;
+
+    border-radius: 18px;
+
+    background: rgba(0, 0, 0, 0.05);
+
+    font-size: 26px;
+
+    flex-shrink: 0;
+}
+
+.presenca-bloqueada h1 {
+    margin: 0;
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    max-width: 100%;
+}
+
+.presenca-bloqueada p {
+    max-width: 520px;
+
+    margin: 12px 0 8px;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    opacity: 0.7;
+}
+
+.presenca-bloqueada span {
+    max-width: 500px;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    opacity: 0.5;
+}
+
+
 /* =========================
-   RESPONSIVO DO FORMULÁRIO
+   TABLET
+========================= */
+
+@media (max-width: 800px) {
+
+    .presenca {
+        padding: 15px;
+    }
+
+
+    .registro-presenca {
+        grid-template-columns: 65px minmax(0, 1fr);
+
+        gap: 10px 15px;
+    }
+
+
+    .registro-acoes {
+        grid-column: 2;
+
+        width: 100%;
+    }
+
+
+    .registro-acoes button {
+        flex: 1;
+    }
+
+}
+
+
+/* =========================
+   CELULAR
 ========================= */
 
 @media (max-width: 600px) {
+
+    .presenca {
+        padding: 10px;
+    }
+
 
     .presenca-header {
         align-items: flex-start;
 
         gap: 12px;
+
+        flex-wrap: wrap;
+    }
+
+
+    .presenca-header h1 {
+        font-size: 24px;
     }
 
 
@@ -634,18 +997,131 @@
     }
 
 
+    .presenca-abas {
+        gap: 0;
+
+        margin-bottom: 15px;
+    }
+
+
+    .presenca-abas .aba {
+        padding: 10px 14px;
+    }
+
+
+    .presenca-abas .aba span {
+        font-size: 13px;
+    }
+
+
+    .presenca-semanas {
+        gap: 5px;
+    }
+
+
+    .presenca-semanas .semana {
+        min-width: 105px;
+
+        padding: 9px;
+    }
+
+
+    .semana-controle {
+        gap: 10px;
+
+        padding: 9px 10px;
+    }
+
+
+    .semana-controle span {
+        font-size: 12px;
+    }
+
+
+    .semana-controle button {
+        padding: 7px 9px;
+
+        font-size: 11px;
+    }
+
+
+    .presenca-dia-header {
+        padding: 15px;
+
+        align-items: flex-start;
+    }
+
+
+    .presenca-dia-header h2 {
+        font-size: 17px;
+    }
+
+
+    .presenca-dia-header > span {
+        font-size: 11px;
+
+        padding: 5px 8px;
+    }
+
+
+    .registro-presenca {
+        padding: 14px;
+
+        grid-template-columns: 55px minmax(0, 1fr);
+
+        gap: 8px 12px;
+    }
+
+
+    .registro-horario {
+        font-size: 14px;
+    }
+
+
+    .registro-aluno strong {
+        font-size: 14px;
+    }
+
+
+    .registro-acoes {
+        grid-column: 1 / -1;
+
+        display: flex;
+
+        gap: 8px;
+
+        margin-top: 3px;
+
+        width: 100%;
+    }
+
+
+    .registro-acoes button {
+        padding: 9px 8px;
+
+        font-size: 12px;
+    }
+
+
+    .registro-acoes .botao-excluir {
+        width: 36px;
+
+        flex: 0 0 36px;
+    }
+
+
     .presenca-form {
         flex-direction: column;
 
         align-items: stretch;
+
+        padding: 15px;
     }
 
 
     .presenca-form select,
     .presenca-form input {
         width: 100%;
-
-        box-sizing: border-box;
     }
 
 
@@ -658,405 +1134,119 @@
         flex: 1;
     }
 
-}
 
-/* =========================
-   BOTÃO EXCLUIR
-========================= */
-
-.registro-acoes .botao-excluir {
-    width: 36px;
-    height: 36px;
-
-    padding: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: 1px solid #ddd;
-
-    background: #fff;
-
-    color: #999;
-
-    border-radius: 7px;
-
-    cursor: pointer;
-
-    transition: 0.2s;
-}
-
-
-.registro-acoes .botao-excluir:hover {
-    background : #d34e4e;
-
-    border-color: #ffbcbc;
-
-    color: #c00000;
-}
-
-/* =========================
-   SEMANAS
-========================= */
-
-.presenca-semanas {
-    display: flex;
-
-    gap: 8px;
-
-    margin-bottom: 15px;
-
-    overflow-x: auto;
-}
-
-
-.presenca-semanas .semana {
-    border: 1px solid #ddd;
-
-    background: #fff;
-
-    padding: 10px 16px;
-
-    border-radius: 8px;
-
-    cursor: pointer;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    gap: 3px;
-
-    white-space: nowrap;
-
-    transition: 0.2s;
-
-    color: #777;
-}
-
-
-.presenca-semanas .semana span {
-    font-size: 13px;
-
-    font-weight: 600;
-}
-
-
-.presenca-semanas .semana small {
-    font-size: 11px;
-
-    color: #999;
-}
-
-
-.presenca-semanas .semana:hover {
-    background: #f7f7f7;
-}
-
-
-.presenca-semanas .semana.ativa {
-    background: #aa0505;
-
-    border-color: #aa0505;
-
-    color: #fff;
-}
-
-
-.presenca-semanas .semana.ativa small {
-    color: #eee;
-}
-
-/* =========================
-   ABA DESABILITADA
-========================= */
-
-.presenca-abas .aba.desabilitada {
-    color: #ccc;
-    cursor: not-allowed;
-    background: transparent;
-    border-bottom-color: transparent;
-}
-
-.presenca-abas .aba.desabilitada small {
-    color: #ccc;
-}
-
-.presenca-abas .aba.desabilitada:hover {
-    background: transparent;
-    color: #ccc;
-}
-
-.presenca-semanas .semana em {
-    display: block;
-    margin-top: 4px;
-    font-size: 11px;
-    font-style: normal;
-    color: #16803c;
-    font-weight: 600;
-}
-
-/* =========================
-   SEMANAS
-========================= */
-
-.presenca-semanas {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 15px;
-    overflow-x: auto;
-}
-
-.presenca-semanas .semana {
-    min-width: 120px;
-
-    border: 1px solid #ddd;
-    background: #fff;
-
-    border-radius: 8px;
-
-    padding: 10px 12px;
-
-    cursor: pointer;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    gap: 3px;
-
-    transition: 0.2s;
-}
-
-.presenca-semanas .semana:hover {
-    background: #f7f7f7;
-}
-
-.presenca-semanas .semana span {
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.presenca-semanas .semana small {
-    font-size: 11px;
-    color: #999;
-}
-
-.presenca-semanas .semana em {
-    font-size: 10px;
-    color: #16803c;
-    font-style: normal;
-    font-weight: 600;
-}
-
-.presenca-semanas .semana.ativa {
-    color: #aa0505;
-    border-color: #aa0505;
-    background: #fff5f5;
-}
-
-.presenca-semanas .semana.ativa small {
-    color: #aa0505;
-}
-
-
-/* =========================
-   CONTROLE DA SEMANA
-========================= */
-
-.semana-controle {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    margin-bottom: 15px;
-
-    padding: 10px 14px;
-
-    background: #fafafa;
-
-    border: 1px solid #e5e5e5;
-
-    border-radius: 8px;
-}
-
-.semana-controle span {
-    font-size: 13px;
-    color: #777;
-    font-weight: 600;
-}
-
-.semana-controle button {
-    border: 1px solid #ddd;
-
-    background: #fff;
-
-    color: #555;
-
-    padding: 7px 12px;
-
-    border-radius: 7px;
-
-    cursor: pointer;
-
-    font-size: 12px;
-
-    font-weight: 600;
-
-    transition: 0.2s;
-}
-
-.semana-controle button:hover {
-    color: #aa0505;
-    border-color: #aa0505;
-}
-
-
-/* =========================
-   DIAS FORA DO MÊS
-========================= */
-
-.presenca-abas .aba.desabilitada {
-    color: #ccc;
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.presenca-abas .aba.desabilitada small {
-    color: #ccc;
-}
-
-
-/* =========================
-   MOBILE
-========================= */
-
-@media (max-width: 600px) {
-
-    .presenca-semanas {
-        gap: 5px;
+    .btn-sincronizar {
+        width: 100%;
     }
 
-    .presenca-semanas .semana {
-        min-width: 105px;
-        padding: 9px;
+
+    .presenca-bloqueada {
+        min-height: 55vh;
+
+        padding: 30px 15px;
     }
+
+
+    .presenca-bloqueada h1 {
+        font-size: 24px;
+    }
+
+
+    .presenca-bloqueada p {
+        font-size: 14px;
+    }
+
+}
+
+
+/* =========================
+   CELULAR PEQUENO
+========================= */
+
+@media (max-width: 400px) {
+
+    .presenca {
+        padding: 8px;
+    }
+
+
+    .presenca-header h1 {
+        font-size: 22px;
+    }
+
+
+    .presenca-dia-header {
+        padding: 12px;
+    }
+
+
+    .presenca-dia-header {
+        flex-direction: column;
+    }
+
+
+    .presenca-dia-header > span {
+        align-self: flex-start;
+    }
+
+
+    .registro-presenca {
+        padding: 12px;
+
+        grid-template-columns: 50px minmax(0, 1fr);
+
+        gap: 7px 10px;
+    }
+
+
+    .registro-horario {
+        font-size: 13px;
+    }
+
+
+    .registro-aluno strong {
+        font-size: 13px;
+    }
+
+
+    .registro-aluno span {
+        font-size: 11px;
+    }
+
+
+    .registro-acoes {
+        gap: 6px;
+    }
+
+
+    .registro-acoes button {
+        padding: 8px 6px;
+
+        font-size: 11px;
+    }
+
+
+    .registro-acoes .botao-excluir {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+    }
+
 
     .semana-controle {
-        gap: 10px;
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .semana-controle span {
+        white-space: normal;
+    }
+
+
+    .semana-controle button {
+        width: 100%;
     }
 
 }
-
-/* =====================================================
-   BOTÃO SINCRONIZAR
-   ===================================================== */
-
-.btn-sincronizar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-
-  padding: 9px 16px;
-
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-
-  background: #ffffff;
-  color: #333333;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.15s ease;
-}
-
-.btn-sincronizar:hover:not(:disabled) {
-  background: #f5f5f5;
-  border-color: #b8b8b8;
-}
-
-.btn-sincronizar:active:not(:disabled) {
-  transform: scale(0.97);
-}
-
-.btn-sincronizar:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
-.btn-sincronizar svg {
-  font-size: 17px;
-}
-
-/* =====================================================
-   TELA DE PRESENÇA — ADMIN / DEV
-   ===================================================== */
-
-.presenca-bloqueada {
-  min-height: 60vh;
-
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-
-  padding: 40px 24px;
-}
-
-.presenca-bloqueada-icon {
-  width: 64px;
-  height: 64px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin-bottom: 20px;
-
-  border-radius: 18px;
-
-  background: rgba(0, 0, 0, 0.05);
-
-  font-size: 26px;
-}
-
-.presenca-bloqueada h1 {
-  margin: 0;
-
-  font-size: 28px;
-  font-weight: 700;
-}
-
-.presenca-bloqueada p {
-  max-width: 520px;
-
-  margin: 12px 0 8px;
-
-  font-size: 15px;
-  line-height: 1.6;
-
-  opacity: 0.7;
-}
-
-.presenca-bloqueada span {
-  max-width: 500px;
-
-  font-size: 13px;
-  line-height: 1.5;
-
-  opacity: 0.5;
-}
-
