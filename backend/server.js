@@ -24,6 +24,7 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
+app.set("trust proxy", 1);
 
 // =====================================================
 // CORS
@@ -47,11 +48,12 @@ app.use(
     resave: false,
     saveUninitialized: false,
 
-    cookie: {
-      httpOnly: true,
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    },
+   cookie: {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  maxAge: 1000 * 60 * 60 * 24 * 7,
+},
   })
 );
 
