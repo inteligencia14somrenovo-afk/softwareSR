@@ -155,9 +155,9 @@
     border: none;
     border-radius: 10px;
 
-    background: rgba(255, 255, 255, 0.88);
+    background: rgba(32, 32, 32, 0.88);
 
-    color: #444;
+    color: #dbd7d7;
 
     font-size: 25px;
 
@@ -739,7 +739,7 @@ nav {
 @media (max-width: 450px) {
 
     .mobile-menu-button {
-        top: 25px;
+        top: 60px;
         left: 10px;
 
         width: 38px;
