@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "./RelatorioDev.css";
 
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const INTERVALO_MONITORAMENTO = 5000;
 const MAX_HISTORICO_LATENCIA = 30;

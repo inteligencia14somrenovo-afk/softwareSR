@@ -11,10 +11,7 @@ import { nomesInstrumentos } from "../../Alunos/utils/instrumentos";
 
 import "./RelatorioProfessor.css";
 
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:3000";
-
+const API_URL = import.meta.env.VITE_API_URL;
 /* =====================================================
    DIAS DA SEMANA
 ===================================================== */
