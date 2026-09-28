@@ -92,7 +92,7 @@ function Instalar() {
     return (
       <main className="instalar-page">
         <section className="instalar-card">
-            
+
           <div className="instalar-logo">
             <img
                 src={logo}
@@ -127,8 +127,12 @@ function Instalar() {
       <section className="instalar-card">
 
         <div className="instalar-logo">
-          SR
-        </div>
+            <img
+                src={logo}
+                alt="Som Renovo"
+                className="instalar-logo-image"
+            />
+            </div>
 
         <h1>Som Renovo Manager</h1>
 
