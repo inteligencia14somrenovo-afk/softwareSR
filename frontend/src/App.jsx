@@ -13,6 +13,8 @@ import CentralAjuda from "./pages/Configuração/componentes/CentralAjuda";
 import RelatarProblema from "./pages/Configuração/componentes/RelatarProblema";
 import ContatoSuporte from "./pages/Configuração/componentes/ContatoSuporte";
 
+import Instalar from "./pages/Instalar/Instalar";
+
 import Professores from "./pages/Professores/Professores";
 import ProfessorDetalhes from "./pages/Professores/ProfessorDetalhes";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
@@ -27,6 +29,9 @@ function App() {
 
         {/* LOGIN */}
         <Route path="/login" element={<Login />} />
+
+        {/* INSTALAR */}
+        <Route path="/instalar" element={<Instalar />} />
 
         {/* ÁREA DO SISTEMA */}
         <Route
