@@ -68,7 +68,9 @@ function Alunos() {
   // =========================================================
 
   const isProfessor =
-    professor?.role === "professor";
+    professor?.role === "professor" ||
+    professor?.role === "admin" ||
+    professor?.role === "dev";
 
 
   // =========================================================
