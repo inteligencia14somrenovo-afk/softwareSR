@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./Instalar.css";
 
+import logo from "../../assets/logo.png";
+
 function Instalar() {
   const [installPrompt, setInstallPrompt] = useState(null);
   const [instalado, setInstalado] = useState(false);
@@ -91,7 +93,13 @@ function Instalar() {
       <main className="instalar-page">
         <section className="instalar-card">
           <div className="instalar-logo">
-            SR
+            {!collapsed && (
+                        <img
+                          src={logo}
+                          alt="Som Renovo"
+                          className="instalar-logo"
+                        />
+                      )}
           </div>
 
           <div className="instalar-status">
