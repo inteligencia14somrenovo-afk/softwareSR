@@ -125,34 +125,88 @@ function Alunos() {
 
         // =====================================================
         // NORMALIZA OS DADOS
+        //
+        // A tela Alunos deve conter somente alunos definitivos.
+        //
+        // Por segurança, mesmo que algum registro temporário
+        // chegue indevidamente pela API, ele será descartado.
         // =====================================================
 
-        const alunosPlanilha = (data.alunos || []).map(
-          (aluno) => ({
-            ...aluno,
+        const alunosPlanilha = (data.alunos || [])
+          .filter((aluno) => {
 
-            codigoAluno:
-              aluno.codigoAluno ??
-              aluno.codigo_aluno ??
-              aluno.id,
+            const tipo =
+              String(
+                aluno.tipo ||
+                aluno.tipoAluno ||
+                aluno.tipo_aluno ||
+                ""
+              )
+                .trim()
+                .toLowerCase();
 
-            nascimento:
-              aluno.nascimento || null,
+            // =================================================
+            // TIPOS TEMPORÁRIOS
+            //
+            // Esses registros pertencem somente à Presença
+            // e nunca devem aparecer em Alunos.
+            // =================================================
 
-            foto:
-              aluno.foto || null,
+            if (
+              tipo === "aluno_temporario" ||
+              tipo === "experimental" ||
+              tipo === "reposicao" ||
+              tipo === "reposição"
+            ) {
+              return false;
+            }
 
-            responsaveis:
-              aluno.responsaveis || []
+            // =================================================
+            // PROTEÇÃO CONTRA NOMES DE AULA EXPERIMENTAL
+            // =================================================
+
+            const nome =
+              String(
+                aluno.nome || ""
+              )
+                .trim()
+                .toUpperCase();
+
+            if (
+              nome.startsWith("AE")
+            ) {
+              return false;
+            }
+
+            return true;
+
           })
-        );
+          .map(
+            (aluno) => ({
+              ...aluno,
+
+              codigoAluno:
+                aluno.codigoAluno ??
+                aluno.codigo_aluno ??
+                aluno.id,
+
+              nascimento:
+                aluno.nascimento || null,
+
+              foto:
+                aluno.foto || null,
+
+              responsaveis:
+                aluno.responsaveis || []
+            })
+          );
 
 
         setAlunos(alunosPlanilha);
 
 
         console.log(
-          "✅ Alunos carregados:",
+          "✅ Alunos definitivos carregados:",
           alunosPlanilha
         );
 
@@ -390,6 +444,34 @@ function Alunos() {
   const alunosFiltrados =
     alunos.filter((aluno) => {
 
+      // =====================================================
+      // PROTEÇÃO EXTRA
+      //
+      // Mesmo que um registro temporário tenha chegado
+      // ao estado por alguma atualização posterior, ele
+      // não será exibido nos cards.
+      // =====================================================
+
+      const tipo =
+        String(
+          aluno.tipo ||
+          aluno.tipoAluno ||
+          aluno.tipo_aluno ||
+          ""
+        )
+          .trim()
+          .toLowerCase();
+
+      if (
+        tipo === "aluno_temporario" ||
+        tipo === "experimental" ||
+        tipo === "reposicao" ||
+        tipo === "reposição"
+      ) {
+        return false;
+      }
+
+
       // Não exibir alunos de aula experimental
       if (
         (aluno.nome || "")
@@ -453,75 +535,75 @@ function Alunos() {
         filtroUnidade;
 
 
-     const instrumentoBase =
-  String(aluno.instrumento || "")
-    .trim()
-    .toLowerCase();
+      const instrumentoBase =
+        String(aluno.instrumento || "")
+          .trim()
+          .toLowerCase();
 
-const instrumentoEspecifico =
-  String(aluno.instrumento_especifico || "")
-    .trim()
-    .toLowerCase();
+      const instrumentoEspecifico =
+        String(aluno.instrumento_especifico || "")
+          .trim()
+          .toLowerCase();
 
 
-const correspondeInstrumento =
+      const correspondeInstrumento =
 
-  !filtroInstrumento ||
+        !filtroInstrumento ||
 
-  // Já possui instrumento específico:
-  // aparece somente no instrumento escolhido.
-  (
-    instrumentoEspecifico &&
-    instrumentoEspecifico ===
-      filtroInstrumento
-  )
-
-  ||
-
-  // Ainda não possui específico:
-  // 🎸 pode ser qualquer instrumento da família.
-  (
-    !instrumentoEspecifico &&
-    (
-      (
+        // Já possui instrumento específico:
+        // aparece somente no instrumento escolhido.
         (
-          instrumentoBase ===
-            "guitarra/violao" ||
-          instrumentoBase ===
-            "guitarra/violao/ukulele/contrabaixo"
-        ) &&
-        [
-          "guitarra",
-          "violao",
-          "ukulele",
-          "contrabaixo"
-        ].includes(
-          filtroInstrumento
+          instrumentoEspecifico &&
+          instrumentoEspecifico ===
+            filtroInstrumento
         )
-      )
 
-      ||
+        ||
 
-      // 🎹 pode ser Teclado ou Piano.
-      (
-        instrumentoBase ===
-          "teclado/piano" &&
-        [
-          "teclado",
-          "piano"
-        ].includes(
-          filtroInstrumento
-        )
-      )
+        // Ainda não possui específico:
+        // pode ser qualquer instrumento da família.
+        (
+          !instrumentoEspecifico &&
+          (
+            (
+              (
+                instrumentoBase ===
+                  "guitarra/violao" ||
+                instrumentoBase ===
+                  "guitarra/violao/ukulele/contrabaixo"
+              ) &&
+              [
+                "guitarra",
+                "violao",
+                "ukulele",
+                "contrabaixo"
+              ].includes(
+                filtroInstrumento
+              )
+            )
 
-      ||
+            ||
 
-      // Registros antigos que já possuem
-      // instrumento específico na própria categoria.
-      instrumentoBase ===
-        filtroInstrumento
-    )
-  );
+            // Pode ser Teclado ou Piano.
+            (
+              instrumentoBase ===
+                "teclado/piano" &&
+              [
+                "teclado",
+                "piano"
+              ].includes(
+                filtroInstrumento
+              )
+            )
+
+            ||
+
+            // Registros antigos que já possuem
+            // instrumento específico na própria categoria.
+            instrumentoBase ===
+              filtroInstrumento
+          )
+        );
 
 
       const correspondeIdade =
@@ -549,7 +631,6 @@ const correspondeInstrumento =
 
     });
 
-    
 
   // =========================================================
   // STATUS

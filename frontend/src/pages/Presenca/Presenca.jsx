@@ -405,12 +405,38 @@ function Presenca() {
       diaSelecionado
     );
 
+  // =====================================================
+  // DATA NO FORMATO YYYY-MM-DD
+  //
+  // Usa a data LOCAL para evitar que o UTC do
+  // toISOString() faça a data voltar um dia.
+  // =====================================================
+
+  const formatarDataISO = (data) => {
+    if (!data) {
+      return "";
+    }
+
+    const ano =
+      data.getFullYear();
+
+    const mes =
+      String(
+        data.getMonth() + 1
+      ).padStart(2, "0");
+
+    const dia =
+      String(
+        data.getDate()
+      ).padStart(2, "0");
+
+    return `${ano}-${mes}-${dia}`;
+  };
+
   const dataString =
-    dataSelecionada
-      ? dataSelecionada
-          .toISOString()
-          .split("T")[0]
-      : "";
+    formatarDataISO(
+      dataSelecionada
+    );
 
   // =========================
   // STRING DO MÊS PARA API
@@ -583,9 +609,9 @@ function Presenca() {
                 item.instrumento,
 
               instrumentoEspecifico:
-              item.instrumento_especifico ||
-              item.instrumentoEspecifico ||
-              null,
+                item.instrumento_especifico ||
+                item.instrumentoEspecifico ||
+                null,
 
               diaSemana:
                 mapaDias[
@@ -600,6 +626,19 @@ function Presenca() {
 
               dataBloqueada:
                 item.dataBloqueada,
+
+              // =================================================
+              // DATAS ESPECÍFICAS
+              //
+              // Usadas pelos alunos temporários.
+              // =================================================
+
+              datasEspecificas:
+                Array.isArray(
+                  item.datasEspecificas
+                )
+                  ? item.datasEspecificas
+                  : [],
 
               tipo:
                 item.tipo,
@@ -875,8 +914,46 @@ function Presenca() {
   ]);
 
   // =====================================================
-  // AULAS DO DIA
+  // CONVERTER DATA DD/MM PARA YYYY-MM-DD
   // =====================================================
+
+  const converterDataEspecifica =
+    (data) => {
+
+      if (!data) {
+        return null;
+      }
+
+      const partes =
+        String(data).split("/");
+
+      if (
+        partes.length !== 2
+      ) {
+        return null;
+      }
+
+      const dia =
+        partes[0].trim();
+
+      const mes =
+        partes[1].trim();
+
+      if (
+        !dia ||
+        !mes
+      ) {
+        return null;
+      }
+
+      return (
+        `${dataSelecionada.getFullYear()}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`
+      );
+    };
+
+  // =========================
+  // AULAS DO DIA
+  // =========================
 
   const aulasDoDia =
     horariosPlanilha
@@ -890,7 +967,8 @@ function Presenca() {
 
         // ==========================================
         // AULA EXPERIMENTAL
-        // Só aparece na data específica
+        //
+        // Só aparece na data específica.
         // ==========================================
 
         if (
@@ -904,16 +982,10 @@ function Presenca() {
             return false;
           }
 
-          const [
-            dia,
-            mes,
-          ] =
-            aula.dataExperimental.split(
-              "/"
-            );
-
           const dataAE =
-            `${dataSelecionada.getFullYear()}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+            converterDataEspecifica(
+              aula.dataExperimental
+            );
 
           return (
             dataAE ===
@@ -922,32 +994,82 @@ function Presenca() {
         }
 
         // ==========================================
-        // ALUNO NORMAL
-        // Continua recorrente semanalmente
+        // ALUNO TEMPORÁRIO
+        //
+        // Exemplo:
+        //
+        // Sara Angelo 25/09
+        //
+        // ou:
+        //
+        // Sara Angelo 18/06 25/06
+        //
+        // Só aparece nas datas informadas.
+        // ==========================================
+
+        if (
+          aula.tipo ===
+          "aluno_temporario"
+        ) {
+
+          if (
+            !Array.isArray(
+              aula.datasEspecificas
+            ) ||
+            aula.datasEspecificas.length === 0
+          ) {
+            return false;
+          }
+
+          return aula.datasEspecificas.some(
+            (data) => {
+
+              const dataTemporaria =
+                converterDataEspecifica(
+                  data
+                );
+
+              return (
+                dataTemporaria ===
+                dataString
+              );
+            }
+          );
+        }
+
+        // ==========================================
+        // ALUNO FIXO BLOQUEADO POR AE
+        //
+        // O aluno continua sendo definitivo,
+        // mas não aparece no dia em que seu
+        // horário foi ocupado pela AE.
         // ==========================================
 
         if (
           aula.dataBloqueada
         ) {
 
-          const [
-            dia,
-            mes,
-          ] =
-            aula.dataBloqueada.split(
-              "/"
-            );
-
           const dataBloqueada =
-            `${dataSelecionada.getFullYear()}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}`;
+            converterDataEspecifica(
+              aula.dataBloqueada
+            );
 
           if (
             dataBloqueada ===
             dataString
           ) {
+
             return false;
+
           }
+
         }
+
+        // ==========================================
+        // ALUNO DEFINITIVO
+        //
+        // Continua recorrente semanalmente.
+        // ==========================================
 
         return (
           Number(
@@ -955,6 +1077,7 @@ function Presenca() {
           ) ===
           diaSelecionado
         );
+
       })
       .sort(
         (a, b) =>

@@ -13,6 +13,11 @@ let statusSincronizacao = {
   erro: null,
 };
 
+
+// =====================================================
+// UTILITÁRIOS
+// =====================================================
+
 function colunaParaLetra(numero) {
   let resultado = "";
 
@@ -27,6 +32,7 @@ function colunaParaLetra(numero) {
 
   return resultado;
 }
+
 
 function extrairInicioIntervalo(intervalo) {
   const match =
@@ -44,6 +50,7 @@ function extrairInicioIntervalo(intervalo) {
   };
 }
 
+
 function letraParaNumero(letras) {
   let numero = 0;
 
@@ -54,6 +61,58 @@ function letraParaNumero(letras) {
   }
 
   return numero;
+}
+
+
+// =====================================================
+// EXTRAI DATAS ESPECÍFICAS DO TEXTO
+//
+// Exemplos:
+//
+// "Sara Angelo 25/09"
+// → ["25/09"]
+//
+// "Sara Angelo 18/06 25/06"
+// → ["18/06", "25/06"]
+//
+// A data fica separada do nome.
+// =====================================================
+
+function extrairDatas(texto) {
+
+  const datas = [];
+
+  const regex =
+    /(?:^|\s)(\d{1,2}\/\d{1,2})(?=\s|$)/g;
+
+  let match;
+
+  while (
+    (match = regex.exec(texto)) !== null
+  ) {
+
+    datas.push(match[1]);
+
+  }
+
+  return datas;
+}
+
+
+// =====================================================
+// REMOVE DATAS DO TEXTO
+// =====================================================
+
+function removerDatas(texto) {
+
+  return texto
+    .replace(
+      /(?:^|\s)\d{1,2}\/\d{1,2}(?=\s|$)/g,
+      " "
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+
 }
 
 
@@ -145,14 +204,17 @@ function interpretarCelula(conteudo) {
       instrumentoTexto === "violão" ||
       instrumentoTexto === "violao"
     ) {
+
       instrumento = "violao";
 
     } else if (
       instrumentoTexto === "teclado" ||
       instrumentoTexto === "piano"
     ) {
+
       instrumento =
         "teclado/piano";
+
     }
 
 
@@ -162,6 +224,7 @@ function interpretarCelula(conteudo) {
 
     let alunoSubstituido =
       null;
+
 
     if (
       experimentalMatch[5]
@@ -219,6 +282,7 @@ function interpretarCelula(conteudo) {
           dataExperimental,
 
       };
+
     }
 
 
@@ -241,6 +305,9 @@ function interpretarCelula(conteudo) {
 
       dataExperimental,
 
+      datasEspecificas:
+        [dataExperimental],
+
       alunoSubstituido,
 
       foto:
@@ -250,6 +317,7 @@ function interpretarCelula(conteudo) {
         texto,
 
     };
+
   }
 
 
@@ -276,6 +344,12 @@ function interpretarCelula(conteudo) {
         : null;
 
 
+    const datasEspecificas =
+      extrairDatas(
+        textoSemHorario
+      );
+
+
     let restante =
       textoSemHorario
         .replace(
@@ -289,8 +363,13 @@ function interpretarCelula(conteudo) {
         .replace(
           /\b\d{3,5}\b/,
           ""
-        )
-        .trim();
+        );
+
+
+    restante =
+      removerDatas(
+        restante
+      );
 
 
     const foto =
@@ -336,10 +415,13 @@ function interpretarCelula(conteudo) {
 
       foto,
 
+      datasEspecificas,
+
       conteudoOriginal:
         texto,
 
     };
+
   }
 
 
@@ -359,6 +441,12 @@ function interpretarCelula(conteudo) {
       : null;
 
 
+  const datasEspecificas =
+    extrairDatas(
+      textoSemHorario
+    );
+
+
   let restante =
     texto
       .replace(
@@ -372,8 +460,13 @@ function interpretarCelula(conteudo) {
       .replace(
         /\b\d{3,5}\b/,
         ""
-      )
-      .trim();
+      );
+
+
+  restante =
+    removerDatas(
+      restante
+    );
 
 
   const foto =
@@ -407,8 +500,17 @@ function interpretarCelula(conteudo) {
     horario:
       `${hora}:${minuto}`,
 
+    // ===================================================
+    // IMPORTANTE:
+    //
+    // Se possui uma data específica, NÃO é aluno
+    // definitivo. É somente uma ocorrência temporária.
+    // ===================================================
+
     tipo:
-      "aluno",
+      datasEspecificas.length > 0
+        ? "aluno_temporario"
+        : "aluno",
 
     codigoAluno,
 
@@ -419,15 +521,28 @@ function interpretarCelula(conteudo) {
 
     foto,
 
+    datasEspecificas,
+
     conteudoOriginal:
       texto,
 
   };
+
 }
 
 
 // =====================================================
-// MONTAR ALUNOS A PARTIR DA PLANILHA
+// MONTAR ALUNOS DEFINITIVOS A PARTIR DA PLANILHA
+//
+// SOMENTE entram:
+//
+// aluno normal SEM data
+//
+// NÃO entram:
+//
+// AE
+// Rep
+// aluno normal com data
 // =====================================================
 
 function montarAlunosDaPlanilha(
@@ -455,7 +570,9 @@ function montarAlunosDaPlanilha(
     of resultado.rows
   ) {
 
-    // Ignora coluna A
+    // =================================================
+    // IGNORA COLUNA A
+    // =================================================
 
     if (
       !diasSemana[item.coluna]
@@ -475,43 +592,33 @@ function montarAlunosDaPlanilha(
     }
 
 
-    let codigo =
-      horario.codigoAluno;
-
-    let nome =
-      horario.nome;
-
-    let instrumento =
-      horario.instrumento;
-
-    let foto =
-      horario.foto;
-
-
     // =================================================
-    // AE COM ALUNO FIXO
+    // SOMENTE ALUNO DEFINITIVO
+    //
+    // AE, Rep e aluno com data NÃO entram.
     // =================================================
 
     if (
-      horario.tipo === "experimental" &&
-      horario.alunoSubstituido
+      horario.tipo !== "aluno"
     ) {
 
-      codigo =
-        horario.alunoSubstituido.codigoAluno;
-
-      nome =
-        horario.alunoSubstituido.nome;
-
-      instrumento =
-        horario.alunoSubstituido.instrumento;
-
-      foto = false;
+      continue;
 
     }
 
 
-    // AE sem aluno fixo não vira aluno cadastrado
+    const codigo =
+      horario.codigoAluno;
+
+    const nome =
+      horario.nome;
+
+    const instrumento =
+      horario.instrumento;
+
+    const foto =
+      horario.foto;
+
 
     if (!codigo) {
       continue;
@@ -554,6 +661,7 @@ function montarAlunosDaPlanilha(
 
         }
       );
+
     }
 
 
@@ -606,10 +714,7 @@ function montarAlunosDaPlanilha(
         horario.conteudoOriginal,
 
       dataBloqueada:
-        horario.tipo === "experimental" &&
-        horario.alunoSubstituido
-          ? horario.alunoSubstituido.dataBloqueada
-          : null,
+        null,
 
     });
 
@@ -792,6 +897,7 @@ async function sincronizarAlunosDoProfessor(
     novos,
     atualizados,
   };
+
 }
 
 
@@ -800,18 +906,36 @@ async function sincronizarAlunosDoProfessor(
 // =====================================================
 
 async function executarSincronizacao() {
-  const inicio = Date.now();
+
+  const inicio =
+    Date.now();
+
 
   statusSincronizacao = {
-    status: "executando",
-    inicio: new Date().toISOString(),
-    fim: null,
-    duracao: null,
-    resultado: null,
-    erro: null,
+
+    status:
+      "executando",
+
+    inicio:
+      new Date().toISOString(),
+
+    fim:
+      null,
+
+    duracao:
+      null,
+
+    resultado:
+      null,
+
+    erro:
+      null,
+
   };
 
-  const client = await pool.connect();
+
+  const client =
+    await pool.connect();
 
 
   try {
@@ -839,7 +963,9 @@ async function executarSincronizacao() {
 
 
     let totalCelulas = 0;
+
     let totalAlunosNovos = 0;
+
     let totalAlunosAtualizados = 0;
 
 
@@ -860,11 +986,13 @@ async function executarSincronizacao() {
 
       const response =
         await sheets.spreadsheets.values.get({
+
           spreadsheetId:
             SPREADSHEET_ID,
 
           range:
             `${professor.aba}!${professor.intervalo}`,
+
         });
 
 
@@ -1003,42 +1131,88 @@ async function executarSincronizacao() {
     }
 
 
-    await client.query("COMMIT");
+    await client.query(
+      "COMMIT"
+    );
+
 
     const resultado = {
-      sucesso: true,
-      professores: professores.rows.length,
-      celulas: totalCelulas,
-      alunosNovos: totalAlunosNovos,
-      alunosAtualizados: totalAlunosAtualizados,
+
+      sucesso:
+        true,
+
+      professores:
+        professores.rows.length,
+
+      celulas:
+        totalCelulas,
+
+      alunosNovos:
+        totalAlunosNovos,
+
+      alunosAtualizados:
+        totalAlunosAtualizados,
+
     };
 
+
     statusSincronizacao = {
-      status: "sucesso",
-      inicio: statusSincronizacao.inicio,
-      fim: new Date().toISOString(),
-      duracao: Date.now() - inicio,
+
+      status:
+        "sucesso",
+
+      inicio:
+        statusSincronizacao.inicio,
+
+      fim:
+        new Date().toISOString(),
+
+      duracao:
+        Date.now() - inicio,
+
       resultado,
-      erro: null,
+
+      erro:
+        null,
+
     };
+
 
     return resultado;
 
 
   } catch (error) {
 
-    await client.query("ROLLBACK");
+    await client.query(
+      "ROLLBACK"
+    );
+
 
     statusSincronizacao = {
-      status: "erro",
-      inicio: statusSincronizacao.inicio,
-      fim: new Date().toISOString(),
-      duracao: Date.now() - inicio,
-      resultado: null,
-      erro: error.message,
+
+      status:
+        "erro",
+
+      inicio:
+        statusSincronizacao.inicio,
+
+      fim:
+        new Date().toISOString(),
+
+      duracao:
+        Date.now() - inicio,
+
+      resultado:
+        null,
+
+      erro:
+        error.message,
+
     };
 
+
     throw error;
+
 
   } finally {
 
@@ -1066,7 +1240,8 @@ async function sincronizarPlanilha(
 
     res.json({
 
-      sucesso: true,
+      sucesso:
+        true,
 
       mensagem:
         "Planilha sincronizada com sucesso!",
@@ -1086,7 +1261,8 @@ async function sincronizarPlanilha(
 
     res.status(500).json({
 
-      sucesso: false,
+      sucesso:
+        false,
 
       erro:
         error.message,
@@ -1115,7 +1291,8 @@ async function buscarHorariosProfessor(
 
       return res.status(401).json({
 
-        sucesso: false,
+        sucesso:
+          false,
 
         mensagem:
           "Usuário não autenticado.",
@@ -1158,7 +1335,8 @@ async function buscarHorariosProfessor(
 
       return res.status(404).json({
 
-        sucesso: false,
+        sucesso:
+          false,
 
         mensagem:
           "Nenhuma planilha configurada para este professor.",
@@ -1194,7 +1372,8 @@ async function buscarHorariosProfessor(
 
     return res.json({
 
-      sucesso: true,
+      sucesso:
+        true,
 
       professor_id:
         professorId,
@@ -1218,7 +1397,8 @@ async function buscarHorariosProfessor(
 
     return res.status(500).json({
 
-      sucesso: false,
+      sucesso:
+        false,
 
       erro:
         error.message,
@@ -1276,7 +1456,8 @@ async function buscarHorariosOrganizados(
 
       return res.status(404).json({
 
-        sucesso: false,
+        sucesso:
+          false,
 
         erro:
           "Nenhuma planilha configurada para este professor.",
@@ -1419,6 +1600,9 @@ async function buscarHorariosOrganizados(
 
       // =================================================
       // ALUNO FIXO SUBSTITUÍDO POR AE
+      //
+      // Continua aparecendo para a Presença,
+      // mas NÃO é recriado como aluno.
       // =================================================
 
       if (
@@ -1483,7 +1667,8 @@ async function buscarHorariosOrganizados(
 
     res.json({
 
-      sucesso: true,
+      sucesso:
+        true,
 
       professor_id:
         Number(professorId),
@@ -1509,7 +1694,8 @@ async function buscarHorariosOrganizados(
 
     res.status(500).json({
 
-      sucesso: false,
+      sucesso:
+        false,
 
       erro:
         error.message,
@@ -1565,7 +1751,8 @@ async function buscarAlunosProfessor(
 
       return res.status(404).json({
 
-        sucesso: false,
+        sucesso:
+          false,
 
         erro:
           "Nenhuma planilha configurada para este professor.",
@@ -1603,7 +1790,8 @@ async function buscarAlunosProfessor(
 
     res.json({
 
-      sucesso: true,
+      sucesso:
+        true,
 
       professor_id:
         Number(professorId),
@@ -1626,7 +1814,8 @@ async function buscarAlunosProfessor(
 
     res.status(500).json({
 
-      sucesso: false,
+      sucesso:
+        false,
 
       erro:
         error.message,
@@ -1646,11 +1835,19 @@ function getStatusSincronizacao() {
   return statusSincronizacao;
 }
 
+
 module.exports = {
+
   sincronizarPlanilha,
+
   executarSincronizacao,
+
   getStatusSincronizacao,
+
   buscarHorariosProfessor,
+
   buscarHorariosOrganizados,
+
   buscarAlunosProfessor,
+
 };
