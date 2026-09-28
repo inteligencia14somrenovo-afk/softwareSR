@@ -41,6 +41,13 @@
   letter-spacing: -1px;
 }
 
+.instalar-logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 18px;
+}
+
 /* STATUS */
 
 .instalar-status {

@@ -92,15 +92,14 @@ function Instalar() {
     return (
       <main className="instalar-page">
         <section className="instalar-card">
+            
           <div className="instalar-logo">
-            {!collapsed && (
-                        <img
-                          src={logo}
-                          alt="Som Renovo"
-                          className="instalar-logo"
-                        />
-                      )}
-          </div>
+            <img
+                src={logo}
+                alt="Som Renovo"
+                className="instalar-logo-image"
+            />
+            </div>
 
           <div className="instalar-status">
             ✓
