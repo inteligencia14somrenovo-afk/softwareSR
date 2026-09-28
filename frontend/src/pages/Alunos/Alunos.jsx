@@ -267,7 +267,7 @@ function Alunos() {
 
   const atualizarAlunosDaPlanilha = async () => {
 
-    if (!isProfessor || atualizandoAlunos) {
+    if (!podeAtualizarAlunos || atualizandoAlunos) {
       return;
     }
 
