@@ -445,13 +445,20 @@ function AlunoDetalhes({
           </div>
 
 
-          <div>
+<div>
 
-            <h2>
-              {aluno.nome}
-            </h2>
+  <h2>
+    {aluno.nome}
+  </h2>
 
-          </div>
+  <p className="codigo-aluno">
+    Código:{" "}
+    {aluno.codigoAluno ??
+      aluno.codigo_aluno ??
+      "Não informado"}
+  </p>
+
+</div>
 
         </div>
 

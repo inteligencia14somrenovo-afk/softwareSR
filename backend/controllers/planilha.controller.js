@@ -4,6 +4,16 @@ const sheets = require("../config/googleSheets");
 const SPREADSHEET_ID =
   "1bbzbHCy5_tHx2mjI7KW6xl1f_K7dPFK5QWVWeXbAnco";
 
+// =====================================================
+// LOCK GLOBAL DA SINCRONIZAÇÃO
+//
+// O PostgreSQL garante que somente uma sincronização
+// possa acontecer por vez, mesmo que existam múltiplas
+// requisições ou instâncias do backend.
+// =====================================================
+
+const LOCK_SINCRONIZACAO = 736421;
+
 let statusSincronizacao = {
   status: "aguardando",
   inicio: null,
@@ -733,10 +743,6 @@ function montarAlunosDaPlanilha(
 // - Rep
 //
 // e NÃO aparecem como aluno definitivo.
-//
-// Esses códigos são importantes para limpar registros
-// temporários antigos que foram gravados na tabela alunos
-// antes da nova regra.
 // =====================================================
 
 function obterCodigosTemporarios(
@@ -908,8 +914,6 @@ async function sincronizarAlunosDoProfessor(
 
   // =====================================================
   // IDENTIFICA TEMPORÁRIOS
-  //
-  // Usado para limpar registros antigos.
   // =====================================================
 
   const {
@@ -927,15 +931,6 @@ async function sincronizarAlunosDoProfessor(
 
   // =====================================================
   // LIMPA REGISTROS TEMPORÁRIOS ANTIGOS
-  //
-  // Só remove:
-  //
-  // 1. aluno do mesmo professor
-  // 2. cujo código aparece atualmente como temporário
-  // 3. e NÃO aparece como aluno definitivo
-  //
-  // Assim, se o mesmo código possuir uma aula definitiva
-  // em outro horário, ele NÃO será removido.
   // =====================================================
 
   if (
@@ -1120,35 +1115,74 @@ async function executarSincronizacao() {
   const inicio =
     Date.now();
 
-
-  statusSincronizacao = {
-
-    status:
-      "executando",
-
-    inicio:
-      new Date().toISOString(),
-
-    fim:
-      null,
-
-    duracao:
-      null,
-
-    resultado:
-      null,
-
-    erro:
-      null,
-
-  };
-
-
   const client =
     await pool.connect();
 
+  let lockAdquirido = false;
+  let transacaoIniciada = false;
+
 
   try {
+
+    // =================================================
+    // PROTEÇÃO CONTRA SINCRONIZAÇÕES SIMULTÂNEAS
+    //
+    // O lock pertence à conexão PostgreSQL.
+    // Enquanto uma sincronização estiver executando,
+    // outra requisição não poderá iniciar outra.
+    // =================================================
+
+    const lockResult =
+      await client.query(
+        `
+        SELECT pg_try_advisory_lock($1) AS adquirido
+        `,
+        [LOCK_SINCRONIZACAO]
+      );
+
+
+    if (
+      !lockResult.rows[0].adquirido
+    ) {
+
+      const erro =
+        new Error(
+          "Já existe uma sincronização da planilha em andamento. Aguarde alguns segundos e tente novamente."
+        );
+
+      erro.code =
+        "SINCRONIZACAO_EM_ANDAMENTO";
+
+      throw erro;
+
+    }
+
+
+    lockAdquirido = true;
+
+
+    statusSincronizacao = {
+
+      status:
+        "executando",
+
+      inicio:
+        new Date().toISOString(),
+
+      fim:
+        null,
+
+      duracao:
+        null,
+
+      resultado:
+        null,
+
+      erro:
+        null,
+
+    };
+
 
     const professores =
       await client.query(
@@ -1184,6 +1218,8 @@ async function executarSincronizacao() {
     await client.query(
       "BEGIN"
     );
+
+    transacaoIniciada = true;
 
 
     for (
@@ -1243,6 +1279,11 @@ async function executarSincronizacao() {
 
       // =================================================
       // RECRIA O ESPELHO
+      //
+      // ON CONFLICT protege contra qualquer registro
+      // que já exista para a mesma combinação:
+      //
+      // professor_id + linha + coluna
       // =================================================
 
       for (
@@ -1295,6 +1336,17 @@ async function executarSincronizacao() {
             )
             VALUES
             ($1, $2, $3, $4, $5)
+
+            ON CONFLICT (
+              professor_id,
+              linha,
+              coluna
+            )
+
+            DO UPDATE SET
+              celula = EXCLUDED.celula,
+              conteudo = EXCLUDED.conteudo,
+              updated_at = NOW()
             `,
             [
               professor.id,
@@ -1352,6 +1404,8 @@ async function executarSincronizacao() {
       "COMMIT"
     );
 
+    transacaoIniciada = false;
+
 
     const resultado = {
 
@@ -1403,9 +1457,43 @@ async function executarSincronizacao() {
 
   } catch (error) {
 
-    await client.query(
-      "ROLLBACK"
-    );
+    if (
+      transacaoIniciada
+    ) {
+
+      try {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+      } catch (rollbackError) {
+
+        console.error(
+          "❌ Erro ao fazer ROLLBACK:",
+          rollbackError
+        );
+
+      }
+
+    }
+
+
+    // =================================================
+    // ERRO DE SINCRONIZAÇÃO SIMULTÂNEA
+    //
+    // Não trata como erro interno do sistema.
+    // A rota transforma em HTTP 409.
+    // =================================================
+
+    if (
+      error.code ===
+      "SINCRONIZACAO_EM_ANDAMENTO"
+    ) {
+
+      throw error;
+
+    }
 
 
     statusSincronizacao = {
@@ -1414,7 +1502,8 @@ async function executarSincronizacao() {
         "erro",
 
       inicio:
-        statusSincronizacao.inicio,
+        statusSincronizacao.inicio ||
+        new Date().toISOString(),
 
       fim:
         new Date().toISOString(),
@@ -1435,6 +1524,35 @@ async function executarSincronizacao() {
 
 
   } finally {
+
+    // =================================================
+    // LIBERA O LOCK DO POSTGRES
+    // =================================================
+
+    if (
+      lockAdquirido
+    ) {
+
+      try {
+
+        await client.query(
+          `
+          SELECT pg_advisory_unlock($1)
+          `,
+          [LOCK_SINCRONIZACAO]
+        );
+
+      } catch (unlockError) {
+
+        console.error(
+          "❌ Erro ao liberar lock da sincronização:",
+          unlockError
+        );
+
+      }
+
+    }
+
 
     client.release();
 
@@ -1472,6 +1590,24 @@ async function sincronizarPlanilha(
 
 
   } catch (error) {
+
+    if (
+      error.code ===
+      "SINCRONIZACAO_EM_ANDAMENTO"
+    ) {
+
+      return res.status(409).json({
+
+        sucesso:
+          false,
+
+        erro:
+          error.message,
+
+      });
+
+    }
+
 
     console.error(
       "❌ Erro ao sincronizar planilha:",
