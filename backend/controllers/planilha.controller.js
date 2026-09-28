@@ -425,106 +425,159 @@ function interpretarCelula(conteudo) {
   }
 
 
-  // =====================================================
-  // ALUNO NORMAL
-  // =====================================================
+  
+// =====================================================
+// ALUNO NORMAL
+// =====================================================
 
-  const codigoMatch =
-    texto.match(
-      /\b\d{3,5}\b/
-    );
+// =====================================================
+// CÓDIGO DO ALUNO
+//
+// Primeiro tentamos encontrar o código logo depois
+// do horário, inclusive quando ele está colado:
+//
+// 16:20h3047 Bento Barbeto
+//       ↑
+//       código
+//
+// Depois mantemos a busca tradicional como fallback.
+// =====================================================
 
+const codigoColadoMatch =
+textoSemHorario.match(
+/^(\d{3,5})(?=\s|$)/
+);
 
-  const codigoAluno =
-    codigoMatch
-      ? Number(codigoMatch[0])
-      : null;
+const codigoMatch =
+codigoColadoMatch ||
+textoSemHorario.match(
+/\b\d{3,5}\b/
+);
 
+const codigoAluno =
+codigoMatch
+? Number(
+codigoMatch[1] || codigoMatch[0]
+)
+: null;
 
-  const datasEspecificas =
-    extrairDatas(
-      textoSemHorario
-    );
+const datasEspecificas =
+extrairDatas(
+textoSemHorario
+);
 
+// =====================================================
+// REMOVE O HORÁRIO
+// =====================================================
 
-  let restante =
-    texto
-      .replace(
-        /^(\d{1,2})(?::(\d{2}))?h?/i,
-        ""
-      )
-      .replace(
-        /📸|❌|🎸|🥁|🎹|🎤|🎻|🎵|🪕|🎼/g,
-        ""
-      )
-      .replace(
-        /\b\d{3,5}\b/,
-        ""
-      );
+let restante =
+texto
+.replace(
+/^(\d{1,2})(?::(\d{2}))?h?/i,
+""
+);
 
+// =====================================================
+// REMOVE O CÓDIGO
+//
+// Primeiro trata o código colado ao horário:
+//
+// 16:20h3047 Bento Barbeto
+//
+// Depois trata o formato com espaço:
+//
+// 16:20h 3047 Bento Barbeto
+// =====================================================
 
-  restante =
-    removerDatas(
-      restante
-    );
+if (codigoAluno) {
 
+restante =
+  restante.replace(
+    new RegExp(
+      `^\\s*${codigoAluno}\\b`
+    ),
+    ""
+  );
 
-  const foto =
-    texto.includes("📸");
+}
 
+// =====================================================
+// REMOVE EMOJIS
+// =====================================================
 
-  let instrumento = null;
+restante =
+restante.replace(
+/📸|❌|🎸|🥁|🎹|🎤|🎻|🎵|🪕|🎼/g,
+""
+);
 
+// =====================================================
+// REMOVE DATAS ESPECÍFICAS
+// =====================================================
 
-  if (texto.includes("🎸"))
-    instrumento = "guitarra/violao";
+restante =
+removerDatas(
+restante
+);
 
-  else if (texto.includes("🥁"))
-    instrumento = "bateria";
+const foto =
+texto.includes("📸");
 
-  else if (texto.includes("🎹"))
-    instrumento = "teclado/piano";
+let instrumento = null;
 
-  else if (texto.includes("🎤"))
-    instrumento = "canto";
+if (texto.includes("🎸"))
+instrumento =
+"guitarra/violao";
 
-  else if (texto.includes("🎻"))
-    instrumento = "violino";
+else if (texto.includes("🥁"))
+instrumento =
+"bateria";
 
-  else if (texto.includes("🪕"))
-    instrumento = "ukulele";
+else if (texto.includes("🎹"))
+instrumento =
+"teclado/piano";
 
+else if (texto.includes("🎤"))
+instrumento =
+"canto";
 
-  return {
+else if (texto.includes("🎻"))
+instrumento =
+"violino";
 
-    horario:
-      `${hora}:${minuto}`,
+else if (texto.includes("🪕"))
+instrumento =
+"ukulele";
 
-    // ===================================================
-    // ALUNO COM DATA = TEMPORÁRIO
-    // ===================================================
+return {
 
-    tipo:
-      datasEspecificas.length > 0
-        ? "aluno_temporario"
-        : "aluno",
+horario:
+  `${hora}:${minuto}`,
 
-    codigoAluno,
+// ===================================================
+// ALUNO COM DATA = TEMPORÁRIO
+// ===================================================
 
-    nome:
-      restante || null,
+tipo:
+  datasEspecificas.length > 0
+    ? "aluno_temporario"
+    : "aluno",
 
-    instrumento,
+codigoAluno,
 
-    foto,
+nome:
+  restante || null,
 
-    datasEspecificas,
+instrumento,
 
-    conteudoOriginal:
-      texto,
+foto,
 
-  };
+datasEspecificas,
 
+conteudoOriginal:
+  texto,
+
+};
 }
 
 
