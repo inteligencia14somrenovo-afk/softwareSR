@@ -67,7 +67,7 @@ function Alunos() {
   // PROFESSOR
   // =========================================================
 
-  const isProfessor =
+  const podeAtualizarAlunos =
     professor?.role === "professor" ||
     professor?.role === "admin" ||
     professor?.role === "dev";
@@ -811,7 +811,7 @@ function Alunos() {
             Somente professor
         =================================================== */}
 
-        {isProfessor && (
+        {podeAtualizarAlunos && (
 
           <button
             type="button"
