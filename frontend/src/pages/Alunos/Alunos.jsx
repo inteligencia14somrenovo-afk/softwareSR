@@ -40,6 +40,14 @@ function Alunos() {
 
 
   // =========================
+  // ATUALIZAÇÃO DA PLANILHA
+  // =========================
+
+  const [atualizandoAlunos, setAtualizandoAlunos] =
+    useState(false);
+
+
+  // =========================
   // FILTROS
   // =========================
 
@@ -53,6 +61,14 @@ function Alunos() {
 
   const [filtroIdade, setFiltroIdade] =
     useState("");
+
+
+  // =========================================================
+  // PROFESSOR
+  // =========================================================
+
+  const isProfessor =
+    professor?.role === "professor";
 
 
   // =========================================================
@@ -76,159 +92,164 @@ function Alunos() {
   // CARREGAR ALUNOS
   // =========================================================
 
-  useEffect(() => {
+  const carregarAlunos = async () => {
 
-    const carregarAlunos = async () => {
-
-      if (carregandoProfessor) {
-        return;
-      }
+    if (carregandoProfessor) {
+      return;
+    }
 
 
-      if (!professor) {
+    if (!professor) {
 
-        setAlunos([]);
+      setAlunos([]);
 
-        setCarregandoAlunos(false);
+      setCarregandoAlunos(false);
 
-        return;
+      return;
 
-      }
-
-
-      try {
-
-        setCarregandoAlunos(true);
+    }
 
 
-        const response = await fetch(
-          `${API_URL}/alunos`,
-          {
-            credentials: "include",
-          }
-        );
+    try {
+
+      setCarregandoAlunos(true);
 
 
-        const data = await response.json();
-
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.erro ||
-            data.mensagem ||
-            "Não foi possível carregar os alunos da planilha."
-          );
-
+      const response = await fetch(
+        `${API_URL}/alunos`,
+        {
+          credentials: "include",
         }
+      );
 
 
-        // =====================================================
-        // NORMALIZA OS DADOS
-        //
-        // A tela Alunos deve conter somente alunos definitivos.
-        //
-        // Por segurança, mesmo que algum registro temporário
-        // chegue indevidamente pela API, ele será descartado.
-        // =====================================================
-
-        const alunosPlanilha = (data.alunos || [])
-          .filter((aluno) => {
-
-            const tipo =
-              String(
-                aluno.tipo ||
-                aluno.tipoAluno ||
-                aluno.tipo_aluno ||
-                ""
-              )
-                .trim()
-                .toLowerCase();
-
-            // =================================================
-            // TIPOS TEMPORÁRIOS
-            //
-            // Esses registros pertencem somente à Presença
-            // e nunca devem aparecer em Alunos.
-            // =================================================
-
-            if (
-              tipo === "aluno_temporario" ||
-              tipo === "experimental" ||
-              tipo === "reposicao" ||
-              tipo === "reposição"
-            ) {
-              return false;
-            }
-
-            // =================================================
-            // PROTEÇÃO CONTRA NOMES DE AULA EXPERIMENTAL
-            // =================================================
-
-            const nome =
-              String(
-                aluno.nome || ""
-              )
-                .trim()
-                .toUpperCase();
-
-            if (
-              nome.startsWith("AE")
-            ) {
-              return false;
-            }
-
-            return true;
-
-          })
-          .map(
-            (aluno) => ({
-              ...aluno,
-
-              codigoAluno:
-                aluno.codigoAluno ??
-                aluno.codigo_aluno ??
-                aluno.id,
-
-              nascimento:
-                aluno.nascimento || null,
-
-              foto:
-                aluno.foto || null,
-
-              responsaveis:
-                aluno.responsaveis || []
-            })
-          );
+      const data = await response.json();
 
 
-        setAlunos(alunosPlanilha);
+      if (!response.ok) {
 
-
-        console.log(
-          "✅ Alunos definitivos carregados:",
-          alunosPlanilha
+        throw new Error(
+          data.erro ||
+          data.mensagem ||
+          "Não foi possível carregar os alunos da planilha."
         );
-
-
-      } catch (error) {
-
-        console.error(
-          "❌ Erro ao carregar alunos:",
-          error
-        );
-
-
-        setAlunos([]);
-
-      } finally {
-
-        setCarregandoAlunos(false);
 
       }
 
-    };
 
+      // =====================================================
+      // NORMALIZA OS DADOS
+      //
+      // A tela Alunos deve conter somente alunos definitivos.
+      //
+      // Por segurança, mesmo que algum registro temporário
+      // chegue indevidamente pela API, ele será descartado.
+      // =====================================================
+
+      const alunosPlanilha = (data.alunos || [])
+        .filter((aluno) => {
+
+          const tipo =
+            String(
+              aluno.tipo ||
+              aluno.tipoAluno ||
+              aluno.tipo_aluno ||
+              ""
+            )
+              .trim()
+              .toLowerCase();
+
+
+          // =================================================
+          // TIPOS TEMPORÁRIOS
+          // =================================================
+
+          if (
+            tipo === "aluno_temporario" ||
+            tipo === "experimental" ||
+            tipo === "reposicao" ||
+            tipo === "reposição"
+          ) {
+            return false;
+          }
+
+
+          // =================================================
+          // PROTEÇÃO CONTRA NOMES DE AULA EXPERIMENTAL
+          // =================================================
+
+          const nome =
+            String(
+              aluno.nome || ""
+            )
+              .trim()
+              .toUpperCase();
+
+
+          if (
+            nome.startsWith("AE")
+          ) {
+            return false;
+          }
+
+
+          return true;
+
+        })
+        .map(
+          (aluno) => ({
+            ...aluno,
+
+            codigoAluno:
+              aluno.codigoAluno ??
+              aluno.codigo_aluno ??
+              aluno.id,
+
+            nascimento:
+              aluno.nascimento || null,
+
+            foto:
+              aluno.foto || null,
+
+            responsaveis:
+              aluno.responsaveis || []
+          })
+        );
+
+
+      setAlunos(alunosPlanilha);
+
+
+      console.log(
+        "✅ Alunos definitivos carregados:",
+        alunosPlanilha
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "❌ Erro ao carregar alunos:",
+        error
+      );
+
+
+      setAlunos([]);
+
+    } finally {
+
+      setCarregandoAlunos(false);
+
+    }
+
+  };
+
+
+  // =========================================================
+  // CARREGAR ALUNOS AO ABRIR A TELA
+  // =========================================================
+
+  useEffect(() => {
 
     carregarAlunos();
 
@@ -236,6 +257,77 @@ function Alunos() {
     professor,
     carregandoProfessor
   ]);
+
+
+  // =========================================================
+  // ATUALIZAR ALUNOS PELA PLANILHA
+  // =========================================================
+
+  const atualizarAlunosDaPlanilha = async () => {
+
+    if (!isProfessor || atualizandoAlunos) {
+      return;
+    }
+
+
+    try {
+
+      setAtualizandoAlunos(true);
+
+
+      const response = await fetch(
+        `${API_URL}/planilha/sincronizar`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+
+
+      const data = await response.json();
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.erro ||
+          data.mensagem ||
+          "Não foi possível atualizar os alunos."
+        );
+
+      }
+
+
+      // Depois da sincronização, recarrega os alunos
+      // diretamente do banco.
+      await carregarAlunos();
+
+
+      console.log(
+        "✅ Alunos atualizados pela planilha:",
+        data
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "❌ Erro ao atualizar alunos:",
+        error
+      );
+
+      alert(
+        error.message ||
+        "Não foi possível atualizar os alunos."
+      );
+
+    } finally {
+
+      setAtualizandoAlunos(false);
+
+    }
+
+  };
 
 
   // =========================================================
@@ -446,10 +538,6 @@ function Alunos() {
 
       // =====================================================
       // PROTEÇÃO EXTRA
-      //
-      // Mesmo que um registro temporário tenha chegado
-      // ao estado por alguma atualização posterior, ele
-      // não será exibido nos cards.
       // =====================================================
 
       const tipo =
@@ -462,6 +550,7 @@ function Alunos() {
           .trim()
           .toLowerCase();
 
+
       if (
         tipo === "aluno_temporario" ||
         tipo === "experimental" ||
@@ -472,7 +561,10 @@ function Alunos() {
       }
 
 
-      // Não exibir alunos de aula experimental
+      // =====================================================
+      // NÃO EXIBIR AULAS EXPERIMENTAIS
+      // =====================================================
+
       if (
         (aluno.nome || "")
           .trim()
@@ -512,6 +604,14 @@ function Alunos() {
 
         ||
 
+        String(
+          aluno.codigoAluno ?? ""
+        )
+          .toLowerCase()
+          .includes(textoPesquisa)
+
+        ||
+
         textoInstrumento
           .includes(textoPesquisa)
 
@@ -540,6 +640,7 @@ function Alunos() {
           .trim()
           .toLowerCase();
 
+
       const instrumentoEspecifico =
         String(aluno.instrumento_especifico || "")
           .trim()
@@ -550,8 +651,6 @@ function Alunos() {
 
         !filtroInstrumento ||
 
-        // Já possui instrumento específico:
-        // aparece somente no instrumento escolhido.
         (
           instrumentoEspecifico &&
           instrumentoEspecifico ===
@@ -560,8 +659,6 @@ function Alunos() {
 
         ||
 
-        // Ainda não possui específico:
-        // pode ser qualquer instrumento da família.
         (
           !instrumentoEspecifico &&
           (
@@ -584,7 +681,6 @@ function Alunos() {
 
             ||
 
-            // Pode ser Teclado ou Piano.
             (
               instrumentoBase ===
                 "teclado/piano" &&
@@ -598,8 +694,6 @@ function Alunos() {
 
             ||
 
-            // Registros antigos que já possuem
-            // instrumento específico na própria categoria.
             instrumentoBase ===
               filtroInstrumento
           )
@@ -708,6 +802,30 @@ function Alunos() {
         <h1>
           Alunos
         </h1>
+
+
+        {/* ===================================================
+            ATUALIZAR ALUNOS
+            Somente professor
+        =================================================== */}
+
+        {isProfessor && (
+
+          <button
+            type="button"
+            className="botao-atualizar-alunos"
+            onClick={atualizarAlunosDaPlanilha}
+            disabled={atualizandoAlunos}
+          >
+
+            {atualizandoAlunos
+              ? "Atualizando..."
+              : "↻ Atualizar alunos"
+            }
+
+          </button>
+
+        )}
 
       </div>
 
@@ -921,3 +1039,4 @@ function Alunos() {
 
 
 export default Alunos;
+

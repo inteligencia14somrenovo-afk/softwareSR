@@ -115,7 +115,7 @@ function AlunoCard({
     >
 
       {/* =====================================================
-          NOME + FOTO
+          NOME + CÓDIGO + FOTO
       ===================================================== */}
 
       <div className="card-top">
@@ -125,6 +125,21 @@ function AlunoCard({
           <h2>
             {aluno.nome}
           </h2>
+
+
+          {/* =================================================
+              CÓDIGO DO ALUNO
+          ================================================= */}
+
+          <p className="codigo-aluno">
+
+            Código:{" "}
+
+            {aluno.codigoAluno ??
+              aluno.codigo_aluno ??
+              "Não informado"}
+
+          </p>
 
         </div>
 
