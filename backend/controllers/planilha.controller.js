@@ -74,12 +74,9 @@ function letraParaNumero(letras) {
 //
 // "Sara Angelo 18/06 25/06"
 // → ["18/06", "25/06"]
-//
-// A data fica separada do nome.
 // =====================================================
 
 function extrairDatas(texto) {
-
   const datas = [];
 
   const regex =
@@ -90,9 +87,7 @@ function extrairDatas(texto) {
   while (
     (match = regex.exec(texto)) !== null
   ) {
-
     datas.push(match[1]);
-
   }
 
   return datas;
@@ -104,7 +99,6 @@ function extrairDatas(texto) {
 // =====================================================
 
 function removerDatas(texto) {
-
   return texto
     .replace(
       /(?:^|\s)\d{1,2}\/\d{1,2}(?=\s|$)/g,
@@ -112,7 +106,6 @@ function removerDatas(texto) {
     )
     .replace(/\s+/g, " ")
     .trim();
-
 }
 
 
@@ -204,17 +197,14 @@ function interpretarCelula(conteudo) {
       instrumentoTexto === "violão" ||
       instrumentoTexto === "violao"
     ) {
-
       instrumento = "violao";
 
     } else if (
       instrumentoTexto === "teclado" ||
       instrumentoTexto === "piano"
     ) {
-
       instrumento =
         "teclado/piano";
-
     }
 
 
@@ -501,10 +491,7 @@ function interpretarCelula(conteudo) {
       `${hora}:${minuto}`,
 
     // ===================================================
-    // IMPORTANTE:
-    //
-    // Se possui uma data específica, NÃO é aluno
-    // definitivo. É somente uma ocorrência temporária.
+    // ALUNO COM DATA = TEMPORÁRIO
     // ===================================================
 
     tipo:
@@ -594,16 +581,12 @@ function montarAlunosDaPlanilha(
 
     // =================================================
     // SOMENTE ALUNO DEFINITIVO
-    //
-    // AE, Rep e aluno com data NÃO entram.
     // =================================================
 
     if (
       horario.tipo !== "aluno"
     ) {
-
       continue;
-
     }
 
 
@@ -741,6 +724,153 @@ function montarAlunosDaPlanilha(
 
 
 // =====================================================
+// IDENTIFICAR CÓDIGOS TEMPORÁRIOS
+//
+// Retorna os códigos que aparecem na planilha
+// somente como:
+//
+// - aluno_temporario
+// - Rep
+//
+// e NÃO aparecem como aluno definitivo.
+//
+// Esses códigos são importantes para limpar registros
+// temporários antigos que foram gravados na tabela alunos
+// antes da nova regra.
+// =====================================================
+
+function obterCodigosTemporarios(
+  resultado
+) {
+
+  const diasSemana = {
+
+    2: "SEGUNDA",
+    3: "TERÇA",
+    4: "QUARTA",
+    5: "QUINTA",
+    6: "SEXTA",
+    7: "SÁBADO",
+
+  };
+
+
+  const codigosDefinitivos =
+    new Set();
+
+  const codigosTemporarios =
+    new Set();
+
+
+  for (
+    const item
+    of resultado.rows
+  ) {
+
+    if (
+      !diasSemana[item.coluna]
+    ) {
+      continue;
+    }
+
+
+    const horario =
+      interpretarCelula(
+        item.conteudo
+      );
+
+
+    if (!horario) {
+      continue;
+    }
+
+
+    // =================================================
+    // ALUNO DEFINITIVO
+    // =================================================
+
+    if (
+      horario.tipo === "aluno" &&
+      horario.codigoAluno
+    ) {
+
+      codigosDefinitivos.add(
+        Number(
+          horario.codigoAluno
+        )
+      );
+
+      continue;
+    }
+
+
+    // =================================================
+    // ALUNO TEMPORÁRIO
+    // =================================================
+
+    if (
+      horario.tipo ===
+        "aluno_temporario" &&
+      horario.codigoAluno
+    ) {
+
+      codigosTemporarios.add(
+        Number(
+          horario.codigoAluno
+        )
+      );
+
+      continue;
+    }
+
+
+    // =================================================
+    // REP
+    // =================================================
+
+    if (
+      horario.tipo ===
+        "reposicao" &&
+      horario.codigoAluno
+    ) {
+
+      codigosTemporarios.add(
+        Number(
+          horario.codigoAluno
+        )
+      );
+
+    }
+
+  }
+
+
+  // =====================================================
+  // SE O CÓDIGO TAMBÉM É DEFINITIVO,
+  // NÃO PODE SER REMOVIDO.
+  // =====================================================
+
+  for (
+    const codigo
+    of codigosDefinitivos
+  ) {
+
+    codigosTemporarios.delete(
+      codigo
+    );
+
+  }
+
+
+  return {
+    codigosDefinitivos,
+    codigosTemporarios,
+  };
+
+}
+
+
+// =====================================================
 // SINCRONIZAR ALUNOS NA TABELA alunos
 // =====================================================
 
@@ -766,15 +896,94 @@ async function sincronizarAlunosDoProfessor(
     );
 
 
+  // =====================================================
+  // MONTA SOMENTE OS ALUNOS DEFINITIVOS
+  // =====================================================
+
   const alunos =
     montarAlunosDaPlanilha(
       resultado
     );
 
 
+  // =====================================================
+  // IDENTIFICA TEMPORÁRIOS
+  //
+  // Usado para limpar registros antigos.
+  // =====================================================
+
+  const {
+    codigosTemporarios
+  } =
+    obterCodigosTemporarios(
+      resultado
+    );
+
+
   let novos = 0;
   let atualizados = 0;
+  let removidosTemporarios = 0;
 
+
+  // =====================================================
+  // LIMPA REGISTROS TEMPORÁRIOS ANTIGOS
+  //
+  // Só remove:
+  //
+  // 1. aluno do mesmo professor
+  // 2. cujo código aparece atualmente como temporário
+  // 3. e NÃO aparece como aluno definitivo
+  //
+  // Assim, se o mesmo código possuir uma aula definitiva
+  // em outro horário, ele NÃO será removido.
+  // =====================================================
+
+  if (
+    codigosTemporarios.size > 0
+  ) {
+
+    const codigos =
+      Array.from(
+        codigosTemporarios
+      );
+
+
+    const resultadoRemocao =
+      await client.query(
+        `
+        DELETE FROM alunos
+        WHERE
+          professor_id = $1
+          AND codigo_aluno = ANY($2::integer[])
+        RETURNING id, codigo_aluno, nome
+        `,
+        [
+          professorId,
+          codigos,
+        ]
+      );
+
+
+    removidosTemporarios =
+      resultadoRemocao.rows.length;
+
+
+    if (
+      removidosTemporarios > 0
+    ) {
+
+      console.log(
+        `🧹 ${removidosTemporarios} registro(s) temporário(s) antigo(s) removido(s) de alunos para o professor ${professorId}.`
+      );
+
+    }
+
+  }
+
+
+  // =====================================================
+  // SINCRONIZA ALUNOS DEFINITIVOS
+  // =====================================================
 
   for (
     const aluno
@@ -896,6 +1105,7 @@ async function sincronizarAlunosDoProfessor(
     total: alunos.length,
     novos,
     atualizados,
+    removidosTemporarios,
   };
 
 }
@@ -967,6 +1177,8 @@ async function executarSincronizacao() {
     let totalAlunosNovos = 0;
 
     let totalAlunosAtualizados = 0;
+
+    let totalAlunosTemporariosRemovidos = 0;
 
 
     await client.query(
@@ -1121,11 +1333,16 @@ async function executarSincronizacao() {
         resultadoAlunos.atualizados;
 
 
+      totalAlunosTemporariosRemovidos +=
+        resultadoAlunos.removidosTemporarios;
+
+
       console.log(
         `✅ ${professor.nome} sincronizado: ${valores.length} linhas | ` +
         `${resultadoAlunos.total} alunos | ` +
         `${resultadoAlunos.novos} novos | ` +
-        `${resultadoAlunos.atualizados} atualizados`
+        `${resultadoAlunos.atualizados} atualizados | ` +
+        `${resultadoAlunos.removidosTemporarios} temporários removidos`
       );
 
     }
@@ -1152,6 +1369,9 @@ async function executarSincronizacao() {
 
       alunosAtualizados:
         totalAlunosAtualizados,
+
+      alunosTemporariosRemovidos:
+        totalAlunosTemporariosRemovidos,
 
     };
 
@@ -1552,9 +1772,7 @@ async function buscarHorariosOrganizados(
       if (
         !diasSemana[item.coluna]
       ) {
-
         continue;
-
       }
 
 
@@ -1565,9 +1783,7 @@ async function buscarHorariosOrganizados(
 
 
       if (!horario) {
-
         continue;
-
       }
 
 
