@@ -60,18 +60,6 @@ function normalizarHorario(horario) {
 // =====================================================
 // DATAS ESPECÍFICAS
 // =====================================================
-//
-// Exemplos:
-//
-// 19h Teoria 29/09
-// → ["29/09"]
-//
-// 19h AE Vitor 18a Piano 29/09 🎼 Teoria
-// → ["29/09"]
-//
-// 19h Teoria 18/09 25/09
-// → ["18/09", "25/09"]
-// =====================================================
 
 function extrairDatasEspecificas(texto) {
   const datas = [];
@@ -93,13 +81,6 @@ function extrairDatasEspecificas(texto) {
 
 // =====================================================
 // DETECTAR AULA EXPERIMENTAL
-// =====================================================
-//
-// Não precisamos reproduzir aqui todo o parser do
-// planilha.controller.js.
-//
-// Para o cruzamento de turmas, basta saber se a célula
-// representa uma AE e quais datas específicas ela possui.
 // =====================================================
 
 function ehAulaExperimental(conteudo) {
@@ -129,9 +110,6 @@ function interpretarCabecalho(conteudo) {
 
   // ===================================================
   // MUSICALIZAÇÃO
-  //
-  // Exemplo:
-  // MUSICALIZAÇÃO - SEGUNDA 10H
   // ===================================================
 
   if (texto.includes("musicalização")) {
@@ -159,10 +137,6 @@ function interpretarCabecalho(conteudo) {
 
   // ===================================================
   // TEORIA
-  //
-  // Exemplo:
-  // Segunda 15h
-  // Quarta 10h
   // ===================================================
 
   const matchTeoria = texto.match(
@@ -290,7 +264,6 @@ function extrairAlunos(
         )
       );
 
-    // Outro cabeçalho encontrado.
     if (
       interpretarCabecalho(valorCodigo)
     ) {
@@ -402,7 +375,7 @@ function interpretarTurmas(dados) {
 // INTERPRETAR HORÁRIO DO PROFESSOR
 // =====================================================
 //
-// Exemplos aceitos:
+// Aceita:
 //
 // 17h 🎵 T4 Musicalização
 // 17h Musicalização
@@ -410,10 +383,14 @@ function interpretarTurmas(dados) {
 // 10h Teoria
 //
 // T1/T2/T3/T4 são ignorados.
+//
+// Também pode receber um horário herdado da linha
+// quando a célula não começa com horário.
 // =====================================================
 
 function interpretarHorarioProfessor(
-  conteudo
+  conteudo,
+  horarioFallback = null
 ) {
   const texto =
     normalizarTexto(conteudo);
@@ -422,45 +399,73 @@ function interpretarHorarioProfessor(
     return null;
   }
 
-  // Precisa começar com horário.
+  // ===================================================
+  // TENTAR HORÁRIO EXPLÍCITO
+  // ===================================================
+
   const horarioMatch =
     texto.match(
       /^(\d{1,2})(?::(\d{2}))?\s*h?/i
     );
 
-  if (!horarioMatch) {
-    return null;
+  let horario = null;
+  let restante = texto;
+
+  if (horarioMatch) {
+    const hora =
+      Number(horarioMatch[1]);
+
+    const minuto =
+      horarioMatch[2]
+        ? Number(horarioMatch[2])
+        : 0;
+
+    if (
+      hora < 0 ||
+      hora > 23 ||
+      minuto < 0 ||
+      minuto > 59
+    ) {
+      return null;
+    }
+
+    horario =
+      `${String(hora).padStart(2, "0")}:${String(
+        minuto
+      ).padStart(2, "0")}`;
+
+    restante =
+      texto
+        .replace(
+          /^(\d{1,2})(?::(\d{2}))?\s*h?/i,
+          ""
+        )
+        .trim();
+  } else {
+    // =================================================
+    // NOVO:
+    // A célula não possui horário.
+    //
+    // Exemplo:
+    //
+    // 🎵 T3 Musicalização 29/09 🎹 3140 Ana Cecília-
+    //
+    // O horário será herdado da linha da planilha.
+    // =================================================
+
+    horario =
+      horarioFallback
+        ? normalizarHorario(
+            horarioFallback
+          )
+        : null;
+
+    restante = texto;
   }
 
-  const hora =
-    Number(horarioMatch[1]);
-
-  const minuto =
-    horarioMatch[2]
-      ? Number(horarioMatch[2])
-      : 0;
-
-  if (
-    hora < 0 ||
-    hora > 23 ||
-    minuto < 0 ||
-    minuto > 59
-  ) {
+  if (!horario) {
     return null;
   }
-
-  const horario =
-    `${String(hora).padStart(2, "0")}:${String(
-      minuto
-    ).padStart(2, "0")}`;
-
-  const restante =
-    texto
-      .replace(
-        /^(\d{1,2})(?::(\d{2}))?\s*h?/i,
-        ""
-      )
-      .trim();
 
   const restanteNormalizado =
     restante
@@ -518,17 +523,79 @@ const DIAS_SEMANA = {
 };
 
 // =====================================================
-// BUSCAR PROFESSORES DOS HORÁRIOS
+// DESCOBRIR HORÁRIOS DAS LINHAS
 // =====================================================
 //
-// Além dos dados básicos do professor, mantemos:
+// Algumas células da planilha não repetem o horário.
 //
-// - conteudo
-// - coluna
-// - datasEspecificas
-// - aulaExperimental
+// Exemplo:
 //
-// Isso permite resolver conflitos específicos de data.
+// 16h 🎤 3290 Deborah Vitória...
+//
+// e outra célula na mesma linha:
+//
+// 🎵 T3 Musicalização 29/09 🎹 3140 Ana Cecília-
+//
+// Nesse caso a segunda célula pertence ao mesmo horário
+// da linha.
+//
+// Primeiro descobrimos os horários explícitos e depois
+// usamos a linha como referência para as células que
+// não possuem horário.
+// =====================================================
+
+function montarMapaHorariosDasLinhas(
+  horarios
+) {
+  const mapa = new Map();
+
+  for (const item of horarios) {
+    const horario =
+      interpretarHorarioProfessor(
+        item.conteudo
+      );
+
+    if (!horario) {
+      continue;
+    }
+
+    const chave =
+      `${item.linha}`;
+
+    if (!mapa.has(chave)) {
+      mapa.set(chave, []);
+    }
+
+    const lista =
+      mapa.get(chave);
+
+    const jaExiste =
+      lista.some(
+        (itemHorario) =>
+          itemHorario.horario ===
+            horario.horario &&
+          itemHorario.tipo ===
+            horario.tipo
+      );
+
+    if (jaExiste) {
+      continue;
+    }
+
+    lista.push({
+      horario:
+        horario.horario,
+
+      tipo:
+        horario.tipo,
+    });
+  }
+
+  return mapa;
+}
+
+// =====================================================
+// BUSCAR PROFESSORES DOS HORÁRIOS
 // =====================================================
 
 async function buscarHorariosDosProfessores() {
@@ -574,25 +641,18 @@ async function buscarHorariosDosProfessores() {
 // INDEXAR PROFESSORES POR:
 // TIPO + DIA + HORÁRIO
 // =====================================================
-//
-// Agora cada entrada mantém também as células que
-// originaram o vínculo.
-//
-// Isso é necessário porque:
-//
-// 19h Teoria 29/09
-//
-// é diferente de:
-//
-// 19h Teoria
-//
-// mesmo que ambas representem TERÇA + 19h.
-// =====================================================
 
 function montarIndiceProfessores(
   horarios
 ) {
   const indice = new Map();
+
+  // Primeiro descobrimos os horários explícitos
+  // existentes em cada linha.
+  const mapaHorariosDasLinhas =
+    montarMapaHorariosDasLinhas(
+      horarios
+    );
 
   for (const item of horarios) {
     const dia =
@@ -602,10 +662,40 @@ function montarIndiceProfessores(
       continue;
     }
 
-    const horario =
+    // =================================================
+    // TENTAR HORÁRIO EXPLÍCITO
+    //
+    // Se não existir, usar o horário conhecido
+    // da mesma linha.
+    // =================================================
+
+    let horario =
       interpretarHorarioProfessor(
         item.conteudo
       );
+
+    if (!horario) {
+      const horariosDaLinha =
+        mapaHorariosDasLinhas.get(
+          `${item.linha}`
+        ) || [];
+
+      // Se a linha possui apenas um horário,
+      // podemos herdá-lo com segurança.
+      if (
+        horariosDaLinha.length === 1
+      ) {
+        horario =
+          interpretarHorarioProfessor(
+            item.conteudo,
+            horariosDaLinha[0].horario
+          );
+      } else {
+        // Se houver mais de um horário na mesma linha,
+        // não fazemos uma associação arbitrária.
+        horario = null;
+      }
+    }
 
     if (!horario) {
       continue;
@@ -658,6 +748,12 @@ function montarIndiceProfessores(
       celula: item.celula,
       conteudo: item.conteudo,
 
+      horario:
+        horario.horario,
+
+      tipo:
+        horario.tipo,
+
       datasEspecificas,
 
       aulaExperimental:
@@ -686,18 +782,9 @@ function obterExcecoesDoProfessor(
     const item
     of professor.horarios
   ) {
-    const horarioInterpretado =
-      interpretarHorarioProfessor(
-        item.conteudo
-      );
-
-    if (!horarioInterpretado) {
-      continue;
-    }
-
     if (
-      horarioInterpretado.tipo !== tipo ||
-      horarioInterpretado.horario !== horario
+      item.tipo !== tipo ||
+      item.horario !== horario
     ) {
       continue;
     }
@@ -722,7 +809,7 @@ function obterExcecoesDoProfessor(
 // IDENTIFICAR CONFLITO ESPECÍFICO
 // =====================================================
 //
-// Exemplo:
+// Caso 1:
 //
 // Manuely:
 // 19h Teoria 29/09
@@ -730,13 +817,23 @@ function obterExcecoesDoProfessor(
 // Apolo:
 // 19h AE Vitor 18a Piano 29/09 🎼 Teoria
 //
-// Resultado:
+// → Manuely responsável em 29/09.
 //
-// professor = Manuely
+// Caso 2:
 //
-// exceção:
-// Apolo está ocupado por AE em 29/09.
+// Sara:
+// 16h 🎤 3290 Deborah Vitória
+// 22/09 e 29/09 🎵 T3 Musicalização
 //
+// Manuely:
+// 🎵 T3 Musicalização 29/09 🎹 3140 Ana Cecília-
+//
+// → Sara em 22/09
+// → Manuely em 29/09
+//
+// A segunda célula não precisa conter "AE".
+// O que importa é que ela representa o mesmo
+// tipo/horário e possui uma data específica.
 // =====================================================
 
 function resolverConflitoPorData(
@@ -750,131 +847,250 @@ function resolverConflitoPorData(
     return null;
   }
 
-  const candidatosNormais = [];
-  const candidatosAE = [];
+  // ===================================================
+  // TODAS AS OCORRÊNCIAS DATADAS
+  // ===================================================
 
-  for (
-    const professor
-    of professores
-  ) {
-    const excecoes =
-      obterExcecoesDoProfessor(
+  const ocorrenciasPorProfessor =
+    professores.map(
+      (professor) => ({
         professor,
-        tipo,
-        horario
-      );
 
-    const temNormalComData =
-      excecoes.some(
-        (item) =>
-          !item.aulaExperimental
-      );
-
-    const temAEComData =
-      excecoes.some(
-        (item) =>
-          item.aulaExperimental
-      );
-
-    if (temNormalComData) {
-      candidatosNormais.push(
-        professor
-      );
-    }
-
-    if (temAEComData) {
-      candidatosAE.push(
-        professor
-      );
-    }
-  }
-
-  // ===================================================
-  // PROCURAR DATAS EM COMUM ENTRE:
-  //
-  // professor normal
-  // +
-  // professor em AE
-  // ===================================================
-
-  for (
-    const professorNormal
-    of candidatosNormais
-  ) {
-    const excecoesNormal =
-      obterExcecoesDoProfessor(
-        professorNormal,
-        tipo,
-        horario
-      ).filter(
-        (item) =>
-          !item.aulaExperimental
-      );
-
-    for (
-      const itemNormal
-      of excecoesNormal
-    ) {
-      for (
-        const professorAE
-        of candidatosAE
-      ) {
-        const excecoesAE =
+        ocorrencias:
           obterExcecoesDoProfessor(
-            professorAE,
+            professor,
             tipo,
             horario
-          ).filter(
-            (item) =>
-              item.aulaExperimental
+          ),
+      })
+    );
+
+  // ===================================================
+  // COMPARAR DATAS ENTRE OS PROFESSORES
+  // ===================================================
+
+  for (
+    const origem
+    of ocorrenciasPorProfessor
+  ) {
+    for (
+      const ocorrencia
+      of origem.ocorrencias
+    ) {
+      for (
+        const data
+        of ocorrencia.datasEspecificas
+      ) {
+        const outrosProfessores =
+          ocorrenciasPorProfessor.filter(
+            (outro) =>
+              outro.professor.id !==
+              origem.professor.id
           );
 
         for (
-          const itemAE
-          of excecoesAE
+          const outro
+          of outrosProfessores
         ) {
-          const datasComuns =
-            itemNormal.datasEspecificas.filter(
-              (data) =>
-                itemAE.datasEspecificas.includes(
+          const outraOcorrencia =
+            outro.ocorrencias.find(
+              (item) =>
+                item.datasEspecificas.includes(
                   data
                 )
             );
 
-          if (
-            datasComuns.length === 0
-          ) {
+          if (!outraOcorrencia) {
             continue;
           }
 
-          return {
-            professor:
-              professorNormal,
+          // =========================================
+          // Se um dos dois é AE, o outro é o
+          // responsável pela turma.
+          // =========================================
 
-            tipoResolucao:
-              "excecao_data",
+          if (
+            !ocorrencia.aulaExperimental &&
+            outraOcorrencia.aulaExperimental
+          ) {
+            return {
+              professor:
+                origem.professor,
 
-            datas:
-              datasComuns,
+              tipoResolucao:
+                "excecao_data",
 
-            professorAE,
+              datas: [data],
 
-            ocupacoesAE:
-              datasComuns.map(
-                (data) => ({
+              professorAE:
+                outro.professor,
+
+              ocupacoesAE: [
+                {
                   data,
 
                   professor:
-                    professorAE,
+                    outro.professor,
 
                   conteudo:
-                    itemAE.conteudo,
+                    outraOcorrencia.conteudo,
 
                   celula:
-                    itemAE.celula,
-                })
-              ),
-          };
+                    outraOcorrencia.celula,
+                },
+              ],
+            };
+          }
+
+          if (
+            ocorrencia.aulaExperimental &&
+            !outraOcorrencia.aulaExperimental
+          ) {
+            return {
+              professor:
+                outro.professor,
+
+              tipoResolucao:
+                "excecao_data",
+
+              datas: [data],
+
+              professorAE:
+                origem.professor,
+
+              ocupacoesAE: [
+                {
+                  data,
+
+                  professor:
+                    origem.professor,
+
+                  conteudo:
+                    ocorrencia.conteudo,
+
+                  celula:
+                    ocorrencia.celula,
+                },
+              ],
+            };
+          }
+
+          // =========================================
+          // NOVO CASO:
+          //
+          // Dois professores possuem ocorrência
+          // datada no mesmo horário.
+          //
+          // Se a ocorrência de origem possui
+          // conteúdo que indica diretamente a turma
+          // e a outra também, mantemos a ocorrência
+          // normal como responsável.
+          //
+          // Isso permite casos como:
+          //
+          // Sara:
+          // 16h ... 22/09 e 29/09 Musicalização
+          //
+          // Manuely:
+          // Musicalização 29/09 ... Ana Cecília
+          //
+          // A célula da Manuely está ocupando o
+          // mesmo horário naquela data.
+          // =========================================
+
+          const origemTemTipo =
+            ocorrencia.tipo === tipo;
+
+          const outraTemTipo =
+            outraOcorrencia.tipo === tipo;
+
+          if (
+            origemTemTipo &&
+            outraTemTipo
+          ) {
+            // Se apenas uma ocorrência possui
+            // horário explicitamente informado,
+            // ela representa o horário-base.
+            //
+            // A outra pode ser a substituição.
+            const origemTemHorarioExplicito =
+              /^(\d{1,2})(?::(\d{2}))?\s*h?/i.test(
+                normalizarTexto(
+                  ocorrencia.conteudo
+                )
+              );
+
+            const outraTemHorarioExplicito =
+              /^(\d{1,2})(?::(\d{2}))?\s*h?/i.test(
+                normalizarTexto(
+                  outraOcorrencia.conteudo
+                )
+              );
+
+            if (
+              origemTemHorarioExplicito &&
+              !outraTemHorarioExplicito
+            ) {
+              return {
+                professor:
+                  outro.professor,
+
+                tipoResolucao:
+                  "excecao_data",
+
+                datas: [data],
+
+                professorAE: null,
+
+                ocupacoesAE: [
+                  {
+                    data,
+
+                    professor:
+                      outro.professor,
+
+                    conteudo:
+                      outraOcorrencia.conteudo,
+
+                    celula:
+                      outraOcorrencia.celula,
+                  },
+                ],
+              };
+            }
+
+            if (
+              !origemTemHorarioExplicito &&
+              outraTemHorarioExplicito
+            ) {
+              return {
+                professor:
+                  origem.professor,
+
+                tipoResolucao:
+                  "excecao_data",
+
+                datas: [data],
+
+                professorAE: null,
+
+                ocupacoesAE: [
+                  {
+                    data,
+
+                    professor:
+                      origem.professor,
+
+                    conteudo:
+                      ocorrencia.conteudo,
+
+                    celula:
+                      ocorrencia.celula,
+                  },
+                ],
+              };
+            }
+          }
         }
       }
     }
@@ -987,9 +1203,6 @@ async function vincularProfessoresAsTurmas(
 
     // =================================================
     // MAIS DE UM PROFESSOR
-    //
-    // Primeiro tenta resolver através das datas
-    // específicas.
     // =================================================
 
     const resolucao =
@@ -1048,31 +1261,31 @@ async function vincularProfessoresAsTurmas(
           resolucao.datas,
 
         professorAE:
-          {
-            id:
-              resolucao
-                .professorAE.id,
+          resolucao.professorAE
+            ? {
+                id:
+                  resolucao
+                    .professorAE.id,
 
-            nome:
-              resolucao
-                .professorAE.nome,
+                nome:
+                  resolucao
+                    .professorAE.nome,
 
-            email:
-              resolucao
-                .professorAE.email,
+                email:
+                  resolucao
+                    .professorAE.email,
 
-            professorPlanilhaId:
-              resolucao
-                .professorAE
-                .professorPlanilhaId,
-          },
+                professorPlanilhaId:
+                  resolucao
+                    .professorAE
+                    .professorPlanilhaId,
+              }
+            : null,
       };
     }
 
     // =================================================
     // AMBIGUIDADE REAL
-    //
-    // Não conseguimos determinar um único professor.
     // =================================================
 
     return {
