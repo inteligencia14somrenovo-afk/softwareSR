@@ -11,6 +11,23 @@ import API_URL from "../../config/api";
 import "./Configuração.css";
 
 const Configuração = () => {
+
+  const formatarTipoAcesso = (role) => {
+  switch (role) {
+    case "admin":
+      return "Administrador";
+
+    case "dev":
+      return "Desenvolvedor";
+
+    case "professor":
+      return "Professor";
+
+    default:
+      return "Usuário";
+  }
+};
+
   const { professor, setProfessor } = useAuth();
 
   const [nome, setNome] = useState("");
@@ -272,8 +289,8 @@ const Configuração = () => {
               </h3>
 
               <span>
-                Professor
-              </span>
+  {formatarTipoAcesso(professor.role)}
+</span>
 
             </div>
 
@@ -412,8 +429,8 @@ const Configuração = () => {
               Tipo de acesso
             </span>
 
-            <strong>
-              Professor
+            <strong>       
+               {formatarTipoAcesso(professor.role)}
             </strong>
 
           </div>
