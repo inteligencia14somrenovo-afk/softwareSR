@@ -30,6 +30,17 @@ function Alunos() {
 
 
   // =========================
+  // AVISO DE ANIVERSÁRIO
+  // =========================
+
+  const [mostrarAvisoAniversario, setMostrarAvisoAniversario] =
+    useState(false);
+
+  const [naoMostrarAvisoAniversario, setNaoMostrarAvisoAniversario] =
+    useState(false);
+
+
+  // =========================
   // ALUNOS
   // =========================
 
@@ -259,6 +270,74 @@ function Alunos() {
     professor,
     carregandoProfessor
   ]);
+
+
+  // =========================================================
+  // AVISO SOBRE DATA DE NASCIMENTO
+  // =========================================================
+
+  useEffect(() => {
+
+    if (
+      carregandoProfessor ||
+      carregandoAlunos ||
+      !professor
+    ) {
+      return;
+    }
+
+
+    // O aviso é somente para professores.
+    if (professor.role !== "professor") {
+      return;
+    }
+
+
+    // Só mostra se o professor realmente possui alunos.
+    if (alunos.length === 0) {
+      return;
+    }
+
+
+    const avisoJaDesativado =
+      localStorage.getItem(
+        "som-renovo-alunos-aviso-aniversario"
+      ) === "true";
+
+
+    if (!avisoJaDesativado) {
+
+      setMostrarAvisoAniversario(true);
+
+    }
+
+  }, [
+    professor,
+    carregandoProfessor,
+    carregandoAlunos,
+    alunos.length
+  ]);
+
+
+  // =========================================================
+  // FECHAR AVISO
+  // =========================================================
+
+  const fecharAvisoAniversario = () => {
+
+    if (naoMostrarAvisoAniversario) {
+
+      localStorage.setItem(
+        "som-renovo-alunos-aviso-aniversario",
+        "true"
+      );
+
+    }
+
+
+    setMostrarAvisoAniversario(false);
+
+  };
 
 
   // =========================================================
@@ -796,6 +875,107 @@ function Alunos() {
 
 
       {/* =====================================================
+          AVISO DE ANIVERSÁRIO
+      ===================================================== */}
+
+      {mostrarAvisoAniversario && (
+
+        <div
+          className="aviso-aniversario-overlay"
+          onMouseDown={(e) => {
+
+            if (
+              e.target === e.currentTarget
+            ) {
+              fecharAvisoAniversario();
+            }
+
+          }}
+        >
+
+          <div
+            className="aviso-aniversario-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="aviso-aniversario-titulo"
+          >
+
+            <div className="aviso-aniversario-icone">
+
+              🎂
+
+            </div>
+
+
+            <div className="aviso-aniversario-conteudo">
+
+              <span className="aviso-aniversario-tag">
+                UM PEQUENO DETALHE, UMA GRANDE DIFERENÇA
+              </span>
+
+
+              <h2 id="aviso-aniversario-titulo">
+                Atenção, professor!
+              </h2>
+
+
+              <p>
+
+                Cadastre a <strong>data de nascimento</strong>
+                {" "}dos seus alunos para que o Manager possa
+                mostrar a idade e a data de aniversário de cada um.
+
+              </p>
+
+
+              <p>
+
+                Assim, você poderá se programar com antecedência
+                para fazer <strong>algo especial para o aluno</strong>
+                {" "}no aniversário dele, da forma que você escolher. 🎉
+
+              </p>
+
+
+              <label className="aviso-aniversario-checkbox">
+
+                <input
+                  type="checkbox"
+                  checked={naoMostrarAvisoAniversario}
+                  onChange={(e) =>
+                    setNaoMostrarAvisoAniversario(
+                      e.target.checked
+                    )
+                  }
+                />
+
+                <span className="aviso-aniversario-checkbox-custom"></span>
+
+                <span>
+                  Não mostrar novamente
+                </span>
+
+              </label>
+
+
+              <button
+                type="button"
+                className="aviso-aniversario-botao"
+                onClick={fecharAvisoAniversario}
+              >
+                Entendi
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
+
+      {/* =====================================================
           CABEÇALHO
       ===================================================== */}
 
@@ -1041,4 +1221,3 @@ function Alunos() {
 
 
 export default Alunos;
-
