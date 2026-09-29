@@ -80,6 +80,86 @@ function extrairDatasEspecificas(texto) {
 }
 
 // =====================================================
+// DATAS DA PRÓPRIA TURMA
+// =====================================================
+//
+// Regra:
+//
+// 16h 🎤 3290 Deborah Vitória 22/09 e 29/09 🎵 T3 Musicalização
+//
+// As datas estão ANTES de "Musicalização".
+// Elas pertencem à aluna Deborah e NÃO à turma.
+//
+// Já:
+//
+// 16h 🎵 T3 Musicalização 29/09 🎹 3140 Ana Cecília-
+//
+// A data está DEPOIS de "Musicalização".
+// Ela pertence à ocorrência da própria turma.
+//
+// Exceção:
+// Quando for AE, as datas continuam sendo consideradas
+// como datas da exceção, pois o AE é justamente uma
+// ocupação temporária da turma.
+// =====================================================
+
+function extrairDatasDaTurma(
+  conteudo,
+  tipo
+) {
+  const texto =
+    normalizarTexto(conteudo);
+
+  if (!texto) {
+    return [];
+  }
+
+  // AE continua usando todas as datas da célula.
+  if (ehAulaExperimental(texto)) {
+    return extrairDatasEspecificas(
+      texto
+    );
+  }
+
+  const tipoNormalizado =
+    tipo === "MUSICALIZAÇÃO"
+      ? /musicalização/i
+      : /teoria/i;
+
+  const matchTipo =
+    texto.match(tipoNormalizado);
+
+  if (!matchTipo) {
+    return [];
+  }
+
+  const parteDaTurma =
+    texto.slice(
+      matchTipo.index +
+        matchTipo[0].length
+    );
+
+  // Aceita datas mesmo quando estão coladas
+  // com emoji/texto, por exemplo:
+  // 29/09🎹
+  const datas = [];
+  const regex =
+    /(\d{1,2}\/\d{1,2})/g;
+
+  let match;
+
+  while (
+    (match = regex.exec(
+      parteDaTurma
+    )) !== null
+  ) {
+    datas.push(match[1]);
+  }
+
+  return [...new Set(datas)];
+}
+
+// =====================================================
 // DETECTAR AULA EXPERIMENTAL
 // =====================================================
 
@@ -442,17 +522,6 @@ function interpretarHorarioProfessor(
         )
         .trim();
   } else {
-    // =================================================
-    // NOVO:
-    // A célula não possui horário.
-    //
-    // Exemplo:
-    //
-    // 🎵 T3 Musicalização 29/09 🎹 3140 Ana Cecília-
-    //
-    // O horário será herdado da linha da planilha.
-    // =================================================
-
     horario =
       horarioFallback
         ? normalizarHorario(
@@ -524,24 +593,6 @@ const DIAS_SEMANA = {
 
 // =====================================================
 // DESCOBRIR HORÁRIOS DAS LINHAS
-// =====================================================
-//
-// Algumas células da planilha não repetem o horário.
-//
-// Exemplo:
-//
-// 16h 🎤 3290 Deborah Vitória...
-//
-// e outra célula na mesma linha:
-//
-// 🎵 T3 Musicalização 29/09 🎹 3140 Ana Cecília-
-//
-// Nesse caso a segunda célula pertence ao mesmo horário
-// da linha.
-//
-// Primeiro descobrimos os horários explícitos e depois
-// usamos a linha como referência para as células que
-// não possuem horário.
 // =====================================================
 
 function montarMapaHorariosDasLinhas(
@@ -647,8 +698,6 @@ function montarIndiceProfessores(
 ) {
   const indice = new Map();
 
-  // Primeiro descobrimos os horários explícitos
-  // existentes em cada linha.
   const mapaHorariosDasLinhas =
     montarMapaHorariosDasLinhas(
       horarios
@@ -662,13 +711,6 @@ function montarIndiceProfessores(
       continue;
     }
 
-    // =================================================
-    // TENTAR HORÁRIO EXPLÍCITO
-    //
-    // Se não existir, usar o horário conhecido
-    // da mesma linha.
-    // =================================================
-
     let horario =
       interpretarHorarioProfessor(
         item.conteudo
@@ -680,8 +722,6 @@ function montarIndiceProfessores(
           `${item.linha}`
         ) || [];
 
-      // Se a linha possui apenas um horário,
-      // podemos herdá-lo com segurança.
       if (
         horariosDaLinha.length === 1
       ) {
@@ -691,8 +731,6 @@ function montarIndiceProfessores(
             horariosDaLinha[0].horario
           );
       } else {
-        // Se houver mais de um horário na mesma linha,
-        // não fazemos uma associação arbitrária.
         horario = null;
       }
     }
@@ -737,9 +775,29 @@ function montarIndiceProfessores(
       lista.push(professor);
     }
 
+    // =================================================
+    // IMPORTANTE:
+    //
+    // Aqui não usamos mais todas as datas da célula.
+    //
+    // Para uma célula normal:
+    //
+    // 16h 🎤 Deborah 22/09 e 29/09 🎵 T3 Musicalização
+    //
+    // as datas são da aluna.
+    //
+    // Para:
+    //
+    // 16h 🎵 T3 Musicalização 29/09 🎹 Ana Cecília
+    //
+    // 29/09 é da turma.
+    //
+    // =================================================
+
     const datasEspecificas =
-      extrairDatasEspecificas(
-        item.conteudo
+      extrairDatasDaTurma(
+        item.conteudo,
+        horario.tipo
       );
 
     professor.horarios.push({
@@ -808,33 +866,6 @@ function obterExcecoesDoProfessor(
 // =====================================================
 // IDENTIFICAR CONFLITO ESPECÍFICO
 // =====================================================
-//
-// Caso 1:
-//
-// Manuely:
-// 19h Teoria 29/09
-//
-// Apolo:
-// 19h AE Vitor 18a Piano 29/09 🎼 Teoria
-//
-// → Manuely responsável em 29/09.
-//
-// Caso 2:
-//
-// Sara:
-// 16h 🎤 3290 Deborah Vitória
-// 22/09 e 29/09 🎵 T3 Musicalização
-//
-// Manuely:
-// 16h 🎵 T3 Musicalização 29/09 🎹 3140 Ana Cecília-
-//
-// → Sara em 22/09
-// → Manuely em 29/09
-//
-// A segunda célula não precisa conter "AE".
-// O que importa é que ela representa o mesmo
-// tipo/horário e possui uma data específica.
-// =====================================================
 
 function resolverConflitoPorData(
   professores,
@@ -866,7 +897,8 @@ function resolverConflitoPorData(
     );
 
   // ===================================================
-  // COMPARAR DATAS ENTRE OS PROFESSORES
+  // PRIMEIRO:
+  // RESOLVER CASOS DE AE
   // ===================================================
 
   for (
@@ -903,11 +935,6 @@ function resolverConflitoPorData(
           if (!outraOcorrencia) {
             continue;
           }
-
-          // =========================================
-          // Se um dos dois é AE, o outro é o
-          // responsável pela turma.
-          // =========================================
 
           if (
             !ocorrencia.aulaExperimental &&
@@ -980,6 +1007,122 @@ function resolverConflitoPorData(
   }
 
   // ===================================================
+  // PROFESSOR BASE + EXCEÇÃO DATADA
+  // ===================================================
+  //
+  // Exemplo:
+  //
+  // Sara:
+  // 16h Deborah 22/09 e 29/09 T3 Musicalização
+  //
+  // Depois da correção acima:
+  //
+  // Sara → T3 Musicalização SEM data
+  //
+  // Manuelly:
+  // 16h T3 Musicalização 29/09 Ana Cecília
+  //
+  // Manuelly → T3 Musicalização em 29/09
+  //
+  // Resultado:
+  //
+  // Sara = professora base
+  // Manuelly = exceção em 29/09
+  // ===================================================
+
+  const professoresBase =
+    professores.filter(
+      (professor) =>
+        professor.horarios.some(
+          (item) =>
+            item.tipo === tipo &&
+            item.horario === horario &&
+            item.datasEspecificas.length ===
+              0 &&
+            !item.aulaExperimental
+        )
+    );
+
+  const professoresComExcecao =
+    ocorrenciasPorProfessor.filter(
+      (item) =>
+        item.ocorrencias.some(
+          (ocorrencia) =>
+            !ocorrencia.aulaExperimental &&
+            ocorrencia.datasEspecificas
+              .length > 0
+        )
+    );
+
+  if (
+    professoresBase.length === 1 &&
+    professoresComExcecao.length >= 1
+  ) {
+    const professorBase =
+      professoresBase[0];
+
+    const ocupacoes = [];
+
+    for (
+      const item
+      of professoresComExcecao
+    ) {
+      for (
+        const ocorrencia
+        of item.ocorrencias
+      ) {
+        if (
+          ocorrencia.aulaExperimental
+        ) {
+          continue;
+        }
+
+        for (
+          const data
+          of ocorrencia.datasEspecificas
+        ) {
+          ocupacoes.push({
+            data,
+
+            professor:
+              item.professor,
+
+            conteudo:
+              ocorrencia.conteudo,
+
+            celula:
+              ocorrencia.celula,
+          });
+        }
+      }
+    }
+
+    if (ocupacoes.length > 0) {
+      return {
+        professor:
+          professorBase,
+
+        tipoResolucao:
+          "excecao_data",
+
+        datas:
+          [
+            ...new Set(
+              ocupacoes.map(
+                (item) => item.data
+              )
+            ),
+          ],
+
+        professorAE: null,
+
+        ocupacoesAE:
+          ocupacoes,
+      };
+    }
+  }
+
+  // ===================================================
   // OCORRÊNCIAS NORMAIS COM DATAS ESPECÍFICAS
   // ===================================================
   //
@@ -993,8 +1136,6 @@ function resolverConflitoPorData(
   //
   // A ocorrência da Manuelly é um subconjunto
   // estrito da ocorrência da Sara.
-  //
-  // Portanto Manuelly é a exceção de 29/09.
   // ===================================================
 
   for (
@@ -1061,10 +1202,6 @@ function resolverConflitoPorData(
                 .datasEspecificas
             );
 
-          // =========================================
-          // ENCONTRAR INTERSEÇÃO
-          // =========================================
-
           const intersecao =
             [
               ...datasAtual,
@@ -1078,10 +1215,6 @@ function resolverConflitoPorData(
           ) {
             continue;
           }
-
-          // =========================================
-          // VERIFICAR SUBCONJUNTO ESTRITO
-          // =========================================
 
           const atualEhSubconjunto =
             datasAtual.size <
@@ -1098,10 +1231,6 @@ function resolverConflitoPorData(
               (data) =>
                 datasAtual.has(data)
             );
-
-          // =========================================
-          // OUTRO É A EXCEÇÃO
-          // =========================================
 
           if (
             outroEhSubconjunto
@@ -1136,10 +1265,6 @@ function resolverConflitoPorData(
             };
           }
 
-          // =========================================
-          // ATUAL É A EXCEÇÃO
-          // =========================================
-
           if (
             atualEhSubconjunto
           ) {
@@ -1172,11 +1297,6 @@ function resolverConflitoPorData(
                 ),
             };
           }
-
-          // =========================================
-          // MESMAS DATAS OU CONJUNTOS SEM RELAÇÃO:
-          // CONTINUA AMBÍGUO
-          // =========================================
         }
       }
     }
