@@ -516,7 +516,7 @@ function interpretarHorarioProfessor(
 const DIAS_SEMANA = {
   2: "SEGUNDA",
   3: "TERÇA",
-  4: "QUARTA",
+  4: "QUINTA",
   5: "QUINTA",
   6: "SEXTA",
   7: "SÁBADO",
@@ -826,7 +826,7 @@ function obterExcecoesDoProfessor(
 // 22/09 e 29/09 🎵 T3 Musicalização
 //
 // Manuely:
-// 🎵 T3 Musicalização 29/09 🎹 3140 Ana Cecília-
+// 16h 🎵 T3 Musicalização 29/09 🎹 3140 Ana Cecília-
 //
 // → Sara em 22/09
 // → Manuely em 29/09
@@ -974,123 +974,209 @@ function resolverConflitoPorData(
               ],
             };
           }
+        }
+      }
+    }
+  }
 
-          // =========================================
-          // NOVO CASO:
-          //
-          // Dois professores possuem ocorrência
-          // datada no mesmo horário.
-          //
-          // Se a ocorrência de origem possui
-          // conteúdo que indica diretamente a turma
-          // e a outra também, mantemos a ocorrência
-          // normal como responsável.
-          //
-          // Isso permite casos como:
-          //
-          // Sara:
-          // 16h ... 22/09 e 29/09 Musicalização
-          //
-          // Manuely:
-          // Musicalização 29/09 ... Ana Cecília
-          //
-          // A célula da Manuely está ocupando o
-          // mesmo horário naquela data.
-          // =========================================
+  // ===================================================
+  // OCORRÊNCIAS NORMAIS COM DATAS ESPECÍFICAS
+  // ===================================================
+  //
+  // Exemplo:
+  //
+  // Sara:
+  // [22/09, 29/09]
+  //
+  // Manuelly:
+  // [29/09]
+  //
+  // A ocorrência da Manuelly é um subconjunto
+  // estrito da ocorrência da Sara.
+  //
+  // Portanto Manuelly é a exceção de 29/09.
+  // ===================================================
 
-          const origemTemTipo =
-            ocorrencia.tipo === tipo;
+  for (
+    let i = 0;
+    i < ocorrenciasPorProfessor.length;
+    i++
+  ) {
+    const atual =
+      ocorrenciasPorProfessor[i];
 
-          const outraTemTipo =
-            outraOcorrencia.tipo === tipo;
+    for (
+      let j = i + 1;
+      j < ocorrenciasPorProfessor.length;
+      j++
+    ) {
+      const outro =
+        ocorrenciasPorProfessor[j];
+
+      for (
+        const ocorrenciaAtual
+        of atual.ocorrencias
+      ) {
+        if (
+          ocorrenciaAtual
+            .aulaExperimental
+        ) {
+          continue;
+        }
+
+        if (
+          ocorrenciaAtual
+            .datasEspecificas.length === 0
+        ) {
+          continue;
+        }
+
+        for (
+          const ocorrenciaOutro
+          of outro.ocorrencias
+        ) {
+          if (
+            ocorrenciaOutro
+              .aulaExperimental
+          ) {
+            continue;
+          }
 
           if (
-            origemTemTipo &&
-            outraTemTipo
+            ocorrenciaOutro
+              .datasEspecificas.length === 0
           ) {
-            // Se apenas uma ocorrência possui
-            // horário explicitamente informado,
-            // ela representa o horário-base.
-            //
-            // A outra pode ser a substituição.
-            const origemTemHorarioExplicito =
-              /^(\d{1,2})(?::(\d{2}))?\s*h?/i.test(
-                normalizarTexto(
-                  ocorrencia.conteudo
-                )
-              );
+            continue;
+          }
 
-            const outraTemHorarioExplicito =
-              /^(\d{1,2})(?::(\d{2}))?\s*h?/i.test(
-                normalizarTexto(
-                  outraOcorrencia.conteudo
-                )
-              );
+          const datasAtual =
+            new Set(
+              ocorrenciaAtual
+                .datasEspecificas
+            );
 
-            if (
-              origemTemHorarioExplicito &&
-              !outraTemHorarioExplicito
-            ) {
-              return {
-                professor:
-                  outro.professor,
+          const datasOutro =
+            new Set(
+              ocorrenciaOutro
+                .datasEspecificas
+            );
 
-                tipoResolucao:
-                  "excecao_data",
+          // =========================================
+          // ENCONTRAR INTERSEÇÃO
+          // =========================================
 
-                datas: [data],
+          const intersecao =
+            [
+              ...datasAtual,
+            ].filter(
+              (data) =>
+                datasOutro.has(data)
+            );
 
-                professorAE: null,
+          if (
+            intersecao.length === 0
+          ) {
+            continue;
+          }
 
-                ocupacoesAE: [
-                  {
+          // =========================================
+          // VERIFICAR SUBCONJUNTO ESTRITO
+          // =========================================
+
+          const atualEhSubconjunto =
+            datasAtual.size <
+              datasOutro.size &&
+            [...datasAtual].every(
+              (data) =>
+                datasOutro.has(data)
+            );
+
+          const outroEhSubconjunto =
+            datasOutro.size <
+              datasAtual.size &&
+            [...datasOutro].every(
+              (data) =>
+                datasAtual.has(data)
+            );
+
+          // =========================================
+          // OUTRO É A EXCEÇÃO
+          // =========================================
+
+          if (
+            outroEhSubconjunto
+          ) {
+            return {
+              professor:
+                outro.professor,
+
+              tipoResolucao:
+                "excecao_data",
+
+              datas:
+                intersecao,
+
+              professorAE: null,
+
+              ocupacoesAE:
+                intersecao.map(
+                  (data) => ({
                     data,
 
                     professor:
                       outro.professor,
 
                     conteudo:
-                      outraOcorrencia.conteudo,
+                      ocorrenciaOutro.conteudo,
 
                     celula:
-                      outraOcorrencia.celula,
-                  },
-                ],
-              };
-            }
+                      ocorrenciaOutro.celula,
+                  })
+                ),
+            };
+          }
 
-            if (
-              !origemTemHorarioExplicito &&
-              outraTemHorarioExplicito
-            ) {
-              return {
-                professor:
-                  origem.professor,
+          // =========================================
+          // ATUAL É A EXCEÇÃO
+          // =========================================
 
-                tipoResolucao:
-                  "excecao_data",
+          if (
+            atualEhSubconjunto
+          ) {
+            return {
+              professor:
+                atual.professor,
 
-                datas: [data],
+              tipoResolucao:
+                "excecao_data",
 
-                professorAE: null,
+              datas:
+                intersecao,
 
-                ocupacoesAE: [
-                  {
+              professorAE: null,
+
+              ocupacoesAE:
+                intersecao.map(
+                  (data) => ({
                     data,
 
                     professor:
-                      origem.professor,
+                      atual.professor,
 
                     conteudo:
-                      ocorrencia.conteudo,
+                      ocorrenciaAtual.conteudo,
 
                     celula:
-                      ocorrencia.celula,
-                  },
-                ],
-              };
-            }
+                      ocorrenciaAtual.celula,
+                  })
+                ),
+            };
           }
+
+          // =========================================
+          // MESMAS DATAS OU CONJUNTOS SEM RELAÇÃO:
+          // CONTINUA AMBÍGUO
+          // =========================================
         }
       }
     }
