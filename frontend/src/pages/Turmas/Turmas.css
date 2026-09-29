@@ -1,0 +1,550 @@
+/* =====================================================
+   TURMAS
+===================================================== */
+
+.turmas-page {
+    padding: 25px;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+.turmas-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+
+    min-width: 0;
+}
+
+.turmas-header h1 {
+    font-size: 28px;
+
+    margin: 0;
+
+    min-width: 0;
+}
+
+.turmas-header p {
+    margin: 6px 0 0;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   GRID
+========================= */
+
+.turmas-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 22px;
+
+    width: 100%;
+
+    min-width: 0;
+}
+
+
+/* =====================================================
+   CARD DA TURMA
+===================================================== */
+
+.turma-card {
+    background: #fff;
+
+    min-width: 0;
+    width: 100%;
+
+    min-height: 190px;
+
+    padding: 20px;
+
+    border-radius: 16px;
+
+    border: 1px solid #e5e5e5;
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.05);
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    flex-direction: column;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.turma-card:hover {
+    transform: translateY(-4px);
+
+    border-color: #ccc;
+
+    box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =====================================================
+   TOPO DO CARD
+===================================================== */
+
+.turma-card-topo {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 14px;
+
+    min-width: 0;
+}
+
+
+/* =========================
+   TIPO
+========================= */
+
+.turma-tipo {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    background: #f1f1f1;
+
+    color: #333;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.3px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================
+   HORÁRIO
+========================= */
+
+.turma-horario {
+    font-size: 20px;
+
+    font-weight: 700;
+
+    color: #222;
+
+    white-space: nowrap;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================
+   DIA
+========================= */
+
+.turma-dia {
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #555;
+
+    margin-bottom: 20px;
+}
+
+
+/* =====================================================
+   LABELS
+===================================================== */
+
+.turma-label {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #999;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+}
+
+
+/* =====================================================
+   PROFESSOR
+===================================================== */
+
+.turma-professor {
+    display: flex;
+
+    flex-direction: column;
+
+    min-width: 0;
+
+    margin-bottom: 15px;
+}
+
+.turma-professor strong {
+    color: #333;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   ALUNOS
+===================================================== */
+
+.turma-alunos-resumo {
+    display: flex;
+
+    flex-direction: column;
+
+    min-width: 0;
+
+    margin-top: auto;
+}
+
+.turma-alunos-resumo strong {
+    color: #222;
+
+    font-size: 15px;
+
+    font-weight: 700;
+}
+
+
+/* =====================================================
+   SEM RESULTADOS
+===================================================== */
+
+.turmas-vazio {
+    width: 100%;
+
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 50px 20px;
+
+    background: #fff;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.05);
+
+    text-align: center;
+}
+
+.turmas-vazio p {
+    margin: 0;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   CARREGANDO
+===================================================== */
+
+.turmas-loading {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-height: 200px;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+/* =====================================================
+   ERRO
+===================================================== */
+
+.turmas-erro {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    padding: 50px 20px;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    background: #fff;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.05);
+
+    text-align: center;
+}
+
+.turmas-erro p {
+    margin: 0;
+
+    color: #c62828;
+
+    font-size: 14px;
+}
+
+.turmas-erro button {
+    border: 1px solid #ddd;
+
+    background: #fff;
+
+    color: #333;
+
+    padding: 10px 15px;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.turmas-erro button:hover {
+    background: #f5f5f5;
+
+    border-color: #bbb;
+
+    transform: translateY(-1px);
+}
+
+.turmas-erro button:active {
+    transform: translateY(0);
+}
+
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1000px) {
+
+    .turmas-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================
+   CELULAR
+========================= */
+
+@media (max-width: 768px) {
+
+    .turmas-page {
+        padding: 10px;
+
+        width: 100%;
+
+        max-width: 100%;
+    }
+
+
+    .turmas-header {
+        margin-bottom: 20px;
+
+        width: 100%;
+    }
+
+
+    .turmas-header h1 {
+        font-size: 24px;
+    }
+
+
+    .turmas-header p {
+        font-size: 13px;
+    }
+
+
+    .turmas-grid {
+        grid-template-columns:
+            minmax(0, 1fr);
+
+        gap: 15px;
+
+        width: 100%;
+    }
+
+
+    .turma-card {
+        min-height: 175px;
+
+        padding: 18px;
+
+        width: 100%;
+
+        max-width: 100%;
+    }
+
+
+    .turma-horario {
+        font-size: 18px;
+    }
+
+
+    .turma-dia {
+        font-size: 14px;
+
+        margin-bottom: 18px;
+    }
+
+
+    .turma-professor strong {
+        font-size: 13px;
+    }
+
+
+    .turma-alunos-resumo strong {
+        font-size: 14px;
+    }
+
+}
+
+
+/* =========================
+   CELULAR PEQUENO
+========================= */
+
+@media (max-width: 450px) {
+
+    .turmas-page {
+        padding: 8px;
+    }
+
+
+    .turmas-header {
+        gap: 10px;
+    }
+
+
+    .turmas-header h1 {
+        font-size: 22px;
+    }
+
+
+    .turmas-header p {
+        font-size: 12px;
+    }
+
+
+    .turma-card {
+        padding: 15px;
+    }
+
+
+    .turma-card-topo {
+        gap: 8px;
+    }
+
+
+    .turma-tipo {
+        font-size: 10px;
+
+        padding: 4px 8px;
+    }
+
+
+    .turma-horario {
+        font-size: 17px;
+    }
+
+
+    .turma-dia {
+        font-size: 13px;
+    }
+
+
+    .turma-label {
+        font-size: 10px;
+    }
+
+
+    .turma-professor strong {
+        font-size: 13px;
+    }
+
+}
