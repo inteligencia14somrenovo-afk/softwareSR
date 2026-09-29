@@ -30,7 +30,9 @@ function normalizarHorario(horario) {
     .toLowerCase()
     .replace(/\s/g, "");
 
-  const match = texto.match(/^(\d{1,2})h(?:(\d{2}))?$/);
+  const match = texto.match(
+    /^(\d{1,2})(?::(\d{2}))?h$/
+  );
 
   if (!match) {
     return null;
@@ -58,16 +60,6 @@ function normalizarHorario(horario) {
 // =====================================================
 // INTERPRETAR CABEÇALHO DE TURMA
 // =====================================================
-//
-// Exemplos:
-//
-// "Segunda 15h"
-// "Quarta 10h"
-// "MUSICALIZAÇÃO - SEGUNDA 10H"
-// "17h 🎵 T4 Musicalização"
-//
-// O T1/T2/T3/T4 não é utilizado.
-// =====================================================
 
 function interpretarCabecalho(conteudo) {
   const original = normalizarTexto(conteudo);
@@ -78,9 +70,12 @@ function interpretarCabecalho(conteudo) {
 
   const texto = original.toLowerCase();
 
-  // ---------------------------------------------------
+  // ===================================================
   // MUSICALIZAÇÃO
-  // ---------------------------------------------------
+  //
+  // Exemplo:
+  // MUSICALIZAÇÃO - SEGUNDA 10H
+  // ===================================================
 
   if (texto.includes("musicalização")) {
     const match = texto.match(
@@ -105,9 +100,13 @@ function interpretarCabecalho(conteudo) {
     };
   }
 
-  // ---------------------------------------------------
+  // ===================================================
   // TEORIA
-  // ---------------------------------------------------
+  //
+  // Exemplo:
+  // Segunda 15h
+  // Quarta 10h
+  // ===================================================
 
   const matchTeoria = texto.match(
     /^(segunda|terça|terca|quarta|quinta|sexta|sábado|sabado)\s+(\d{1,2}h(?:\d{2})?)/i
@@ -128,40 +127,11 @@ function interpretarCabecalho(conteudo) {
     };
   }
 
-  // ---------------------------------------------------
-  // CASO FUTURO:
-  //
-  // "17h 🎵 T4 Musicalização"
-  //
-  // Mantemos suporte para esse formato também.
-  // ---------------------------------------------------
-
-  if (
-    texto.includes("musicalizacao") ||
-    texto.includes("musicalização")
-  ) {
-    const match = texto.match(
-      /(\d{1,2}h(?:\d{2})?).*musicaliza/i
-    );
-
-    if (match) {
-      const horario = normalizarHorario(match[1]);
-
-      if (horario) {
-        return {
-          tipo: "MUSICALIZAÇÃO",
-          dia: null,
-          horario,
-        };
-      }
-    }
-  }
-
   return null;
 }
 
 // =====================================================
-// VERIFICAR SE É CÓDIGO DE ALUNO
+// VERIFICAR CÓDIGO DE ALUNO
 // =====================================================
 
 function ehCodigoAluno(valor) {
@@ -175,7 +145,7 @@ function ehCodigoAluno(valor) {
 }
 
 // =====================================================
-// BUSCAR DADOS BRUTOS
+// BUSCAR DADOS BRUTOS DAS TURMAS
 // =====================================================
 
 async function buscarDadosBrutos() {
@@ -217,31 +187,19 @@ function montarMatriz(dados) {
 }
 
 // =====================================================
-// BUSCAR VALOR DE UMA CÉLULA
+// BUSCAR VALOR DE CÉLULA
 // =====================================================
 
-function obterCelula(matriz, linha, coluna) {
+function obterCelula(
+  matriz,
+  linha,
+  coluna
+) {
   return matriz[linha]?.[coluna] ?? "";
 }
 
 // =====================================================
-// EXTRAIR ALUNOS DE UMA TURMA
-// =====================================================
-//
-// A estrutura é:
-//
-// B4 = Segunda 15h
-// B5 = Codigo
-// C5 = Aluno
-// B6 = código
-// C6 = nome
-// B7 = código
-// C7 = nome
-//
-// Então, ao encontrar um cabeçalho em B4,
-// procuramos alunos abaixo dele até encontrar
-// outro cabeçalho na mesma coluna ou chegar
-// ao fim do bloco.
+// EXTRAIR ALUNOS DA TURMA
 // =====================================================
 
 function extrairAlunos(
@@ -257,24 +215,25 @@ function extrairAlunos(
     linha <= linhaFim;
     linha++
   ) {
-    const valorCodigo = normalizarTexto(
-      obterCelula(
-        matriz,
-        linha,
-        colunaCodigo
-      )
-    );
+    const valorCodigo =
+      normalizarTexto(
+        obterCelula(
+          matriz,
+          linha,
+          colunaCodigo
+        )
+      );
 
-    const valorNome = normalizarTexto(
-      obterCelula(
-        matriz,
-        linha,
-        colunaCodigo + 1
-      )
-    );
+    const valorNome =
+      normalizarTexto(
+        obterCelula(
+          matriz,
+          linha,
+          colunaCodigo + 1
+        )
+      );
 
-    // Se encontrou outro cabeçalho de turma,
-    // terminou esta turma.
+    // Outro cabeçalho encontrado.
     if (
       interpretarCabecalho(valorCodigo)
     ) {
@@ -304,7 +263,7 @@ function extrairAlunos(
 }
 
 // =====================================================
-// EXTRAIR TURMAS
+// INTERPRETAR TODAS AS TURMAS
 // =====================================================
 
 function interpretarTurmas(dados) {
@@ -335,36 +294,46 @@ function interpretarTurmas(dados) {
       .sort((a, b) => a - b);
 
     for (const coluna of colunas) {
-      const conteudo = normalizarTexto(
-        obterCelula(
-          matriz,
-          linha,
-          coluna
-        )
-      );
+      const conteudo =
+        normalizarTexto(
+          obterCelula(
+            matriz,
+            linha,
+            coluna
+          )
+        );
 
       const cabecalho =
-        interpretarCabecalho(conteudo);
+        interpretarCabecalho(
+          conteudo
+        );
 
       if (!cabecalho) {
         continue;
       }
 
-      const alunos = extrairAlunos(
-        matriz,
-        linha,
-        coluna,
-        maiorLinha
-      );
+      const alunos =
+        extrairAlunos(
+          matriz,
+          linha,
+          coluna,
+          maiorLinha
+        );
 
       turmas.push({
         tipo: cabecalho.tipo,
         dia: cabecalho.dia,
         horario: cabecalho.horario,
+
         celulaCabecalho:
           `${coluna}:${linha}`,
+
         alunos,
-        totalAlunos: alunos.length,
+
+        totalAlunos:
+          alunos.length,
+
+        professor: null,
       });
     }
   }
@@ -373,7 +342,294 @@ function interpretarTurmas(dados) {
 }
 
 // =====================================================
-// ENDPOINT DE TESTE
+// INTERPRETAR HORÁRIO DO PROFESSOR
+// =====================================================
+//
+// Exemplos aceitos:
+//
+// 17h 🎵 T4 Musicalização
+// 17h Musicalização
+// 10h 🎼 Teoria
+// 10h Teoria
+//
+// T1/T2/T3/T4 são ignorados.
+// =====================================================
+
+function interpretarHorarioProfessor(
+  conteudo
+) {
+  const texto =
+    normalizarTexto(conteudo);
+
+  if (!texto) {
+    return null;
+  }
+
+  // Precisa começar com horário.
+  const horarioMatch =
+    texto.match(
+      /^(\d{1,2})(?::(\d{2}))?\s*h?/i
+    );
+
+  if (!horarioMatch) {
+    return null;
+  }
+
+  const hora =
+    Number(horarioMatch[1]);
+
+  const minuto =
+    horarioMatch[2]
+      ? Number(horarioMatch[2])
+      : 0;
+
+  if (
+    hora < 0 ||
+    hora > 23 ||
+    minuto < 0 ||
+    minuto > 59
+  ) {
+    return null;
+  }
+
+  const horario =
+    `${String(hora).padStart(2, "0")}:${String(
+      minuto
+    ).padStart(2, "0")}`;
+
+  const restante =
+    texto
+      .replace(
+        /^(\d{1,2})(?::(\d{2}))?\s*h?/i,
+        ""
+      )
+      .trim();
+
+  const restanteNormalizado =
+    restante
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(
+        /[\u0300-\u036f]/g,
+        ""
+      );
+
+  // ===================================================
+  // MUSICALIZAÇÃO
+  // ===================================================
+
+  if (
+    restanteNormalizado.includes(
+      "musicalizacao"
+    )
+  ) {
+    return {
+      tipo: "MUSICALIZAÇÃO",
+      horario,
+    };
+  }
+
+  // ===================================================
+  // TEORIA
+  // ===================================================
+
+  if (
+    restanteNormalizado.includes(
+      "teoria"
+    )
+  ) {
+    return {
+      tipo: "TEORIA",
+      horario,
+    };
+  }
+
+  return null;
+}
+
+// =====================================================
+// MAPA DE DIAS DOS PROFESSORES
+// =====================================================
+//
+// planilha_horarios usa:
+//
+// 2 = segunda
+// 3 = terça
+// 4 = quarta
+// 5 = quinta
+// 6 = sexta
+// 7 = sábado
+// =====================================================
+
+const DIAS_SEMANA = {
+  2: "SEGUNDA",
+  3: "TERÇA",
+  4: "QUARTA",
+  5: "QUINTA",
+  6: "SEXTA",
+  7: "SÁBADO",
+};
+
+// =====================================================
+// BUSCAR PROFESSORES DOS HORÁRIOS
+// =====================================================
+//
+// IMPORTANTE:
+//
+// planilha_horarios.professor_id
+//     ↓
+// professores_planilha.id
+//
+// professores_planilha
+//     ↓ email
+//
+// professores.id
+// =====================================================
+
+async function buscarHorariosDosProfessores() {
+  const resultado = await pool.query(
+    `
+    SELECT
+      ph.professor_id AS professor_planilha_id,
+
+      ph.linha,
+      ph.coluna,
+      ph.celula,
+      ph.conteudo,
+
+      pp.nome AS professor_planilha_nome,
+      pp.email AS professor_email,
+
+      p.id AS professor_id,
+      p.nome AS professor_nome
+
+    FROM planilha_horarios ph
+
+    INNER JOIN professores_planilha pp
+      ON pp.id = ph.professor_id
+
+    INNER JOIN professores p
+      ON LOWER(TRIM(p.email))
+       =
+       LOWER(TRIM(pp.email))
+
+    WHERE pp.ativo = TRUE
+
+    ORDER BY
+      p.id,
+      ph.linha,
+      ph.coluna
+    `
+  );
+
+  return resultado.rows;
+}
+
+// =====================================================
+// INDEXAR PROFESSORES POR:
+// TIPO + DIA + HORÁRIO
+// =====================================================
+
+function montarIndiceProfessores(
+  horarios
+) {
+  const indice = new Map();
+
+  for (const item of horarios) {
+    const dia =
+      DIAS_SEMANA[item.coluna];
+
+    if (!dia) {
+      continue;
+    }
+
+    const horario =
+      interpretarHorarioProfessor(
+        item.conteudo
+      );
+
+    if (!horario) {
+      continue;
+    }
+
+    const chave =
+      `${horario.tipo}|${dia}|${horario.horario}`;
+
+    if (!indice.has(chave)) {
+      indice.set(chave, []);
+    }
+
+    const lista =
+      indice.get(chave);
+
+    // Evita adicionar o mesmo professor
+    // várias vezes para o mesmo horário.
+    const jaExiste =
+      lista.some(
+        (professor) =>
+          professor.id ===
+          item.professor_id
+      );
+
+    if (jaExiste) {
+      continue;
+    }
+
+    lista.push({
+      id: item.professor_id,
+      nome:
+        item.professor_nome ||
+        item.professor_planilha_nome,
+      email: item.professor_email,
+      professorPlanilhaId:
+        item.professor_planilha_id,
+    });
+  }
+
+  return indice;
+}
+
+// =====================================================
+// CRUZAR TURMAS COM PROFESSORES
+// =====================================================
+
+async function vincularProfessoresAsTurmas(
+  turmas
+) {
+  const horarios =
+    await buscarHorariosDosProfessores();
+
+  const indice =
+    montarIndiceProfessores(
+      horarios
+    );
+
+  return turmas.map((turma) => {
+    const chave =
+      `${turma.tipo}|${turma.dia}|${turma.horario}`;
+
+    const professores =
+      indice.get(chave) || [];
+
+    return {
+      ...turma,
+
+      professor:
+        professores.length === 1
+          ? professores[0]
+          : null,
+
+      professoresEncontrados:
+        professores,
+
+      totalProfessoresEncontrados:
+        professores.length,
+    };
+  });
+}
+
+// =====================================================
+// ENDPOINT — TURMAS INTERPRETADAS
 // =====================================================
 
 async function buscarTurmasInterpretadas(
@@ -381,14 +637,18 @@ async function buscarTurmasInterpretadas(
   res
 ) {
   try {
-    const dados = await buscarDadosBrutos();
+    const dados =
+      await buscarDadosBrutos();
 
     const turmas =
-      interpretarTurmas(dados);
+      interpretarTurmas(
+        dados
+      );
 
     res.json({
       sucesso: true,
-      totalTurmas: turmas.length,
+      totalTurmas:
+        turmas.length,
       turmas,
     });
   } catch (erro) {
@@ -407,10 +667,58 @@ async function buscarTurmasInterpretadas(
 }
 
 // =====================================================
+// ENDPOINT — TURMAS + PROFESSORES
+// =====================================================
+
+async function buscarTurmasComProfessores(
+  req,
+  res
+) {
+  try {
+    const dados =
+      await buscarDadosBrutos();
+
+    const turmas =
+      interpretarTurmas(
+        dados
+      );
+
+    const turmasComProfessores =
+      await vincularProfessoresAsTurmas(
+        turmas
+      );
+
+    res.json({
+      sucesso: true,
+
+      totalTurmas:
+        turmasComProfessores.length,
+
+      turmas:
+        turmasComProfessores,
+    });
+  } catch (erro) {
+    console.error(
+      "❌ Erro ao cruzar turmas com professores:",
+      erro
+    );
+
+    res.status(500).json({
+      sucesso: false,
+      mensagem:
+        "Erro ao cruzar turmas com professores.",
+      erro: erro.message,
+    });
+  }
+}
+
+// =====================================================
 // EXPORTS
 // =====================================================
 
 module.exports = {
   buscarTurmasInterpretadas,
+  buscarTurmasComProfessores,
   interpretarTurmas,
+  vincularProfessoresAsTurmas,
 };
