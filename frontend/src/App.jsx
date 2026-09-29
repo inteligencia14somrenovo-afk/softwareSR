@@ -12,7 +12,7 @@ import TratamentoDeDados from "./pages/Configuração/componentes/TratamentoDeDa
 import CentralAjuda from "./pages/Configuração/componentes/CentralAjuda";
 import RelatarProblema from "./pages/Configuração/componentes/RelatarProblema";
 import ContatoSuporte from "./pages/Configuração/componentes/ContatoSuporte";
-
+import Turmas from "./pages/Turmas/Turmas";
 import Instalar from "./pages/Instalar/Instalar";
 
 import Professores from "./pages/Professores/Professores";
@@ -46,6 +46,8 @@ function App() {
           <Route index element={<TelaInicial />} />
 
           <Route path="alunos" element={<Alunos />} />
+
+          <Route path="turmas" element={<Turmas />} />
 
           <Route path="professores" element={<Professores />} />
           <Route

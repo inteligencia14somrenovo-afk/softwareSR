@@ -3,7 +3,7 @@ import { FaUserGraduate } from "@react-icons/all-files/fa/FaUserGraduate";
 import { FaClipboardCheck } from "@react-icons/all-files/fa/FaClipboardCheck";
 import { FaChartBar } from "@react-icons/all-files/fa/FaChartBar";
 import { FaCog } from "@react-icons/all-files/fa/FaCog";
-
+import { FaUsers } from "react-icons/fa";
 import { MdMenu, MdMenuOpen } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
@@ -115,6 +115,14 @@ const Sidebar = () => {
           >
             <FaUserGraduate />
             <span>Alunos</span>
+          </NavLink>
+
+          <NavLink
+            to="/turmas"
+            onClick={fecharMenuMobile}
+          >
+            <FaUserGraduate />
+            <span>Turmas(Em Desenvolvimento)</span>
           </NavLink>
 
 
