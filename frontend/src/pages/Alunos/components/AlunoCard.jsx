@@ -173,7 +173,7 @@ function AlunoCard({
         <p>
 
           <span>
-            Instrumentoㅤ
+            Instrumento
           </span>
 
           {nomeInstrumento}
