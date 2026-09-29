@@ -5,13 +5,36 @@ const SPREADSHEET_ID =
   "1bbzbHCy5_tHx2mjI7KW6xl1f_K7dPFK5QWVWeXbAnco";
 
 // =====================================================
-// CONFIGURAÇÃO DAS ABAS DE TURMAS
+// CONFIGURAÇÃO DAS ABAS / BLOCOS DE TURMAS
+// =====================================================
+//
+// A mesma aba possui dois blocos:
+//
+// TEORIA:
+// A1:AI20
+//
+// MUSICALIZAÇÃO:
+// A24:X37
+//
+// O campo "tipo" identifica de qual bloco o dado veio.
+// Ele não é salvo no banco ainda, pois a tabela
+// planilha_turmas atual não possui uma coluna para isso.
 // =====================================================
 
 const ABAS_TURMAS = [
   {
+    tipo: "TEORIA",
     aba: "Teoria e Musicalização atualizados",
-    intervalo: "A37:AI37",
+    intervalo: "A1:AI20",
+    linhaInicial: 1,
+    colunaInicial: 1,
+  },
+  {
+    tipo: "MUSICALIZAÇÃO",
+    aba: "Teoria e Musicalização atualizados",
+    intervalo: "A24:X37",
+    linhaInicial: 24,
+    colunaInicial: 1,
   },
 ];
 
@@ -35,7 +58,7 @@ function colunaParaLetra(numero) {
 }
 
 // =====================================================
-// SINCRONIZAÇÃO DAS ABAS DE TURMAS
+// SINCRONIZAÇÃO DOS BLOCOS DE TURMAS
 // =====================================================
 
 async function sincronizarTurmas() {
@@ -48,7 +71,7 @@ async function sincronizarTurmas() {
 
     for (const turma of ABAS_TURMAS) {
       console.log(
-        `📚 Sincronizando aba de turmas: ${turma.aba}`
+        `📚 Sincronizando ${turma.tipo}: ${turma.aba}!${turma.intervalo}`
       );
 
       const resposta = await sheets.spreadsheets.values.get({
@@ -58,21 +81,38 @@ async function sincronizarTurmas() {
 
       const valores = resposta.data.values || [];
 
+      console.log(
+        `📊 ${turma.tipo}: ${valores.length} linha(s) retornada(s).`
+      );
+
       // -------------------------------------------------
-      // Remove somente os dados antigos dessa aba.
-      // As outras abas permanecem intactas.
+      // Remove somente os dados que pertencem ao intervalo
+      // atual.
+      //
+      // Como os dois blocos estão na mesma aba, não podemos
+      // simplesmente apagar toda a aba a cada bloco.
       // -------------------------------------------------
+
+      const [linhaInicio, linhaFim] =
+        turma.intervalo
+          .match(/\d+/g)
+          .map(Number);
 
       await client.query(
         `
         DELETE FROM planilha_turmas
         WHERE aba = $1
+          AND linha BETWEEN $2 AND $3
         `,
-        [turma.aba]
+        [
+          turma.aba,
+          linhaInicio,
+          linhaFim,
+        ]
       );
 
       // -------------------------------------------------
-      // Salva novamente os dados atuais da planilha.
+      // Salva cada célula com sua posição REAL na planilha
       // -------------------------------------------------
 
       for (
@@ -89,8 +129,11 @@ async function sincronizarTurmas() {
         ) {
           const conteudo = linha[colunaIndex] ?? "";
 
-          const linhaReal = 37 + linhaIndex;
-          const colunaReal = colunaIndex + 1;
+          const linhaReal =
+            turma.linhaInicial + linhaIndex;
+
+          const colunaReal =
+            turma.colunaInicial + colunaIndex;
 
           const celula =
             `${colunaParaLetra(colunaReal)}${linhaReal}`;
@@ -126,21 +169,25 @@ async function sincronizarTurmas() {
       }
 
       console.log(
-        `✅ ${turma.aba}: ${valores.length} linha(s) sincronizada(s).`
+        `✅ ${turma.tipo}: ${valores.length} linha(s) processada(s).`
       );
     }
 
     await client.query("COMMIT");
 
     console.log(
-      `✅ Sincronização das turmas concluída. ${totalCelulas} célula(s).`
+      `✅ Sincronização das turmas concluída. ${totalCelulas} célula(s) sincronizada(s).`
     );
 
     return {
       sucesso: true,
       mensagem: "Turmas sincronizadas com sucesso.",
       totalCelulas,
-      abas: ABAS_TURMAS.map((item) => item.aba),
+      blocos: ABAS_TURMAS.map((item) => ({
+        tipo: item.tipo,
+        aba: item.aba,
+        intervalo: item.intervalo,
+      })),
     };
   } catch (erro) {
     await client.query("ROLLBACK");
@@ -159,13 +206,6 @@ async function sincronizarTurmas() {
 // =====================================================
 // BUSCAR DADOS BRUTOS DAS TURMAS
 // =====================================================
-//
-// Por enquanto retorna exatamente o que foi espelhado
-// do Google Sheets.
-//
-// A montagem das turmas será feita separadamente,
-// depois do cruzamento com planilha_horarios.
-//
 
 async function buscarPlanilhaTurmas(req, res) {
   try {
