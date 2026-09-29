@@ -80,27 +80,40 @@ function extrairDatasEspecificas(texto) {
 }
 
 // =====================================================
+// DETECTAR AULA EXPERIMENTAL
+// =====================================================
+
+function ehAulaExperimental(conteudo) {
+  const texto = normalizarTexto(conteudo);
+
+  const textoSemHorario =
+    texto.replace(
+      /^(\d{1,2})(?::(\d{2}))?\s*h?/i,
+      ""
+    ).trim();
+
+  return /^AE\b/i.test(textoSemHorario);
+}
+
+// =====================================================
 // DATAS DA PRÓPRIA TURMA
 // =====================================================
 //
-// Regra:
+// Exemplo:
 //
 // 16h 🎤 3290 Deborah Vitória 22/09 e 29/09 🎵 T3 Musicalização
 //
-// As datas estão ANTES de "Musicalização".
-// Elas pertencem à aluna Deborah e NÃO à turma.
+// As datas aparecem ANTES de "Musicalização".
+// Portanto pertencem à aula/aluna e NÃO à turma.
 //
 // Já:
 //
 // 16h 🎵 T3 Musicalização 29/09 🎹 3140 Ana Cecília-
 //
-// A data está DEPOIS de "Musicalização".
-// Ela pertence à ocorrência da própria turma.
+// A data aparece DEPOIS de "Musicalização".
+// Portanto pertence à própria turma.
 //
-// Exceção:
-// Quando for AE, as datas continuam sendo consideradas
-// como datas da exceção, pois o AE é justamente uma
-// ocupação temporária da turma.
+// Para AE mantemos as datas da célula como exceção.
 // =====================================================
 
 function extrairDatasDaTurma(
@@ -114,7 +127,8 @@ function extrairDatasDaTurma(
     return [];
   }
 
-  // AE continua usando todas as datas da célula.
+  // AE continua usando todas as datas
+  // específicas da célula.
   if (ehAulaExperimental(texto)) {
     return extrairDatasEspecificas(
       texto
@@ -133,16 +147,27 @@ function extrairDatasDaTurma(
     return [];
   }
 
+  /*
+   * Tudo que estiver depois do marcador
+   * da turma é considerado parte da
+   * ocorrência da turma.
+   */
   const parteDaTurma =
     texto.slice(
       matchTipo.index +
         matchTipo[0].length
     );
 
-  // Aceita datas mesmo quando estão coladas
-  // com emoji/texto, por exemplo:
-  // 29/09🎹
   const datas = [];
+
+  /*
+   * Não exigimos espaços ao redor.
+   *
+   * Assim também funciona:
+   *
+   * 29/09🎹
+   * 29/09-Ana
+   */
   const regex =
     /(\d{1,2}\/\d{1,2})/g;
 
@@ -157,22 +182,6 @@ function extrairDatasDaTurma(
   }
 
   return [...new Set(datas)];
-}
-
-// =====================================================
-// DETECTAR AULA EXPERIMENTAL
-// =====================================================
-
-function ehAulaExperimental(conteudo) {
-  const texto = normalizarTexto(conteudo);
-
-  const textoSemHorario =
-    texto.replace(
-      /^(\d{1,2})(?::(\d{2}))?\s*h?/i,
-      ""
-    ).trim();
-
-  return /^AE\b/i.test(textoSemHorario);
 }
 
 // =====================================================
@@ -775,24 +784,27 @@ function montarIndiceProfessores(
       lista.push(professor);
     }
 
-    // =================================================
-    // IMPORTANTE:
-    //
-    // Aqui não usamos mais todas as datas da célula.
-    //
-    // Para uma célula normal:
-    //
-    // 16h 🎤 Deborah 22/09 e 29/09 🎵 T3 Musicalização
-    //
-    // as datas são da aluna.
-    //
-    // Para:
-    //
-    // 16h 🎵 T3 Musicalização 29/09 🎹 Ana Cecília
-    //
-    // 29/09 é da turma.
-    //
-    // =================================================
+    /*
+     * IMPORTANTE:
+     *
+     * Não usamos mais todas as datas da célula.
+     *
+     * Exemplo:
+     *
+     * 16h 🎤 Deborah 22/09 e 29/09 🎵 T3 Musicalização
+     *
+     * datasEspecificas = []
+     *
+     * Porque essas datas pertencem à aluna.
+     *
+     * Já:
+     *
+     * 16h 🎵 T3 Musicalização 29/09 🎹 Ana Cecília
+     *
+     * datasEspecificas = ["29/09"]
+     *
+     * Porque 29/09 pertence à turma.
+     */
 
     const datasEspecificas =
       extrairDatasDaTurma(
@@ -866,6 +878,37 @@ function obterExcecoesDoProfessor(
 // =====================================================
 // IDENTIFICAR CONFLITO ESPECÍFICO
 // =====================================================
+//
+// REGRA PRINCIPAL:
+//
+// TURMA DATADA
+//      ↓
+// tem prioridade
+//      ↓
+// AULA COMUM DATADA
+//
+// Exemplo:
+//
+// Sara:
+// 16h 🎤 Deborah 22/09 e 29/09 🎵 T3 Musicalização
+//
+// Manuelly:
+// 16h 🎵 T3 Musicalização 29/09 🎹 Ana Cecília
+//
+// Resultado em 29/09:
+// Manuelly
+//
+// A mesma lógica vale para:
+//
+// Apolo:
+// aula comum em 30/09
+//
+// Manuelly:
+// Teoria 30/09
+//
+// Resultado em 30/09:
+// Manuelly
+// =====================================================
 
 function resolverConflitoPorData(
   professores,
@@ -879,7 +922,7 @@ function resolverConflitoPorData(
   }
 
   // ===================================================
-  // TODAS AS OCORRÊNCIAS DATADAS
+  // ORGANIZAR OCORRÊNCIAS
   // ===================================================
 
   const ocorrenciasPorProfessor =
@@ -897,8 +940,256 @@ function resolverConflitoPorData(
     );
 
   // ===================================================
-  // PRIMEIRO:
-  // RESOLVER CASOS DE AE
+  // TURMAS DATADAS
+  // ===================================================
+  //
+  // Somente ocorrências NÃO-AE que possuem
+  // datas depois do marcador "Teoria" ou
+  // "Musicalização".
+  //
+  // Essas são as ocorrências que podem
+  // substituir o professor-base.
+  // ===================================================
+
+  const ocorrenciasTurmaDatada = [];
+
+  for (
+    const origem
+    of ocorrenciasPorProfessor
+  ) {
+    for (
+      const ocorrencia
+      of origem.ocorrencias
+    ) {
+      if (
+        ocorrencia.aulaExperimental
+      ) {
+        continue;
+      }
+
+      if (
+        ocorrencia.datasEspecificas
+          .length === 0
+      ) {
+        continue;
+      }
+
+      ocorrenciasTurmaDatada.push({
+        professor:
+          origem.professor,
+
+        ocorrencia,
+      });
+    }
+  }
+
+  // ===================================================
+  // TURMA DATADA TEM PRIORIDADE
+  // ===================================================
+  //
+  // Se houver uma ocorrência da própria turma
+  // com uma data, ela deve ser a responsável
+  // naquela data.
+  //
+  // NÃO devolvemos mais o professor-base aqui.
+  // Esse era justamente o erro anterior.
+  // ===================================================
+
+  if (
+    ocorrenciasTurmaDatada.length > 0
+  ) {
+    const datas =
+      [
+        ...new Set(
+          ocorrenciasTurmaDatada.flatMap(
+            (item) =>
+              item.ocorrencia
+                .datasEspecificas
+          )
+        ),
+      ];
+
+    // -----------------------------------------------
+    // Para cada data, identificar quem possui
+    // a ocorrência datada da própria turma.
+    // -----------------------------------------------
+
+    const resolucoes = [];
+
+    for (const data of datas) {
+      const candidatos =
+        [
+          ...new Map(
+            ocorrenciasTurmaDatada
+              .filter(
+                (item) =>
+                  item.ocorrencia
+                    .datasEspecificas
+                    .includes(data)
+              )
+              .map((item) => [
+                item.professor.id,
+                item.professor,
+              ])
+          ).values(),
+        ];
+
+      if (
+        candidatos.length === 1
+      ) {
+        const professor =
+          candidatos[0];
+
+        const ocorrencia =
+          ocorrenciasTurmaDatada.find(
+            (item) =>
+              item.professor.id ===
+                professor.id &&
+              item.ocorrencia
+                .datasEspecificas
+                .includes(data)
+          );
+
+        resolucoes.push({
+          data,
+
+          professor,
+
+          conteudo:
+            ocorrencia
+              ?.ocorrencia
+              .conteudo || null,
+
+          celula:
+            ocorrencia
+              ?.ocorrencia
+              .celula || null,
+        });
+      } else {
+        // Duas pessoas com a própria turma
+        // marcada na mesma data = conflito real.
+        resolucoes.push({
+          data,
+          professor: null,
+          candidatos,
+          conteudo: null,
+          celula: null,
+        });
+      }
+    }
+
+    const resolucoesValidas =
+      resolucoes.filter(
+        (item) => item.professor
+      );
+
+    /*
+     * Se existe pelo menos uma resolução
+     * específica e não existe conflito entre
+     * professores da turma datada, usamos ela.
+     */
+    const professoresResolvidos =
+      [
+        ...new Map(
+          resolucoesValidas.map(
+            (item) => [
+              item.professor.id,
+              item.professor,
+            ]
+          )
+        ).values(),
+      ];
+
+    if (
+      professoresResolvidos.length === 1
+    ) {
+      const professor =
+        professoresResolvidos[0];
+
+      const datasResolvidas =
+        resolucoesValidas.map(
+          (item) => item.data
+        );
+
+      const ocupacoes =
+        resolucoesValidas.map(
+          (item) => ({
+            data: item.data,
+
+            professor:
+              item.professor,
+
+            conteudo:
+              item.conteudo,
+
+            celula:
+              item.celula,
+          })
+        );
+
+      /*
+       * Verificamos se existe um professor-base.
+       *
+       * Isso é apenas informação adicional.
+       * NÃO altera o professor escolhido.
+       */
+      const professorBase =
+        professores.find(
+          (professorBase) =>
+            professorBase.id !==
+              professor.id &&
+            professorBase.horarios.some(
+              (item) =>
+                item.tipo === tipo &&
+                item.horario === horario &&
+                item.datasEspecificas
+                  .length === 0 &&
+                !item.aulaExperimental
+            )
+        ) || null;
+
+      return {
+        professor,
+
+        tipoResolucao:
+          "excecao_data",
+
+        datas:
+          datasResolvidas,
+
+        professorAE: null,
+
+        professorBase,
+
+        ocupacoesAE:
+          ocupacoes,
+      };
+    }
+
+    /*
+     * Existem ocorrências datadas da própria
+     * turma, mas mais de um professor foi
+     * colocado na mesma data.
+     *
+     * Isso continua sendo ambiguidade.
+     */
+    if (
+      resolucoes.some(
+        (item) =>
+          !item.professor
+      )
+    ) {
+      return null;
+    }
+  }
+
+  // ===================================================
+  // CASOS DE AE
+  // ===================================================
+  //
+  // Mantemos a regra existente para AE quando
+  // não existe uma turma datada resolvendo
+  // o conflito.
   // ===================================================
 
   for (
@@ -952,6 +1243,8 @@ function resolverConflitoPorData(
               professorAE:
                 outro.professor,
 
+              professorBase: null,
+
               ocupacoesAE: [
                 {
                   data,
@@ -985,6 +1278,8 @@ function resolverConflitoPorData(
               professorAE:
                 origem.professor,
 
+              professorBase: null,
+
               ocupacoesAE: [
                 {
                   data,
@@ -1007,300 +1302,20 @@ function resolverConflitoPorData(
   }
 
   // ===================================================
-  // PROFESSOR BASE + EXCEÇÃO DATADA
+  // OCORRÊNCIAS NORMAIS COM DATAS
   // ===================================================
   //
-  // Exemplo:
+  // Neste ponto, se existem somente datas de
+  // aulas comuns/alunos, elas NÃO podem determinar
+  // o professor da turma.
   //
-  // Sara:
-  // 16h Deborah 22/09 e 29/09 T3 Musicalização
+  // Portanto não usamos mais a regra antiga de
+  // subconjunto para escolher automaticamente
+  // um professor.
   //
-  // Depois da correção acima:
-  //
-  // Sara → T3 Musicalização SEM data
-  //
-  // Manuelly:
-  // 16h T3 Musicalização 29/09 Ana Cecília
-  //
-  // Manuelly → T3 Musicalização em 29/09
-  //
-  // Resultado:
-  //
-  // Sara = professora base
-  // Manuelly = exceção em 29/09
+  // Se não existe uma turma datada, permanece
+  // a ambiguidade.
   // ===================================================
-
-  const professoresBase =
-    professores.filter(
-      (professor) =>
-        professor.horarios.some(
-          (item) =>
-            item.tipo === tipo &&
-            item.horario === horario &&
-            item.datasEspecificas.length ===
-              0 &&
-            !item.aulaExperimental
-        )
-    );
-
-  const professoresComExcecao =
-    ocorrenciasPorProfessor.filter(
-      (item) =>
-        item.ocorrencias.some(
-          (ocorrencia) =>
-            !ocorrencia.aulaExperimental &&
-            ocorrencia.datasEspecificas
-              .length > 0
-        )
-    );
-
-  if (
-    professoresBase.length === 1 &&
-    professoresComExcecao.length >= 1
-  ) {
-    const professorBase =
-      professoresBase[0];
-
-    const ocupacoes = [];
-
-    for (
-      const item
-      of professoresComExcecao
-    ) {
-      for (
-        const ocorrencia
-        of item.ocorrencias
-      ) {
-        if (
-          ocorrencia.aulaExperimental
-        ) {
-          continue;
-        }
-
-        for (
-          const data
-          of ocorrencia.datasEspecificas
-        ) {
-          ocupacoes.push({
-            data,
-
-            professor:
-              item.professor,
-
-            conteudo:
-              ocorrencia.conteudo,
-
-            celula:
-              ocorrencia.celula,
-          });
-        }
-      }
-    }
-
-    if (ocupacoes.length > 0) {
-      return {
-        professor:
-          professorBase,
-
-        tipoResolucao:
-          "excecao_data",
-
-        datas:
-          [
-            ...new Set(
-              ocupacoes.map(
-                (item) => item.data
-              )
-            ),
-          ],
-
-        professorAE: null,
-
-        ocupacoesAE:
-          ocupacoes,
-      };
-    }
-  }
-
-  // ===================================================
-  // OCORRÊNCIAS NORMAIS COM DATAS ESPECÍFICAS
-  // ===================================================
-  //
-  // Exemplo:
-  //
-  // Sara:
-  // [22/09, 29/09]
-  //
-  // Manuelly:
-  // [29/09]
-  //
-  // A ocorrência da Manuelly é um subconjunto
-  // estrito da ocorrência da Sara.
-  // ===================================================
-
-  for (
-    let i = 0;
-    i < ocorrenciasPorProfessor.length;
-    i++
-  ) {
-    const atual =
-      ocorrenciasPorProfessor[i];
-
-    for (
-      let j = i + 1;
-      j < ocorrenciasPorProfessor.length;
-      j++
-    ) {
-      const outro =
-        ocorrenciasPorProfessor[j];
-
-      for (
-        const ocorrenciaAtual
-        of atual.ocorrencias
-      ) {
-        if (
-          ocorrenciaAtual
-            .aulaExperimental
-        ) {
-          continue;
-        }
-
-        if (
-          ocorrenciaAtual
-            .datasEspecificas.length === 0
-        ) {
-          continue;
-        }
-
-        for (
-          const ocorrenciaOutro
-          of outro.ocorrencias
-        ) {
-          if (
-            ocorrenciaOutro
-              .aulaExperimental
-          ) {
-            continue;
-          }
-
-          if (
-            ocorrenciaOutro
-              .datasEspecificas.length === 0
-          ) {
-            continue;
-          }
-
-          const datasAtual =
-            new Set(
-              ocorrenciaAtual
-                .datasEspecificas
-            );
-
-          const datasOutro =
-            new Set(
-              ocorrenciaOutro
-                .datasEspecificas
-            );
-
-          const intersecao =
-            [
-              ...datasAtual,
-            ].filter(
-              (data) =>
-                datasOutro.has(data)
-            );
-
-          if (
-            intersecao.length === 0
-          ) {
-            continue;
-          }
-
-          const atualEhSubconjunto =
-            datasAtual.size <
-              datasOutro.size &&
-            [...datasAtual].every(
-              (data) =>
-                datasOutro.has(data)
-            );
-
-          const outroEhSubconjunto =
-            datasOutro.size <
-              datasAtual.size &&
-            [...datasOutro].every(
-              (data) =>
-                datasAtual.has(data)
-            );
-
-          if (
-            outroEhSubconjunto
-          ) {
-            return {
-              professor:
-                outro.professor,
-
-              tipoResolucao:
-                "excecao_data",
-
-              datas:
-                intersecao,
-
-              professorAE: null,
-
-              ocupacoesAE:
-                intersecao.map(
-                  (data) => ({
-                    data,
-
-                    professor:
-                      outro.professor,
-
-                    conteudo:
-                      ocorrenciaOutro.conteudo,
-
-                    celula:
-                      ocorrenciaOutro.celula,
-                  })
-                ),
-            };
-          }
-
-          if (
-            atualEhSubconjunto
-          ) {
-            return {
-              professor:
-                atual.professor,
-
-              tipoResolucao:
-                "excecao_data",
-
-              datas:
-                intersecao,
-
-              professorAE: null,
-
-              ocupacoesAE:
-                intersecao.map(
-                  (data) => ({
-                    data,
-
-                    professor:
-                      atual.professor,
-
-                    conteudo:
-                      ocorrenciaAtual.conteudo,
-
-                    celula:
-                      ocorrenciaAtual.celula,
-                  })
-                ),
-            };
-          }
-        }
-      }
-    }
-  }
 
   return null;
 }
@@ -1461,10 +1476,10 @@ async function vincularProfessoresAsTurmas(
           "excecao_data",
 
         excecoes:
-          resolucao.ocupacoesAE,
+          resolucao.ocupacoesAE || [],
 
         datasResolvidas:
-          resolucao.datas,
+          resolucao.datas || [],
 
         professorAE:
           resolucao.professorAE
@@ -1484,6 +1499,28 @@ async function vincularProfessoresAsTurmas(
                 professorPlanilhaId:
                   resolucao
                     .professorAE
+                    .professorPlanilhaId,
+              }
+            : null,
+
+        professorBase:
+          resolucao.professorBase
+            ? {
+                id:
+                  resolucao
+                    .professorBase.id,
+
+                nome:
+                  resolucao
+                    .professorBase.nome,
+
+                email:
+                  resolucao
+                    .professorBase.email,
+
+                professorPlanilhaId:
+                  resolucao
+                    .professorBase
                     .professorPlanilhaId,
               }
             : null,
@@ -1523,6 +1560,12 @@ async function vincularProfessoresAsTurmas(
         "ambiguo",
 
       excecoes: [],
+
+      datasResolvidas: [],
+
+      professorAE: null,
+
+      professorBase: null,
     };
   });
 }
