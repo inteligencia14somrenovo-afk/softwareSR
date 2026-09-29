@@ -5,10 +5,13 @@ self.addEventListener("push", (event) => {
 
   const dados = event.data.json();
 
-  const titulo = dados.titulo || "Som Renovo Manager";
+  const titulo =
+    dados.titulo || "Som Renovo Manager";
 
   const opcoes = {
-    body: dados.mensagem || "Você recebeu uma nova notificação.",
+    body:
+      dados.mensagem ||
+      "Você recebeu uma nova notificação.",
     icon: "/pwa-192x192.png",
     badge: "/pwa-192x192.png",
     data: {
@@ -45,9 +48,7 @@ self.addEventListener("notificationclick", (event) => {
           client.navigate(url);
 
           return client.focus();
-
         }
-
       }
 
       if (clients.openWindow) {
@@ -57,3 +58,6 @@ self.addEventListener("notificationclick", (event) => {
     })
   );
 });
+
+// Necessário para o vite-plugin-pwa / Workbox
+const precacheManifest = self.__WB_MANIFEST;
