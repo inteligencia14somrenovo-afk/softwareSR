@@ -10,11 +10,7 @@ const SPREADSHEET_ID =
 
 const ABAS_TURMAS = [
   {
-    aba: "Teoria",
-    intervalo: "A37:AI37",
-  },
-  {
-    aba: "Musicalização",
+    aba: "Teoria e Musicalização atualizados",
     intervalo: "A37:AI37",
   },
 ];
