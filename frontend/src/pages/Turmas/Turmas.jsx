@@ -329,14 +329,13 @@ function Turmas() {
                         </strong>
 
                         <span>
-                          {motivo.descricao}{" "}
-                          {turma.professor
-                            ?.nome ||
-                            "Professor"}{" "}
-                          fica responsável
-                          pela turma nesta
-                          data.
-                        </span>
+  {motivo.descricao}{" "}
+  <strong>
+    {turma.professor?.nome ||
+      "Professor"}{" "}
+    fica responsável pela turma.
+  </strong>
+</span>
                       </div>
                     )
                   )

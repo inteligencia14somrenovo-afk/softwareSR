@@ -792,3 +792,88 @@
     align-items: flex-start;
   }
 }
+
+/* =====================================================
+   MOTIVO DA EXCEÇÃO
+===================================================== */
+
+.turma-excecao-motivo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 7px;
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.08);
+  border-left: 3px solid rgba(245, 158, 11, 0.65);
+}
+
+.turma-excecao-motivo span {
+  display: block;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-secondary, #777);
+}
+
+/* =====================================================
+   EXCEÇÃO NO MODAL
+===================================================== */
+
+.turma-modal-excecao-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.turma-modal-excecao-item + .turma-modal-excecao-item {
+  border-top: 1px solid
+    var(--border-color, rgba(0, 0, 0, 0.08));
+}
+
+.turma-modal-excecao-item > strong {
+  flex-shrink: 0;
+  min-width: 48px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+}
+
+.turma-modal-excecao-item > span {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary, #666);
+}
+
+/* =====================================================
+   RESUMO DA EXCEÇÃO NO CARD
+===================================================== */
+
+.turma-excecao-resumo {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.75;
+}
+
+/* =====================================================
+   AULA EXPERIMENTAL
+===================================================== */
+
+.turma-modal-ae {
+  margin-top: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: rgba(99, 102, 241, 0.08);
+  border-left: 3px solid rgba(99, 102, 241, 0.65);
+}
+
+.turma-modal-ae strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+}
