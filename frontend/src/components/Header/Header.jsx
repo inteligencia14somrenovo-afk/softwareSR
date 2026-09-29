@@ -48,6 +48,27 @@ const Header = () => {
   });
 };
 
+const solicitarPermissaoNotificacoes = async () => {
+  if (!("Notification" in window)) {
+    alert(
+      "Este navegador não oferece suporte a notificações."
+    );
+    return;
+  }
+
+  const permissao =
+    await Notification.requestPermission();
+
+  if (permissao === "granted") {
+    localStorage.setItem(
+      "som-renovo-permissao-notificacoes",
+      "true"
+    );
+
+    console.log("🔔 Notificações permitidas.");
+  }
+};
+
   // =====================================================
   // CONTROLE DAS NOTIFICAÇÕES JÁ CONHECIDAS
   // =====================================================
@@ -153,19 +174,51 @@ const Header = () => {
           );
 
 
+  
         // ===============================================
-        // MOSTRAR TOAST
+        // NOTIFICAÇÃO NATIVA + MOSTRAR TOAST
         // ===============================================
 
         if (novas.length > 0) {
 
-          setNotificacaoToast(
-            novas[0]
-          );
+  const novaNotificacao = novas[0];
 
-          tocarSomNotificacao();
+  setNotificacaoToast(
+    novaNotificacao
+  );
 
-        }
+  tocarSomNotificacao();
+
+  if (
+    "Notification" in window &&
+    Notification.permission === "granted"
+  ) {
+
+    const registro =
+      await navigator.serviceWorker.ready;
+
+    await registro.showNotification(
+      novaNotificacao.titulo ||
+        "Som Renovo Manager",
+      {
+        body:
+          novaNotificacao.mensagem ||
+          "Você recebeu uma nova notificação.",
+        icon: "/pwa-192x192.png",
+        badge: "/pwa-192x192.png",
+        data: {
+          url: "/",
+        },
+        vibrate: [200, 100, 200],
+      }
+    );
+
+  }
+
+}
+
+
+
 
 
         // ===============================================
@@ -546,18 +599,32 @@ const Header = () => {
 
           <div className="notification-panel-header">
 
-            <h3>
-              Notificações
-            </h3>
+  <h3>
+    Notificações
+  </h3>
 
+  <div className="notification-panel-header-actions">
 
-            <span>
+    <span>
+      {notificacoes.length}
+    </span>
 
-              {notificacoes.length}
+    {"Notification" in window &&
+      Notification.permission !== "granted" && (
 
-            </span>
+        <button
+          type="button"
+          className="notification-permission-button"
+          onClick={solicitarPermissaoNotificacoes}
+        >
+          🔔 Permitir
+        </button>
 
-          </div>
+      )}
+
+  </div>
+
+</div>
 
 
           {/* ============================================

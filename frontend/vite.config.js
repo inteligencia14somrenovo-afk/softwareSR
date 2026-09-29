@@ -10,9 +10,15 @@ export default defineConfig({
     tailwindcss(),
 
     VitePWA({
-      registerType: "autoUpdate",
+  registerType: "autoUpdate",
 
-      manifest: {
+  strategies: "injectManifest",
+
+  srcDir: "src",
+
+  filename: "sw.js",
+
+  manifest: {
         name: "Som Renovo Manager",
         short_name: "Som Renovo",
         description: "Sistema de gestão da Escola de Música Som Renovo",
