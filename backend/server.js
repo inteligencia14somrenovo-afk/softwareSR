@@ -15,7 +15,7 @@ const googleSheetsRoutes = require("./routes/googleSheets");
 const planilhaRoutes = require("./routes/planilha.routes");
 const notificacoesRoutes = require("./routes/notificacoes.routes");
 const planilhaTurmasRoutes = require("./routes/planilha_turmas.routes");
-
+const turmasRoutes = require("./routes/turmas.routes");
 const {
   executarSincronizacao,
   getStatusSincronizacao,
@@ -102,6 +102,8 @@ app.use("/planilha", planilhaRoutes);
 app.use("/notificacoes", notificacoesRoutes);
 
 app.use("/api/planilha-turmas", planilhaTurmasRoutes);
+
+app.use("/api/turmas", turmasRoutes);
 
 // =====================================================
 // HOME
