@@ -95,6 +95,88 @@ function ehAulaExperimental(conteudo) {
   return /^AE\b/i.test(textoSemHorario);
 }
 
+function identificarMotivoExcecao(
+  professorOriginal,
+  tipo,
+  horario,
+  data
+) {
+  if (!professorOriginal) {
+    return null;
+  }
+
+  const ocorrencias =
+    professorOriginal.horarios.filter(
+      (item) =>
+        item.tipo === tipo &&
+        item.horario === horario
+    );
+
+  for (const ocorrencia of ocorrencias) {
+    const texto =
+      normalizarTexto(
+        ocorrencia.conteudo
+      );
+
+    // ===============================================
+    // AULA EXPERIMENTAL
+    // ===============================================
+
+    if (
+      ocorrencia.aulaExperimental &&
+      ocorrencia.datasEspecificas.includes(
+        data
+      )
+    ) {
+      return {
+        tipo: "aula_experimental",
+
+        descricao:
+          `${professorOriginal.nome} estará dando uma aula experimental neste horário.`,
+      };
+    }
+
+    // ===============================================
+    // AULA COMUM / ALUNO
+    // ===============================================
+    //
+    // Se a célula contém o tipo da turma mas
+    // não possui uma data da própria turma,
+    // significa que as datas encontradas na
+    // célula pertencem à aula/aluno.
+    //
+    // Como datas da própria turma já foram
+    // separadas por extrairDatasDaTurma(),
+    // usamos a presença de data na célula para
+    // identificar a ocupação.
+    // ===============================================
+
+    const todasAsDatas =
+      extrairDatasEspecificas(
+        texto
+      );
+
+    if (
+      todasAsDatas.includes(data) &&
+      ocorrencia.datasEspecificas.length === 0
+    ) {
+      return {
+        tipo: "aula_comum",
+
+        descricao:
+          `${professorOriginal.nome} estará dando uma aula comum neste horário.`,
+      };
+    }
+  }
+
+  return {
+    tipo: "outra_ocupacao",
+
+    descricao:
+      `${professorOriginal.nome} estará em outra atividade neste horário.`,
+  };
+}
+
 // =====================================================
 // DATAS DA PRÓPRIA TURMA
 // =====================================================
@@ -1148,6 +1230,28 @@ function resolverConflitoPorData(
             )
         ) || null;
 
+        const motivoExcecao =
+  professorBase
+    ? resolucoesValidas.map(
+        (resolucao) => ({
+          data: resolucao.data,
+
+          professorOriginal:
+            professorBase,
+
+          professorSubstituto:
+            professor,
+
+          ...identificarMotivoExcecao(
+            professorBase,
+            tipo,
+            horario,
+            resolucao.data
+          ),
+        })
+      )
+    : [];
+
       return {
         professor,
 
@@ -1160,6 +1264,8 @@ function resolverConflitoPorData(
         professorAE: null,
 
         professorBase,
+
+        motivoExcecao,
 
         ocupacoesAE:
           ocupacoes,
@@ -1523,7 +1629,10 @@ async function vincularProfessoresAsTurmas(
                     .professorBase
                     .professorPlanilhaId,
               }
-            : null,
+            : null, 
+
+            motivoExcecao:
+  resolucao.motivoExcecao || [],
       };
     }
 

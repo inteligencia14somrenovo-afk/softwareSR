@@ -187,6 +187,24 @@ function Turmas() {
             {turma.professor?.nome ||
               "Professor não definido"}
           </strong>
+
+          {turma.tipoVinculo ===
+            "excecao_data" &&
+            turma.motivoExcecao?.length >
+              0 && (
+              <div className="turma-excecao-motivo">
+                {turma.motivoExcecao.map(
+                  (motivo) => (
+                    <span
+                      key={motivo.data}
+                    >
+                      {motivo.data}:{" "}
+                      {motivo.descricao}
+                    </span>
+                  )
+                )}
+              </div>
+            )}
         </div>
 
         <div className="turma-alunos-resumo">
@@ -298,23 +316,51 @@ function Turmas() {
                   Exceção de data
                 </div>
 
-                {turma.datasResolvidas?.map(
-                  (data) => (
-                    <div
-                      className="turma-modal-excecao-item"
-                      key={data}
-                    >
-                      <strong>
-                        {data}
-                      </strong>
+                {turma.motivoExcecao?.length >
+                0 ? (
+                  turma.motivoExcecao.map(
+                    (motivo) => (
+                      <div
+                        className="turma-modal-excecao-item"
+                        key={motivo.data}
+                      >
+                        <strong>
+                          {motivo.data}
+                        </strong>
 
-                      <span>
-                        {turma.professor?.nome ||
-                          "Professor"}
-                        {" "}fica responsável
-                        pela turma nesta data.
-                      </span>
-                    </div>
+                        <span>
+                          {motivo.descricao}{" "}
+                          {turma.professor
+                            ?.nome ||
+                            "Professor"}{" "}
+                          fica responsável
+                          pela turma nesta
+                          data.
+                        </span>
+                      </div>
+                    )
+                  )
+                ) : (
+                  turma.datasResolvidas?.map(
+                    (data) => (
+                      <div
+                        className="turma-modal-excecao-item"
+                        key={data}
+                      >
+                        <strong>
+                          {data}
+                        </strong>
+
+                        <span>
+                          {turma.professor
+                            ?.nome ||
+                            "Professor"}{" "}
+                          fica responsável
+                          pela turma nesta
+                          data.
+                        </span>
+                      </div>
+                    )
                   )
                 )}
 
