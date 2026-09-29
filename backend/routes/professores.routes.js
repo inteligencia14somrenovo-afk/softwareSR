@@ -1,8 +1,31 @@
 const express = require("express");
+const multer = require("multer");
 const pool = require("../config/database");
+const supabase = require("../config/supabase")
 
 const router = express.Router();
 
+// =====================================================
+// CONFIGURAÇÃO DO UPLOAD DE FOTO
+// =====================================================
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(
+        new Error("Selecione um arquivo de imagem válido.")
+      );
+    }
+
+    cb(null, true);
+  },
+});
 
 // =====================================================
 // CONSTANTES
@@ -94,96 +117,215 @@ function validarRole(role) {
 // =====================================================
 // PUT /professores/perfil
 // Atualiza o perfil do usuário autenticado
+// Nome + foto
 // =====================================================
 
-router.put("/perfil", async (req, res) => {
+router.put(
+  "/perfil",
+  upload.single("foto"),
+  async (req, res) => {
 
-  try {
+    try {
 
-    if (!req.session.professorId) {
-      return res.status(401).json({
-        sucesso: false,
-        mensagem: "Usuário não autenticado.",
+      if (!req.session.professorId) {
+        return res.status(401).json({
+          sucesso: false,
+          mensagem: "Usuário não autenticado.",
+        });
+      }
+
+
+      const professorId =
+        req.session.professorId;
+
+
+      const nomeFinal =
+        typeof req.body.nome === "string" &&
+        req.body.nome.trim() !== ""
+          ? req.body.nome.trim()
+          : null;
+
+
+      // -------------------------------------------------
+      // BUSCA FOTO ATUAL
+      // -------------------------------------------------
+
+      const professorAtual =
+        await pool.query(
+          `
+          SELECT
+            id,
+            foto_url
+          FROM professores
+          WHERE id = $1
+          `,
+          [professorId]
+        );
+
+
+      if (professorAtual.rows.length === 0) {
+        return res.status(404).json({
+          sucesso: false,
+          mensagem: "Professor não encontrado.",
+        });
+      }
+
+
+      let fotoFinal =
+        professorAtual.rows[0].foto_url;
+
+
+      // -------------------------------------------------
+      // UPLOAD DA NOVA FOTO
+      // -------------------------------------------------
+
+      if (req.file) {
+
+        const extensao =
+          req.file.originalname
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+        const nomeArquivo =
+          `${professorId}/perfil-${Date.now()}.${extensao}`;
+
+
+        const { error: uploadError } =
+          await supabase.storage
+            .from("professor-fotos")
+            .upload(
+              nomeArquivo,
+              req.file.buffer,
+              {
+                contentType: req.file.mimetype,
+                upsert: false,
+              }
+            );
+
+
+        if (uploadError) {
+
+          console.error(
+            "❌ Erro ao enviar foto para Supabase:",
+            uploadError
+          );
+
+          return res.status(500).json({
+            sucesso: false,
+            mensagem:
+              "Não foi possível enviar a foto.",
+          });
+
+        }
+
+
+        // -------------------------------------------------
+        // OBTÉM URL PÚBLICA
+        // -------------------------------------------------
+
+        const { data: urlData } =
+          supabase.storage
+            .from("professor-fotos")
+            .getPublicUrl(nomeArquivo);
+
+
+        fotoFinal =
+          urlData.publicUrl;
+
+      }
+
+
+      // -------------------------------------------------
+      // ATUALIZA BANCO
+      // -------------------------------------------------
+
+      const resultado =
+        await pool.query(
+          `
+          UPDATE professores
+          SET
+            nome = $1,
+            foto_url = $2,
+            updated_at = CURRENT_TIMESTAMP
+          WHERE id = $3
+          RETURNING
+            id,
+            email,
+            nome,
+            foto_url,
+            instrumentos,
+            perfil_configurado,
+            role,
+            created_at,
+            updated_at
+          `,
+          [
+            nomeFinal,
+            fotoFinal,
+            professorId,
+          ]
+        );
+
+
+      if (resultado.rows.length === 0) {
+        return res.status(404).json({
+          sucesso: false,
+          mensagem: "Professor não encontrado.",
+        });
+      }
+
+
+      res.json({
+        sucesso: true,
+        mensagem:
+          "Perfil atualizado com sucesso.",
+        professor:
+          resultado.rows[0],
       });
-    }
 
 
-    const { nome, foto_url } = req.body;
+    } catch (error) {
+
+      console.error(
+        "❌ Erro ao atualizar perfil:",
+        error
+      );
 
 
-    const nomeFinal =
-      typeof nome === "string" &&
-      nome.trim() !== ""
-        ? nome.trim()
-        : null;
+      if (
+        error.message ===
+        "Selecione um arquivo de imagem válido."
+      ) {
+        return res.status(400).json({
+          sucesso: false,
+          mensagem: error.message,
+        });
+      }
 
 
-    const fotoFinal =
-      typeof foto_url === "string" &&
-      foto_url.trim() !== ""
-        ? foto_url.trim()
-        : null;
+      if (
+        error.code === "LIMIT_FILE_SIZE"
+      ) {
+        return res.status(400).json({
+          sucesso: false,
+          mensagem:
+            "A imagem deve ter no máximo 5 MB.",
+        });
+      }
 
 
-    const resultado = await pool.query(
-      `
-      UPDATE professores
-      SET
-        nome = $1,
-        foto_url = $2,
-        updated_at = CURRENT_TIMESTAMP
-      WHERE id = $3
-      RETURNING
-        id,
-        email,
-        nome,
-        foto_url,
-        instrumentos,
-        perfil_configurado,
-        role,
-        created_at,
-        updated_at
-      `,
-      [
-        nomeFinal,
-        fotoFinal,
-        req.session.professorId,
-      ]
-    );
-
-
-    if (resultado.rows.length === 0) {
-      return res.status(404).json({
+      res.status(500).json({
         sucesso: false,
-        mensagem: "Professor não encontrado.",
+        mensagem:
+          "Erro ao salvar perfil.",
       });
+
     }
-
-
-    res.json({
-      sucesso: true,
-      mensagem: "Perfil atualizado com sucesso.",
-      professor: resultado.rows[0],
-    });
-
-
-  } catch (error) {
-
-    console.error(
-      "❌ Erro ao atualizar perfil:",
-      error
-    );
-
-
-    res.status(500).json({
-      sucesso: false,
-      mensagem: "Erro ao salvar perfil.",
-    });
 
   }
-
-});
-
+);
 
 // =====================================================
 // GET /professores
