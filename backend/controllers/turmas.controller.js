@@ -516,7 +516,7 @@ function interpretarHorarioProfessor(
 const DIAS_SEMANA = {
   2: "SEGUNDA",
   3: "TERÇA",
-  4: "QUINTA",
+  4: "QUARTA",
   5: "QUINTA",
   6: "SEXTA",
   7: "SÁBADO",
