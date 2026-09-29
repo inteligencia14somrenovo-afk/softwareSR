@@ -122,7 +122,7 @@ const Sidebar = () => {
             onClick={fecharMenuMobile}
           >
             <FaUserGraduate />
-            <span>Turmas(Em Desenvolvimento)</span>
+            <span>Turmas</span>
           </NavLink>
 
 
@@ -132,7 +132,7 @@ const Sidebar = () => {
               onClick={fecharMenuMobile}
             >
               <FaChalkboardTeacher />
-              <span>Professores</span>
+              <span>Pessoas</span>
             </NavLink>
           )}
 

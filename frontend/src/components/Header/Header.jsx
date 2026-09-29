@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { MdDarkMode, MdNotifications } from "react-icons/md";
 import API_URL from "../../config/api";
+import notificacaoAudio from "../../assets/sounds/notificacao.mp3"
 
 import "./Header.css";
 
@@ -30,6 +31,22 @@ const Header = () => {
       return valor !== "false";
     });
 
+ // =====================================================
+  // TOCAR SOM NOTIFICAÇÂO
+  // =====================================================
+
+    const tocarSomNotificacao = () => {
+  const audio = new Audio(notificacaoAudio);
+
+  audio.volume = 0.7;
+
+  audio.play().catch((error) => {
+    console.warn(
+      "Não foi possível reproduzir o som da notificação:",
+      error
+    );
+  });
+};
 
   // =====================================================
   // CONTROLE DAS NOTIFICAÇÕES JÁ CONHECIDAS
@@ -145,6 +162,8 @@ const Header = () => {
           setNotificacaoToast(
             novas[0]
           );
+
+          tocarSomNotificacao();
 
         }
 
