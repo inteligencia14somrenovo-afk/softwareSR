@@ -30,3 +30,146 @@ body {
     overscroll-behavior: none;
 
 }
+
+
+/* =========================================
+   SOM RENOVO MANAGER - LOADING SCREEN
+   ========================================= */
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      #202020 0%,
+      #111111 45%,
+      #080808 100%
+    );
+
+  color: white;
+  z-index: 9999;
+
+  overflow: hidden;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  animation: loadingAppear 0.6s ease-out;
+}
+
+/* Ícone musical */
+.loading-logo {
+  width: 72px;
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 18px;
+
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  font-size: 38px;
+  font-weight: 600;
+
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.35);
+
+  animation: logoPulse 2s ease-in-out infinite;
+}
+
+.loading-content h1 {
+  margin: 0;
+
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.loading-subtitle {
+  margin-top: 2px;
+
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+
+  opacity: 0.55;
+}
+
+/* Spinner */
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+
+  margin-top: 32px;
+
+  border-radius: 50%;
+
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.9);
+
+  animation: loadingSpin 0.8s linear infinite;
+}
+
+.loading-content p {
+  margin-top: 16px;
+  margin-bottom: 0;
+
+  font-size: 13px;
+
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* =========================================
+   ANIMAÇÕES
+   ========================================= */
+
+@keyframes loadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes logoPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.04);
+    opacity: 0.85;
+  }
+}
+
+@keyframes loadingAppear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

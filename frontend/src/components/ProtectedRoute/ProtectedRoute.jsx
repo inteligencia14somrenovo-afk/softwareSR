@@ -5,7 +5,26 @@ const ProtectedRoute = ({ children }) => {
   const { professor, carregando } = useAuth();
 
   if (carregando) {
-    return <div>Carregando App...</div>;
+    return (
+      <div className="loading-screen">
+        <div className="loading-content">
+
+          {/* Logo / ícone */}
+          <div className="loading-logo">
+            ♪
+          </div>
+
+          {/* Nome do sistema */}
+          <h1>Som Renovo</h1>
+          <span className="loading-subtitle">Manager</span>
+
+          {/* Indicador */}
+          <div className="loading-spinner"></div>
+
+          <p>Carregando seu ambiente...</p>
+        </div>
+      </div>
+    );
   }
 
   // Não está logado
