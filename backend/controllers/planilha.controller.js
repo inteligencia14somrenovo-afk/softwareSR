@@ -1,6 +1,10 @@
 const pool = require("../config/database");
 const sheets = require("../config/googleSheets");
 
+const {
+  sincronizarTurmasComClient,
+} = require("./planilha_turmas.controller");
+
 const SPREADSHEET_ID =
   "1bbzbHCy5_tHx2mjI7KW6xl1f_K7dPFK5QWVWeXbAnco";
 
@@ -425,159 +429,158 @@ function interpretarCelula(conteudo) {
   }
 
 
-  
-// =====================================================
-// ALUNO NORMAL
-// =====================================================
+  // =====================================================
+  // ALUNO NORMAL
+  // =====================================================
 
-// =====================================================
-// CÓDIGO DO ALUNO
-//
-// Primeiro tentamos encontrar o código logo depois
-// do horário, inclusive quando ele está colado:
-//
-// 16:20h3047 Bento Barbeto
-//       ↑
-//       código
-//
-// Depois mantemos a busca tradicional como fallback.
-// =====================================================
+  // =====================================================
+  // CÓDIGO DO ALUNO
+  //
+  // Primeiro tentamos encontrar o código logo depois
+  // do horário, inclusive quando ele está colado:
+  //
+  // 16:20h3047 Bento Barbeto
+  //       ↑
+  //       código
+  //
+  // Depois mantemos a busca tradicional como fallback.
+  // =====================================================
 
-const codigoColadoMatch =
-textoSemHorario.match(
-/^(\d{3,5})(?=\s|$)/
-);
+  const codigoColadoMatch =
+    textoSemHorario.match(
+      /^(\d{3,5})(?=\s|$)/
+    );
 
-const codigoMatch =
-codigoColadoMatch ||
-textoSemHorario.match(
-/\b\d{3,5}\b/
-);
+  const codigoMatch =
+    codigoColadoMatch ||
+    textoSemHorario.match(
+      /\b\d{3,5}\b/
+    );
 
-const codigoAluno =
-codigoMatch
-? Number(
-codigoMatch[1] || codigoMatch[0]
-)
-: null;
+  const codigoAluno =
+    codigoMatch
+      ? Number(
+          codigoMatch[1] ||
+          codigoMatch[0]
+        )
+      : null;
 
-const datasEspecificas =
-extrairDatas(
-textoSemHorario
-);
+  const datasEspecificas =
+    extrairDatas(
+      textoSemHorario
+    );
 
-// =====================================================
-// REMOVE O HORÁRIO
-// =====================================================
+  // =====================================================
+  // REMOVE O HORÁRIO
+  // =====================================================
 
-let restante =
-texto
-.replace(
-/^(\d{1,2})(?::(\d{2}))?h?/i,
-""
-);
+  let restante =
+    texto.replace(
+      /^(\d{1,2})(?::(\d{2}))?h?/i,
+      ""
+    );
 
-// =====================================================
-// REMOVE O CÓDIGO
-//
-// Primeiro trata o código colado ao horário:
-//
-// 16:20h3047 Bento Barbeto
-//
-// Depois trata o formato com espaço:
-//
-// 16:20h 3047 Bento Barbeto
-// =====================================================
+  // =====================================================
+  // REMOVE O CÓDIGO
+  //
+  // Primeiro trata o código colado ao horário:
+  //
+  // 16:20h3047 Bento Barbeto
+  //
+  // Depois trata o formato com espaço:
+  //
+  // 16:20h 3047 Bento Barbeto
+  // =====================================================
 
-if (codigoAluno) {
+  if (codigoAluno) {
 
-restante =
-  restante.replace(
-    new RegExp(
-      `^\\s*${codigoAluno}\\b`
-    ),
-    ""
-  );
+    restante =
+      restante.replace(
+        new RegExp(
+          `^\\s*${codigoAluno}\\b`
+        ),
+        ""
+      );
 
-}
+  }
 
-// =====================================================
-// REMOVE EMOJIS
-// =====================================================
+  // =====================================================
+  // REMOVE EMOJIS
+  // =====================================================
 
-restante =
-restante.replace(
-/📸|❌|🎸|🥁|🎹|🎤|🎻|🎵|🪕|🎼/g,
-""
-);
+  restante =
+    restante.replace(
+      /📸|❌|🎸|🥁|🎹|🎤|🎻|🎵|🪕|🎼/g,
+      ""
+    );
 
-// =====================================================
-// REMOVE DATAS ESPECÍFICAS
-// =====================================================
+  // =====================================================
+  // REMOVE DATAS ESPECÍFICAS
+  // =====================================================
 
-restante =
-removerDatas(
-restante
-);
+  restante =
+    removerDatas(
+      restante
+    );
 
-const foto =
-texto.includes("📸");
+  const foto =
+    texto.includes("📸");
 
-let instrumento = null;
+  let instrumento = null;
 
-if (texto.includes("🎸"))
-instrumento =
-"guitarra/violao";
+  if (texto.includes("🎸"))
+    instrumento =
+      "guitarra/violao";
 
-else if (texto.includes("🥁"))
-instrumento =
-"bateria";
+  else if (texto.includes("🥁"))
+    instrumento =
+      "bateria";
 
-else if (texto.includes("🎹"))
-instrumento =
-"teclado/piano";
+  else if (texto.includes("🎹"))
+    instrumento =
+      "teclado/piano";
 
-else if (texto.includes("🎤"))
-instrumento =
-"canto";
+  else if (texto.includes("🎤"))
+    instrumento =
+      "canto";
 
-else if (texto.includes("🎻"))
-instrumento =
-"violino";
+  else if (texto.includes("🎻"))
+    instrumento =
+      "violino";
 
-else if (texto.includes("🪕"))
-instrumento =
-"ukulele";
+  else if (texto.includes("🪕"))
+    instrumento =
+      "ukulele";
 
-return {
+  return {
 
-horario:
-  `${hora}:${minuto}`,
+    horario:
+      `${hora}:${minuto}`,
 
-// ===================================================
-// ALUNO COM DATA = TEMPORÁRIO
-// ===================================================
+    // ===================================================
+    // ALUNO COM DATA = TEMPORÁRIO
+    // ===================================================
 
-tipo:
-  datasEspecificas.length > 0
-    ? "aluno_temporario"
-    : "aluno",
+    tipo:
+      datasEspecificas.length > 0
+        ? "aluno_temporario"
+        : "aluno",
 
-codigoAluno,
+    codigoAluno,
 
-nome:
-  restante || null,
+    nome:
+      restante || null,
 
-instrumento,
+    instrumento,
 
-foto,
+    foto,
 
-datasEspecificas,
+    datasEspecificas,
 
-conteudoOriginal:
-  texto,
+    conteudoOriginal:
+      texto,
 
-};
+  };
 }
 
 
@@ -1267,6 +1270,15 @@ async function executarSincronizacao() {
 
     let totalAlunosTemporariosRemovidos = 0;
 
+    // =================================================
+    // RESULTADO DA SINCRONIZAÇÃO DAS TURMAS
+    // =================================================
+
+    let resultadoTurmas = {
+      totalCelulas: 0,
+      blocos: [],
+    };
+
 
     await client.query(
       "BEGIN"
@@ -1453,6 +1465,44 @@ async function executarSincronizacao() {
     }
 
 
+    // =====================================================
+    // SINCRONIZA TURMAS
+    //
+    // Usa o MESMO client e a MESMA transação
+    // da sincronização principal.
+    //
+    // Assim:
+    //
+    // - horários
+    // - alunos
+    // - turmas
+    //
+    // são atualizados juntos.
+    //
+    // Se ocorrer algum erro aqui, o ROLLBACK abaixo
+    // desfaz toda a sincronização desta execução.
+    // =====================================================
+
+    console.log(
+      "📚 Iniciando sincronização automática das turmas..."
+    );
+
+
+    resultadoTurmas =
+      await sincronizarTurmasComClient(
+        client
+      );
+
+
+    console.log(
+      `✅ Turmas sincronizadas: ${resultadoTurmas.totalCelulas} célula(s).`
+    );
+
+
+    // =====================================================
+    // FINALIZA A TRANSAÇÃO
+    // =====================================================
+
     await client.query(
       "COMMIT"
     );
@@ -1479,6 +1529,20 @@ async function executarSincronizacao() {
 
       alunosTemporariosRemovidos:
         totalAlunosTemporariosRemovidos,
+
+      // =================================================
+      // RESULTADO DAS TURMAS
+      // =================================================
+
+      turmas: {
+
+        celulas:
+          resultadoTurmas.totalCelulas,
+
+        blocos:
+          resultadoTurmas.blocos,
+
+      },
 
     };
 
