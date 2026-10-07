@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { logo } from "";
+
 
 const ProtectedRoute = ({ children }) => {
   const { professor, carregando } = useAuth();
@@ -15,6 +15,7 @@ const ProtectedRoute = ({ children }) => {
             <img
               src="/logo.png"
               alt="Som Renovo"
+              className="loading-logo-image"
             />
           </div>
 
