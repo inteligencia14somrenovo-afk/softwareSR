@@ -40,6 +40,15 @@ if (
   });
 }
 
+console.log("🔎 Ambiente Google Sheets:", {
+  modoOAuth,
+  clientIdConfigurado: Boolean(process.env.GOOGLE_CLIENT_ID),
+  clientSecretConfigurado: Boolean(process.env.GOOGLE_CLIENT_SECRET),
+  refreshTokenConfigurado: Boolean(process.env.GOOGLE_REFRESH_TOKEN),
+  spreadsheetId: SPREADSHEET_ID,
+});
+
+
 const sheets = google.sheets({
   version: "v4",
   auth,
