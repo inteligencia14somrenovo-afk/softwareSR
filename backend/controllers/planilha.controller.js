@@ -2092,24 +2092,18 @@ async function buscarHorariosOrganizados(
         continue;
       }
 
+const horario = interpretarCelula(item.conteudo);
 
-      const horario =
-        interpretarCelula(
-          item.conteudo
-        );
+if (!horario) {
+  continue;
+}
 
-        if (
+if (
   horario.tipo === "aluno_temporario" &&
   horario.datasEspecificas?.some(dataTemporariaExpirada)
 ) {
   continue;
 }
-
-
-      if (!horario) {
-        continue;
-      }
-
 
       const instrumentoEspecifico =
         horario.codigoAluno

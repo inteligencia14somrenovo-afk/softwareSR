@@ -83,10 +83,12 @@ async function sincronizarTurmasComClient(client) {
       `📚 Sincronizando ${turma.tipo}: ${turma.aba}!${turma.intervalo}`
     );
 
-    const resposta = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${turma.aba}!${turma.intervalo}`,
-    });
+  
+const resposta = await sheets.spreadsheets.values.get({
+  spreadsheetId: SPREADSHEET_ID,
+  range: `'${turma.aba.replace(/'/g, "''")}'!${turma.intervalo}`,
+});
+
 
     const valores = resposta.data.values || [];
 
