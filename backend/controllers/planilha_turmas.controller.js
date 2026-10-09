@@ -39,7 +39,7 @@ const ABAS_TURMAS = [
 ];
 
 // =====================================================
-// UTILITÁRIOS
+// UTILITÁRIOS 
 // =====================================================
 
 function colunaParaLetra(numero) {
