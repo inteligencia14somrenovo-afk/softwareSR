@@ -83,6 +83,24 @@ async function sincronizarTurmasComClient(client) {
       `📚 Sincronizando ${turma.tipo}: ${turma.aba}!${turma.intervalo}`
     );
 
+    const diagnostico = await sheets.spreadsheets.get({
+  spreadsheetId: SPREADSHEET_ID,
+  fields: "spreadsheetId,properties(title),sheets(properties(title,sheetId))",
+});
+
+console.log(
+  "🔎 Diagnóstico Google Sheets:",
+  JSON.stringify({
+    id: diagnostico.data.spreadsheetId,
+    titulo: diagnostico.data.properties?.title,
+    abas: diagnostico.data.sheets?.map(
+      (s) => ({
+        nome: s.properties?.title,
+        gid: s.properties?.sheetId,
+      })
+    ),
+  })
+);
   
 const resposta = await sheets.spreadsheets.values.get({
   spreadsheetId: SPREADSHEET_ID,
