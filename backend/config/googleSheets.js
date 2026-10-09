@@ -52,38 +52,34 @@ const sheets = google.sheets({
 async function diagnosticarGoogleSheets() {
   console.log("🧪 Iniciando diagnóstico de acesso ao Google Sheets...");
 
-  // Teste 1: identificar a conta OAuth, quando possível.
-  if (modoOAuth) {
-    try {
-      const oauth2 = google.oauth2({
-        auth,
-        version: "v2",
-      });
+  // Teste 1: validar o token OAuth e consultar seus escopos.
+if (modoOAuth) {
+  try {
+    const resultado = await auth.getAccessToken();
+    const accessToken = resultado.token;
 
-      const resposta = await oauth2.userinfo.get();
-
-      console.log("🔎 Conta OAuth ativa:", {
-        email: resposta.data.email || "E-mail não retornado",
-        verificado: resposta.data.verified_email ?? null,
-      });
-    } catch (error) {
-      console.error(
-        "⚠️ Não foi possível identificar a conta OAuth.",
-        {
-          status: error.response?.status,
-          mensagem:
-            error.response?.data?.error_description ||
-            error.response?.data?.error?.message ||
-            error.message,
-        }
-      );
+    if (!accessToken) {
+      throw new Error("O Google não retornou um access token.");
     }
-  } else {
-    console.log(
-      "ℹ️ OAuth não está ativo; usando Application Default Credentials."
-    );
-  }
 
+    const info = await auth.getTokenInfo(accessToken);
+
+    console.log("🔎 Diagnóstico do token OAuth:", {
+      tokenObtido: true,
+      email: info.email || "E-mail não disponibilizado",
+      escopos: info.scopes || [],
+      audiencia: info.aud || "Não informada",
+    });
+  } catch (error) {
+    console.error("❌ Falha ao validar o token OAuth:", {
+      status: error.response?.status,
+      mensagem:
+        error.response?.data?.error_description ||
+        error.response?.data?.error?.message ||
+        error.message,
+    });
+  }
+}
   // Teste 2: confirmar acesso ao arquivo específico.
   try {
     const resposta = await sheets.spreadsheets.get({
