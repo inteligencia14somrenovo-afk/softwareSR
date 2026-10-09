@@ -136,21 +136,22 @@ function dataTemporariaExpirada(dataTexto) {
 // → ["18/06", "25/06"]
 // =====================================================
 
+
 function extrairDatas(texto) {
   const datas = [];
 
-  const regex =
-    /(?:^|\s)(\d{1,2}\/\d{1,2})(?=\s|$)/g;
+  // Reconhece datas mesmo quando estão junto de emojis
+  // ou separadas por pontuação.
+  const regex = /(?<!\d)(\d{1,2}\/\d{1,2})(?!\d)/g;
 
   let match;
 
-  while (
-    (match = regex.exec(texto)) !== null
-  ) {
+  while ((match = regex.exec(texto)) !== null) {
     datas.push(match[1]);
   }
 
-  return datas;
+  // Evita datas repetidas na mesma célula.
+  return [...new Set(datas)];
 }
 
 
@@ -160,10 +161,7 @@ function extrairDatas(texto) {
 
 function removerDatas(texto) {
   return texto
-    .replace(
-      /(?:^|\s)\d{1,2}\/\d{1,2}(?=\s|$)/g,
-      " "
-    )
+    .replace(/(?<!\d)\d{1,2}\/\d{1,2}(?!\d)/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -1547,20 +1545,62 @@ async function executarSincronizacao() {
     // desfaz toda a sincronização desta execução.
     // =====================================================
 
+    
+    // =====================================================
+    // SINCRONIZA TURMAS
+    //
+    // Usa um SAVEPOINT para isolar possíveis erros.
+    // Se as turmas falharem, preserva a sincronização
+    // dos horários e alunos, incluindo a limpeza dos
+    // registros temporários.
+    // =====================================================
+
     console.log(
       "📚 Iniciando sincronização automática das turmas..."
     );
 
+    let erroSincronizacaoTurmas = null;
 
-    resultadoTurmas =
-      await sincronizarTurmasComClient(
-        client
+    await client.query(
+      "SAVEPOINT sincronizacao_turmas"
+    );
+
+    try {
+      resultadoTurmas =
+        await sincronizarTurmasComClient(client);
+
+      await client.query(
+        "RELEASE SAVEPOINT sincronizacao_turmas"
       );
 
+      console.log(
+        `✅ Turmas sincronizadas: ${resultadoTurmas.totalCelulas} célula(s).`
+      );
+    } catch (errorTurmas) {
+      // Desfaz somente o que aconteceu dentro do
+      // SAVEPOINT, preservando as alterações anteriores.
+      await client.query(
+        "ROLLBACK TO SAVEPOINT sincronizacao_turmas"
+      );
 
-    console.log(
-      `✅ Turmas sincronizadas: ${resultadoTurmas.totalCelulas} célula(s).`
-    );
+      await client.query(
+        "RELEASE SAVEPOINT sincronizacao_turmas"
+      );
+
+      erroSincronizacaoTurmas =
+        errorTurmas.message;
+
+      resultadoTurmas = {
+        totalCelulas: 0,
+        blocos: [],
+        erro: erroSincronizacaoTurmas,
+      };
+
+      console.error(
+        "❌ Erro ao sincronizar turmas. A sincronização de horários e alunos será preservada:",
+        errorTurmas
+      );
+    }
 
 
     // =====================================================
@@ -1594,18 +1634,16 @@ async function executarSincronizacao() {
       alunosTemporariosRemovidos:
         totalAlunosTemporariosRemovidos,
 
+      
+
       // =================================================
       // RESULTADO DAS TURMAS
       // =================================================
 
-      turmas: {
-
-        celulas:
-          resultadoTurmas.totalCelulas,
-
-        blocos:
-          resultadoTurmas.blocos,
-
+           turmas: {
+        celulas: resultadoTurmas.totalCelulas,
+        blocos: resultadoTurmas.blocos,
+        erro: resultadoTurmas.erro || null,
       },
 
     };
