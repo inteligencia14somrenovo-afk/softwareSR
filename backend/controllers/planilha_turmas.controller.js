@@ -2,7 +2,7 @@ const pool = require("../config/database");
 const sheets = require("../config/googleSheets");
 
 const SPREADSHEET_ID =
-  "1bbzbHCy5_tHx2mj7KW6xl1f_K7dPFK5QWVWeXbAnco";
+  "1bbzbHCy5_tHx2mjI7KW6xl1f_K7dPFK5QWVWeXbAnco";
 
 // =====================================================
 // CONFIGURAÇÃO DAS ABAS / BLOCOS DE TURMAS
