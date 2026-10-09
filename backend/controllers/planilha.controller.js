@@ -77,6 +77,52 @@ function letraParaNumero(letras) {
   return numero;
 }
 
+function dataTemporariaExpirada(dataTexto) {
+  if (!dataTexto) return false;
+
+  const match = dataTexto.match(
+    /^(\d{1,2})\/(\d{1,2})$/
+  );
+
+  if (!match) return false;
+
+  const dia = Number(match[1]);
+  const mes = Number(match[2]);
+
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Porto_Velho",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+
+  const valores = Object.fromEntries(
+    partes.map(({ type, value }) => [type, value])
+  );
+
+  const hoje = new Date(
+    Number(valores.year),
+    Number(valores.month) - 1,
+    Number(valores.day)
+  );
+
+  const dataMarcada = new Date(
+    Number(valores.year),
+    mes - 1,
+    dia
+  );
+
+  // Datas inválidas não devem causar exclusões.
+  if (
+    dataMarcada.getMonth() !== mes - 1 ||
+    dataMarcada.getDate() !== dia
+  ) {
+    return false;
+  }
+
+  return dataMarcada < hoje;
+}
+
 
 // =====================================================
 // EXTRAI DATAS ESPECÍFICAS DO TEXTO
@@ -967,71 +1013,89 @@ async function sincronizarAlunosDoProfessor(
       resultado
     );
 
-
-  // =====================================================
-  // IDENTIFICA TEMPORÁRIOS
+// =====================================================
+  // IDENTIFICA TEMPORÁRIOS ATUAIS E ANTIGOS
+  //
+  // 1. Temporários/reposições ainda presentes na planilha.
+  // 2. Registros antigos cujo nome contém uma data,
+  //    mas que não são alunos definitivos.
+  //
+  // Um código definitivo nunca deve ser excluído.
   // =====================================================
 
   const {
-    codigosTemporarios
-  } =
-    obterCodigosTemporarios(
-      resultado
-    );
-
+    codigosDefinitivos,
+    codigosTemporarios,
+  } = obterCodigosTemporarios(resultado);
 
   let novos = 0;
   let atualizados = 0;
   let removidosTemporarios = 0;
 
+  // Busca os registros atuais deste professor.
+  const alunosExistentes = await client.query(
+    `
+    SELECT id, codigo_aluno, nome
+    FROM alunos
+    WHERE professor_id = $1
+    `,
+    [professorId]
+  );
 
-  // =====================================================
-  // LIMPA REGISTROS TEMPORÁRIOS ANTIGOS
-  // =====================================================
+  const idsParaRemover = [];
 
-  if (
-    codigosTemporarios.size > 0
-  ) {
+  // Data isolada no nome: 23/09, 5/10 etc.
+  const regexDataTemporaria =
+    /(?:^|\s)\d{1,2}\/\d{1,2}(?=\s|$)/;
 
-    const codigos =
-      Array.from(
-        codigosTemporarios
-      );
+  for (const alunoExistente of alunosExistentes.rows) {
+    const codigo = alunoExistente.codigo_aluno == null
+      ? null
+      : Number(alunoExistente.codigo_aluno);
 
+    // Nunca remover um código que também seja definitivo.
+    const ehDefinitivo =
+      codigo !== null &&
+      codigosDefinitivos.has(codigo);
 
-    const resultadoRemocao =
-      await client.query(
-        `
-        DELETE FROM alunos
-        WHERE
-          professor_id = $1
-          AND codigo_aluno = ANY($2::integer[])
-        RETURNING id, codigo_aluno, nome
-        `,
-        [
-          professorId,
-          codigos,
-        ]
-      );
-
-
-    removidosTemporarios =
-      resultadoRemocao.rows.length;
-
-
-    if (
-      removidosTemporarios > 0
-    ) {
-
-      console.log(
-        `🧹 ${removidosTemporarios} registro(s) temporário(s) antigo(s) removido(s) de alunos para o professor ${professorId}.`
-      );
-
+    if (ehDefinitivo) {
+      continue;
     }
 
+    const nome = alunoExistente.nome || "";
+
+    // Está marcado como temporário/reposição na planilha?
+    const temporarioNaPlanilha =
+      codigo !== null &&
+      codigosTemporarios.has(codigo);
+
+    // Ficou salvo como temporário no nome, mas pode ter
+    // desaparecido da planilha depois da data marcada.
+    const temporarioAntigo =
+      regexDataTemporaria.test(nome);
+
+    if (temporarioNaPlanilha || temporarioAntigo) {
+      idsParaRemover.push(alunoExistente.id);
+    }
   }
 
+  // Exclui somente os IDs identificados e contabiliza
+  // a quantidade realmente removida.
+  if (idsParaRemover.length > 0) {
+    const resultadoRemocao = await client.query(
+      `
+      DELETE FROM alunos
+      WHERE professor_id = $1
+        AND id = ANY($2::integer[])
+      RETURNING id
+      `,
+      [professorId, idsParaRemover]
+    );
 
+    removidosTemporarios =
+      resultadoRemocao.rowCount;
+  }
+ 
   // =====================================================
   // SINCRONIZA ALUNOS DEFINITIVOS
   // =====================================================
@@ -2033,6 +2097,13 @@ async function buscarHorariosOrganizados(
         interpretarCelula(
           item.conteudo
         );
+
+        if (
+  horario.tipo === "aluno_temporario" &&
+  horario.datasEspecificas?.some(dataTemporariaExpirada)
+) {
+  continue;
+}
 
 
       if (!horario) {
