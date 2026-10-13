@@ -9,8 +9,7 @@ import API_URL from "../../config/api";
 import { useAuth } from "../../context/AuthContext";
 import "./GoogleSheets.css";
 
-// Converte letras de coluna em números:
-// A = 1, Z = 26, AA = 27...
+// Converte letras de coluna em números: A = 1, Z = 26, AA = 27...
 const colunaParaNumero = (letras) =>
   letras
     .toUpperCase()
@@ -66,13 +65,14 @@ const interpretarIntervalo = (intervalo) => {
     throw new Error("O intervalo cadastrado possui limites inválidos.");
   }
 
-  // Evita renderizar acidentalmente uma área excessivamente grande.
   const quantidadeCelulas =
     (fimColuna - inicioColuna + 1) *
     (fimLinha - inicioLinha + 1);
 
   if (quantidadeCelulas > 5000) {
-    throw new Error("O intervalo cadastrado é grande demais para exibição.");
+    throw new Error(
+      "O intervalo cadastrado é grande demais para exibição."
+    );
   }
 
   return {
@@ -92,6 +92,9 @@ const GoogleSheets = () => {
 
   const [sincronizando, setSincronizando] = useState(false);
   const [carregando, setCarregando] = useState(true);
+  const [carregandoProfessores, setCarregandoProfessores] =
+    useState(false);
+
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState(false);
 
@@ -99,12 +102,88 @@ const GoogleSheets = () => {
   const [celulas, setCelulas] = useState([]);
   const [erroHorarios, setErroHorarios] = useState("");
 
+  const [professoresPlanilha, setProfessoresPlanilha] = useState([]);
+  const [professorSelecionado, setProfessorSelecionado] = useState("");
+
+  // Lista os professores com intervalos cadastrados.
+  // Endpoint protegido no backend para admin/dev.
+  const carregarProfessores = useCallback(async () => {
+    if (!podeSincronizar) return;
+
+    try {
+      setCarregandoProfessores(true);
+
+      const resposta = await fetch(
+        `${API_URL}/planilha/professores`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      const dados = await resposta.json();
+
+      if (!resposta.ok || !dados.sucesso) {
+        throw new Error(
+          dados.mensagem ||
+            dados.erro ||
+            "Não foi possível listar os professores."
+        );
+      }
+
+      const lista = Array.isArray(dados.dados) ? dados.dados : [];
+
+      setProfessoresPlanilha(lista);
+
+      // Mantém a seleção atual se ela ainda existir.
+      setProfessorSelecionado((selecionadoAtual) => {
+        if (
+          selecionadoAtual &&
+          lista.some(
+            (item) =>
+              String(item.professor_id) === String(selecionadoAtual)
+          )
+        ) {
+          return selecionadoAtual;
+        }
+
+        // Não seleciona automaticamente para evitar exibir
+        // o horário de outra pessoa sem escolha do administrador.
+        return "";
+      });
+    } catch (error) {
+      setProfessoresPlanilha([]);
+      setMensagem(
+        error.message || "Erro ao carregar a lista de professores."
+      );
+      setErro(true);
+    } finally {
+      setCarregandoProfessores(false);
+    }
+  }, [podeSincronizar]);
+
+  useEffect(() => {
+    if (podeSincronizar) {
+      carregarProfessores();
+    }
+  }, [podeSincronizar, carregarProfessores]);
+
+  // Define qual professor será consultado.
+  // Admin/dev consulta o selecionado; professor comum, somente a si próprio.
+  const idParaConsultar = podeSincronizar
+    ? professorSelecionado
+    : professor?.id
+      ? String(professor.id)
+      : "";
+
   const carregarHorarios = useCallback(async () => {
-    if (!professor?.id) {
+    if (!idParaConsultar) {
       setPlanilha(null);
       setCelulas([]);
       setErroHorarios(
-        "Não foi possível identificar o professor conectado."
+        podeSincronizar
+          ? ""
+          : "Não foi possível identificar o professor conectado."
       );
       setCarregando(false);
       return;
@@ -113,9 +192,11 @@ const GoogleSheets = () => {
     try {
       setCarregando(true);
       setErroHorarios("");
+      setPlanilha(null);
+      setCelulas([]);
 
       const resposta = await fetch(
-        `${API_URL}/planilha/horarios/${professor.id}`,
+        `${API_URL}/planilha/horarios/${idParaConsultar}`,
         {
           method: "GET",
           credentials: "include",
@@ -149,11 +230,20 @@ const GoogleSheets = () => {
     } finally {
       setCarregando(false);
     }
-  }, [professor?.id]);
+  }, [idParaConsultar, podeSincronizar]);
 
   useEffect(() => {
     carregarHorarios();
   }, [carregarHorarios]);
+
+  const selecionarProfessor = (event) => {
+    setProfessorSelecionado(event.target.value);
+    setMensagem("");
+    setErro(false);
+    setPlanilha(null);
+    setCelulas([]);
+    setErroHorarios("");
+  };
 
   const sincronizarPlanilha = async () => {
     try {
@@ -192,6 +282,11 @@ const GoogleSheets = () => {
         dados.mensagem || "Planilha sincronizada com sucesso!"
       );
 
+      // Atualiza a lista e a grade após sincronizar.
+      if (podeSincronizar) {
+        await carregarProfessores();
+      }
+
       await carregarHorarios();
     } catch (error) {
       setErro(true);
@@ -209,7 +304,6 @@ const GoogleSheets = () => {
 
     try {
       const limites = interpretarIntervalo(planilha.intervalo);
-
       const mapaCelulas = new Map();
 
       celulas.forEach((item) => {
@@ -251,7 +345,8 @@ const GoogleSheets = () => {
           numero,
           celulas: colunas.map((coluna) => ({
             endereco: `${coluna}${numero}`,
-            conteudo: mapaCelulas.get(`${coluna}${numero}`) ?? "",
+            conteudo:
+              mapaCelulas.get(`${coluna}${numero}`) ?? "",
           })),
         });
       }
@@ -295,10 +390,52 @@ const GoogleSheets = () => {
         </div>
 
         <p className="google-sheets-description">
-          Esta visualização mostra somente o intervalo autorizado para o
-          professor conectado. Ela não abre nem compartilha a planilha
-          original do Google.
+          {podeSincronizar
+            ? "Selecione um professor para visualizar o intervalo de horários importado. A planilha original do Google não é aberta nem compartilhada."
+            : "Esta visualização mostra somente o intervalo autorizado para o professor conectado. A planilha original do Google não é aberta nem compartilhada."}
         </p>
+
+        {podeSincronizar && (
+          <div className="google-sheets-professor-selector">
+            <label
+              className="google-sheets-professor-label"
+              htmlFor="professor-planilha"
+            >
+              Professor
+            </label>
+
+            <select
+              id="professor-planilha"
+              className="google-sheets-professor-select"
+              value={professorSelecionado}
+              onChange={selecionarProfessor}
+              disabled={carregandoProfessores}
+            >
+              <option value="">
+                {carregandoProfessores
+                  ? "Carregando professores..."
+                  : "Selecione um professor"}
+              </option>
+
+              {professoresPlanilha.map((item) => (
+                <option
+                  key={item.professor_id}
+                  value={String(item.professor_id)}
+                >
+                  {item.nome}
+                  {item.intervalo ? ` — ${item.intervalo}` : ""}
+                </option>
+              ))}
+            </select>
+
+            {!carregandoProfessores &&
+              professoresPlanilha.length === 0 && (
+                <p className="google-sheets-permission">
+                  Nenhum professor com planilha ativa foi encontrado.
+                </p>
+              )}
+          </div>
+        )}
 
         {podeSincronizar ? (
           <button
@@ -341,7 +478,9 @@ const GoogleSheets = () => {
             <p>
               {planilha
                 ? `${planilha.nome} • Intervalo ${planilha.intervalo}`
-                : "Intervalo cadastrado para o professor"}
+                : podeSincronizar && !professorSelecionado
+                  ? "Selecione um professor para visualizar o horário."
+                  : "Intervalo cadastrado para o professor"}
             </p>
           </div>
 
@@ -349,7 +488,7 @@ const GoogleSheets = () => {
             type="button"
             className="google-sheets-refresh-button"
             onClick={carregarHorarios}
-            disabled={carregando}
+            disabled={carregando || !idParaConsultar}
           >
             <FaSyncAlt
               className={carregando ? "girando" : ""}
@@ -362,6 +501,11 @@ const GoogleSheets = () => {
           <p className="google-sheets-empty">
             Carregando planilha...
           </p>
+        ) : podeSincronizar && !professorSelecionado ? (
+          <div className="google-sheets-empty">
+            <SiGooglesheets />
+            <p>Selecione um professor acima para visualizar a grade.</p>
+          </div>
         ) : erroHorarios ? (
           <div className="google-sheets-message erro" role="alert">
             <FaExclamationCircle />

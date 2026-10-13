@@ -1,6 +1,7 @@
 const express = require("express");
 
 const {
+  listarProfessoresComPlanilha,
   sincronizarPlanilha,
   buscarHorariosProfessor,
   buscarHorariosOrganizados,
@@ -66,6 +67,11 @@ router.post(
   "/sincronizar",
   exigirAdminOuDev,
   sincronizarPlanilha
+);
+
+router.get(
+  "/professores",
+  listarProfessoresComPlanilha
 );
 
 router.get(

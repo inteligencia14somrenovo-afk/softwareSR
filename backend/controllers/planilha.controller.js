@@ -2436,6 +2436,76 @@ if (professorId === null) return;
 
 }
 
+// =====================================================
+// LISTAR PROFESSORES COM PLANILHA CONFIGURADA
+// Exclusivo para admin e dev
+// =====================================================
+
+async function listarProfessoresComPlanilha(req, res) {
+  try {
+    if (!req.session?.professorId) {
+      return res.status(401).json({
+        sucesso: false,
+        mensagem: "Usuário não autenticado.",
+      });
+    }
+
+    const usuario = await pool.query(
+      `SELECT role FROM professores WHERE id = $1`,
+      [req.session.professorId]
+    );
+
+    if (usuario.rows.length === 0) {
+      return res.status(401).json({
+        sucesso: false,
+        mensagem: "Usuário não encontrado.",
+      });
+    }
+
+    const role = String(usuario.rows[0].role || "")
+      .trim()
+      .toLowerCase();
+
+    if (!["admin", "dev"].includes(role)) {
+      return res.status(403).json({
+        sucesso: false,
+        mensagem: "Apenas administradores podem listar as planilhas.",
+      });
+    }
+
+    const resultado = await pool.query(`
+      SELECT
+        p.id AS professor_id,
+        pp.id AS professor_planilha_id,
+        pp.nome,
+        pp.email,
+        pp.aba,
+        pp.intervalo
+      FROM professores_planilha pp
+      INNER JOIN professores p
+        ON LOWER(TRIM(p.email)) = LOWER(TRIM(pp.email))
+      WHERE pp.ativo = TRUE
+      ORDER BY pp.nome ASC
+    `);
+
+    return res.json({
+      sucesso: true,
+      total: resultado.rows.length,
+      dados: resultado.rows,
+    });
+  } catch (error) {
+    console.error(
+      "Erro ao listar professores com planilha:",
+      error
+    );
+
+    return res.status(500).json({
+      sucesso: false,
+      mensagem: "Não foi possível listar os professores.",
+    });
+  }
+}
+
 
 // =====================================================
 // EXPORTS
@@ -2447,6 +2517,8 @@ function getStatusSincronizacao() {
 
 
 module.exports = {
+
+  listarProfessoresComPlanilha,
 
   sincronizarPlanilha,
 
