@@ -3,8 +3,18 @@ import Login from "./components/Login/Login";
 import Dashboard from "./layouts/Dashboard";
 import TelaInicial from "./pages/TelaInicial/TelaInicial";
 import Alunos from "./pages/Alunos/Alunos";
+import Turmas from "./pages/Turmas/Turmas";
 import Presenca from "./pages/Presenca/Presenca";
 import Relatorio from "./pages/Relatorio/Relatorio";
+import GoogleSheets from "./pages/Conexoes/GoogleSheets";
+
+import Instalar from "./pages/Instalar/Instalar";
+
+
+import Professores from "./pages/Professores/Professores";
+import ProfessorDetalhes from "./pages/Professores/ProfessorDetalhes";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+
 import Configuração from "./pages/Configuração/Configuração";
 import PoliticaPrivacidade from "./pages/Configuração/componentes/PoliticaPrivacidade";
 import TermosDeUso from "./pages/Configuração/componentes/TermosDeUso";
@@ -12,12 +22,6 @@ import TratamentoDeDados from "./pages/Configuração/componentes/TratamentoDeDa
 import CentralAjuda from "./pages/Configuração/componentes/CentralAjuda";
 import RelatarProblema from "./pages/Configuração/componentes/RelatarProblema";
 import ContatoSuporte from "./pages/Configuração/componentes/ContatoSuporte";
-import Turmas from "./pages/Turmas/Turmas";
-import Instalar from "./pages/Instalar/Instalar";
-
-import Professores from "./pages/Professores/Professores";
-import ProfessorDetalhes from "./pages/Professores/ProfessorDetalhes";
-import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 import "./App.css";
 
@@ -61,6 +65,11 @@ function App() {
           <Route
             path="relatorio"
             element={<Relatorio />}
+          />
+
+          <Route
+            path="conexoes/google-sheets"
+            element={<GoogleSheets />}
           />
 
          <Route path="config" element={<Configuração />} />

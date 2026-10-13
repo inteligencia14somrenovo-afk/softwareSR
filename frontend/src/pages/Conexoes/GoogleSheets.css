@@ -1,0 +1,53 @@
+.google-sheets-page {
+  width: 100%;
+  min-width: 0;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.google-sheets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.google-sheets-header h1 {
+  margin: 0 0 8px;
+}
+
+.google-sheets-header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.google-sheets-content {
+  width: 100%;
+  min-width: 0;
+}
+
+.google-sheets-status {
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.google-sheets-status h2 {
+  margin-top: 0;
+}
+
+.google-sheets-status p {
+  color: #4b5563;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+  .google-sheets-page {
+    padding: 16px;
+  }
+
+  .google-sheets-status {
+    padding: 16px;
+  }
+}
