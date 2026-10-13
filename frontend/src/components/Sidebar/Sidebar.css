@@ -866,11 +866,11 @@ nav {
 }
 
 .sidebar-submenu a:hover {
-  background-color: rgba(196, 0, 0, 0.08);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .sidebar-submenu a.active {
-  background-color: rgba(196, 0, 0, 0.12);
+  background-color: rgba(224, 209, 209, 0.12);
   color: #c40000;
   font-weight: 600;
 }

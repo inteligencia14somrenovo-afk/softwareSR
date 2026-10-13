@@ -534,3 +534,363 @@
     min-width: 520px;
   }
 }
+
+/* =====================================================
+   ADMIN / DEV — SELETOR DE PROFESSOR E AÇÕES
+   Som Renovo Manager
+===================================================== */
+
+/* Área de seleção do professor */
+.google-sheets-professor-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 24px 0 20px;
+  padding: 20px;
+  background: linear-gradient(145deg, #fffafa, #f8f9fc);
+  border: 1px solid #eee1e3;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.google-sheets-professor-selector::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #c40000;
+}
+
+.google-sheets-professor-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #27272a;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Ícone antes do título */
+.google-sheets-professor-label::before {
+  content: "♙";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #c40000;
+  background: #ffe7e7;
+  border-radius: 9px;
+  font-size: 17px;
+}
+
+/* Campo de seleção */
+.google-sheets-professor-select {
+  width: 100%;
+  min-height: 49px;
+  padding: 12px 42px 12px 14px;
+  border: 1px solid #d9dce3;
+  border-radius: 11px;
+  background-color: #fff;
+  color: #25252a;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.google-sheets-professor-select:hover {
+  border-color: #c40000;
+  background-color: #fffdfd;
+}
+
+.google-sheets-professor-select:focus {
+  border-color: #c40000;
+  box-shadow: 0 0 0 4px rgba(196, 0, 0, 0.11);
+}
+
+.google-sheets-professor-select:disabled {
+  opacity: 0.65;
+  cursor: wait;
+  background-color: #f1f2f5;
+}
+
+.google-sheets-professor-select option {
+  padding: 10px;
+  background: #fff;
+  color: #25252a;
+}
+
+/* Texto de orientação */
+.google-sheets-professor-selector
+  + .google-sheets-permission {
+  margin-top: -8px;
+}
+
+/* =====================================================
+   BOTÃO DE SINCRONIZAÇÃO
+===================================================== */
+
+.google-sheets-sync-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 1px solid #a90000;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #d50000, #b00000);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.93rem;
+  font-weight: 700;
+  box-shadow: 0 5px 13px rgba(196, 0, 0, 0.17);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.google-sheets-sync-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(196, 0, 0, 0.24);
+  background: linear-gradient(135deg, #e00000, #a90000);
+}
+
+.google-sheets-sync-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.google-sheets-sync-button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  box-shadow: none;
+}
+
+/* =====================================================
+   BOTÃO ATUALIZAR
+===================================================== */
+
+.google-sheets-refresh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 15px;
+  border: 1px solid #e0e2e8;
+  border-radius: 10px;
+  background: #fff;
+  color: #3f4149;
+  font-family: inherit;
+  font-size: 0.87rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.google-sheets-refresh-button:hover:not(:disabled) {
+  color: #c40000;
+  border-color: #e4aaaa;
+  background: #fff6f6;
+  transform: translateY(-1px);
+}
+
+.google-sheets-refresh-button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+/* =====================================================
+   CABEÇALHO DA GRADE
+===================================================== */
+
+.google-sheets-schedule-header {
+  gap: 16px;
+  align-items: center;
+}
+
+.google-sheets-schedule-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #202127;
+  font-size: 1.12rem;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+.google-sheets-schedule-header h2 svg {
+  color: #c40000;
+  flex-shrink: 0;
+}
+
+.google-sheets-schedule-header p {
+  margin-top: 6px;
+  color: #747783;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* =====================================================
+   MENSAGENS DE SUCESSO E ERRO
+===================================================== */
+
+.google-sheets-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px 16px;
+  margin-top: 16px;
+  border-radius: 11px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.google-sheets-message svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 17px;
+}
+
+.google-sheets-message.sucesso {
+  color: #176b43;
+  background: #effaf3;
+  border: 1px solid #ccebd7;
+}
+
+.google-sheets-message.erro {
+  color: #a51d25;
+  background: #fff2f2;
+  border: 1px solid #f2d0d0;
+}
+
+/* =====================================================
+   ESTADO VAZIO / CARREGAMENTO
+===================================================== */
+
+.google-sheets-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 155px;
+  padding: 28px 20px;
+  color: #777b86;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.google-sheets-empty > svg {
+  color: #c40000;
+  font-size: 31px;
+  opacity: 0.8;
+}
+
+.google-sheets-empty p {
+  margin: 0;
+}
+
+/* =====================================================
+   ACESSO E PERMISSÕES
+===================================================== */
+
+.google-sheets-permission {
+  margin-top: 14px;
+  color: #747783;
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+/* =====================================================
+   ANIMAÇÃO DE SINCRONIZAÇÃO
+===================================================== */
+
+.girando {
+  animation: google-sheets-rotacao 1s linear infinite;
+}
+
+@keyframes google-sheets-rotacao {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =====================================================
+   RESPONSIVIDADE — CELULARES
+===================================================== */
+
+@media (max-width: 640px) {
+  .google-sheets-professor-selector {
+    padding: 16px;
+    margin: 20px 0 16px;
+    border-radius: 13px;
+  }
+
+  .google-sheets-professor-select {
+    min-height: 47px;
+    font-size: 0.9rem;
+  }
+
+  .google-sheets-sync-button {
+    width: 100%;
+    min-height: 47px;
+  }
+
+  .google-sheets-schedule-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .google-sheets-schedule-header > div {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .google-sheets-schedule-header h2 {
+    font-size: 1.03rem;
+  }
+
+  .google-sheets-refresh-button {
+    width: 100%;
+  }
+
+  .google-sheets-message {
+    padding: 12px;
+    font-size: 0.86rem;
+  }
+}
+
+/* Respeita usuários que preferem menos animações */
+@media (prefers-reduced-motion: reduce) {
+  .google-sheets-sync-button,
+  .google-sheets-refresh-button,
+  .google-sheets-professor-select {
+    transition: none;
+  }
+
+  .girando {
+    animation-duration: 2s;
+  }
+}
