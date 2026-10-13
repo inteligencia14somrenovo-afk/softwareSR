@@ -3,22 +3,85 @@ import {
   FaSyncAlt,
   FaCheckCircle,
   FaExclamationCircle,
-  FaCalendarAlt,
-  FaUser,
 } from "react-icons/fa";
 import { SiGooglesheets } from "react-icons/si";
 import API_URL from "../../config/api";
 import { useAuth } from "../../context/AuthContext";
 import "./GoogleSheets.css";
 
-const DIAS = [
-  "SEGUNDA",
-  "TERÇA",
-  "QUARTA",
-  "QUINTA",
-  "SEXTA",
-  "SÁBADO",
-];
+// Converte letras de coluna em números:
+// A = 1, Z = 26, AA = 27...
+const colunaParaNumero = (letras) =>
+  letras
+    .toUpperCase()
+    .split("")
+    .reduce(
+      (total, letra) => total * 26 + letra.charCodeAt(0) - 64,
+      0
+    );
+
+// Converte números em letras de coluna.
+const numeroParaColuna = (numero) => {
+  let resultado = "";
+  let n = numero;
+
+  while (n > 0) {
+    const resto = (n - 1) % 26;
+    resultado = String.fromCharCode(65 + resto) + resultado;
+    n = Math.floor((n - 1) / 26);
+  }
+
+  return resultado;
+};
+
+// Interpreta intervalos como A69:G81 ou $A$69:$G$81.
+const interpretarIntervalo = (intervalo) => {
+  const limpo = String(intervalo || "")
+    .replace(/\$/g, "")
+    .trim();
+
+  const correspondencia = limpo.match(
+    /^([A-Z]+)(\d+):([A-Z]+)(\d+)$/i
+  );
+
+  if (!correspondencia) {
+    throw new Error(
+      `Intervalo inválido ou não reconhecido: ${intervalo || "(vazio)"}`
+    );
+  }
+
+  const [, colunaInicial, linhaInicial, colunaFinal, linhaFinal] =
+    correspondencia;
+
+  const inicioColuna = colunaParaNumero(colunaInicial);
+  const fimColuna = colunaParaNumero(colunaFinal);
+  const inicioLinha = Number(linhaInicial);
+  const fimLinha = Number(linhaFinal);
+
+  if (
+    inicioColuna > fimColuna ||
+    inicioLinha > fimLinha ||
+    inicioLinha < 1
+  ) {
+    throw new Error("O intervalo cadastrado possui limites inválidos.");
+  }
+
+  // Evita renderizar acidentalmente uma área excessivamente grande.
+  const quantidadeCelulas =
+    (fimColuna - inicioColuna + 1) *
+    (fimLinha - inicioLinha + 1);
+
+  if (quantidadeCelulas > 5000) {
+    throw new Error("O intervalo cadastrado é grande demais para exibição.");
+  }
+
+  return {
+    inicioColuna,
+    fimColuna,
+    inicioLinha,
+    fimLinha,
+  };
+};
 
 const GoogleSheets = () => {
   const { professor } = useAuth();
@@ -31,13 +94,18 @@ const GoogleSheets = () => {
   const [carregando, setCarregando] = useState(true);
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState(false);
-  const [horarios, setHorarios] = useState([]);
+
+  const [planilha, setPlanilha] = useState(null);
+  const [celulas, setCelulas] = useState([]);
   const [erroHorarios, setErroHorarios] = useState("");
 
   const carregarHorarios = useCallback(async () => {
     if (!professor?.id) {
-      setHorarios([]);
-      setErroHorarios("Não foi possível identificar o professor conectado.");
+      setPlanilha(null);
+      setCelulas([]);
+      setErroHorarios(
+        "Não foi possível identificar o professor conectado."
+      );
       setCarregando(false);
       return;
     }
@@ -47,7 +115,7 @@ const GoogleSheets = () => {
       setErroHorarios("");
 
       const resposta = await fetch(
-        `${API_URL}/planilha/horarios/${professor.id}/organizados`,
+        `${API_URL}/planilha/horarios/${professor.id}`,
         {
           method: "GET",
           credentials: "include",
@@ -60,14 +128,23 @@ const GoogleSheets = () => {
         throw new Error(
           dados.mensagem ||
             dados.erro ||
-            "Não foi possível carregar os horários."
+            "Não foi possível carregar a planilha."
         );
       }
 
-      setHorarios(Array.isArray(dados.dados) ? dados.dados : []);
+      if (!dados.professor_planilha?.intervalo) {
+        throw new Error(
+          "O servidor não retornou o intervalo cadastrado para este professor."
+        );
+      }
+
+      setPlanilha(dados.professor_planilha);
+      setCelulas(Array.isArray(dados.dados) ? dados.dados : []);
     } catch (error) {
+      setPlanilha(null);
+      setCelulas([]);
       setErroHorarios(
-        error.message || "Erro ao consultar os horários."
+        error.message || "Erro ao consultar a planilha."
       );
     } finally {
       setCarregando(false);
@@ -78,63 +155,112 @@ const GoogleSheets = () => {
     carregarHorarios();
   }, [carregarHorarios]);
 
- const sincronizarPlanilha = async () => {
-  try {
-    setSincronizando(true);
-    setMensagem("");
-    setErro(false);
+  const sincronizarPlanilha = async () => {
+    try {
+      setSincronizando(true);
+      setMensagem("");
+      setErro(false);
 
-    const resposta = await fetch(
-      `${API_URL}/planilha/sincronizar`,
-      {
-        method: "POST",
-        credentials: "include",
+      const resposta = await fetch(
+        `${API_URL}/planilha/sincronizar`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+
+      const texto = await resposta.text();
+      let dados = {};
+
+      try {
+        dados = texto ? JSON.parse(texto) : {};
+      } catch {
+        throw new Error(
+          "O servidor retornou uma resposta inválida."
+        );
       }
-    );
 
-    const texto = await resposta.text();
-    let dados = {};
+      if (!resposta.ok || dados.sucesso === false) {
+        throw new Error(
+          dados.mensagem ||
+            dados.erro ||
+            "Não foi possível sincronizar a planilha."
+        );
+      }
+
+      setMensagem(
+        dados.mensagem || "Planilha sincronizada com sucesso!"
+      );
+
+      await carregarHorarios();
+    } catch (error) {
+      setErro(true);
+      setMensagem(
+        error.message || "Erro ao conectar com o servidor."
+      );
+    } finally {
+      setSincronizando(false);
+    }
+  };
+
+  // Reconstrói a grade completa, inclusive células vazias.
+  const grade = (() => {
+    if (!planilha?.intervalo) return null;
 
     try {
-      dados = texto ? JSON.parse(texto) : {};
-    } catch {
-      throw new Error(
-        "O servidor retornou uma resposta inválida."
-      );
+      const limites = interpretarIntervalo(planilha.intervalo);
+
+      const mapaCelulas = new Map();
+
+      celulas.forEach((item) => {
+        const endereco = String(item.celula || "")
+          .replace(/\$/g, "")
+          .trim()
+          .toUpperCase();
+
+        const correspondencia = endereco.match(/^([A-Z]+)(\d+)$/);
+
+        if (!correspondencia) return;
+
+        const [, coluna, linha] = correspondencia;
+
+        mapaCelulas.set(
+          `${coluna}${Number(linha)}`,
+          item.conteudo ?? ""
+        );
+      });
+
+      const colunas = [];
+
+      for (
+        let numero = limites.inicioColuna;
+        numero <= limites.fimColuna;
+        numero++
+      ) {
+        colunas.push(numeroParaColuna(numero));
+      }
+
+      const linhas = [];
+
+      for (
+        let numero = limites.inicioLinha;
+        numero <= limites.fimLinha;
+        numero++
+      ) {
+        linhas.push({
+          numero,
+          celulas: colunas.map((coluna) => ({
+            endereco: `${coluna}${numero}`,
+            conteudo: mapaCelulas.get(`${coluna}${numero}`) ?? "",
+          })),
+        });
+      }
+
+      return { colunas, linhas };
+    } catch (error) {
+      return { erro: error.message };
     }
-
-    if (!resposta.ok || dados.sucesso === false) {
-      throw new Error(
-        dados.mensagem ||
-          dados.erro ||
-          "Não foi possível sincronizar a planilha."
-      );
-    }
-
-    setMensagem(
-      dados.mensagem ||
-        "Planilha sincronizada com sucesso!"
-    );
-
-    // Atualiza a grade somente depois da resposta da sincronização.
-    await carregarHorarios();
-  } catch (error) {
-    setErro(true);
-    setMensagem(
-      error.message || "Erro ao conectar com o servidor."
-    );
-  } finally {
-    setSincronizando(false);
-  }
-};
-
-  const horariosPorDia = DIAS.map((dia) => ({
-    dia,
-    itens: horarios.filter(
-      (item) =>
-        String(item.diaSemana || "").toUpperCase() === dia
-    ),
-  }));
+  })();
 
   return (
     <main className="google-sheets-page">
@@ -142,7 +268,7 @@ const GoogleSheets = () => {
         <div>
           <h1>Google Sheets</h1>
           <p>
-            Consulte os horários importados para o Som Renovo Manager.
+            Consulte a grade de horários importada para o Som Renovo Manager.
           </p>
         </div>
       </header>
@@ -155,7 +281,9 @@ const GoogleSheets = () => {
 
           <div className="google-sheets-info">
             <h2>Planilha de horários</h2>
-            <p>Dados sincronizados com o banco de dados do Manager.</p>
+            <p>
+              Visualização dos dados sincronizados com o banco do Manager.
+            </p>
           </div>
         </div>
 
@@ -167,24 +295,24 @@ const GoogleSheets = () => {
         </div>
 
         <p className="google-sheets-description">
-          A grade abaixo exibe os horários que já estão armazenados no
-          banco de dados. Para confirmar se a conexão com o Google está
-          funcionando, execute uma sincronização.
+          Esta visualização mostra somente o intervalo autorizado para o
+          professor conectado. Ela não abre nem compartilha a planilha
+          original do Google.
         </p>
 
-        {podeSincronizar && (
+        {podeSincronizar ? (
           <button
             type="button"
             className="google-sheets-sync-button"
             onClick={sincronizarPlanilha}
             disabled={sincronizando}
           >
-            <FaSyncAlt className={sincronizando ? "girando" : ""} />
+            <FaSyncAlt
+              className={sincronizando ? "girando" : ""}
+            />
             {sincronizando ? "Sincronizando..." : "Sincronizar agora"}
           </button>
-        )}
-
-        {!podeSincronizar && (
+        ) : (
           <p className="google-sheets-permission">
             A sincronização manual está disponível somente para
             administradores e desenvolvedores.
@@ -208,10 +336,12 @@ const GoogleSheets = () => {
         <div className="google-sheets-schedule-header">
           <div>
             <h2>
-              <FaCalendarAlt /> Horários sincronizados
+              <SiGooglesheets /> Grade de horários
             </h2>
             <p>
-              {horarios.length} registro(s) encontrado(s) no banco.
+              {planilha
+                ? `${planilha.nome} • Intervalo ${planilha.intervalo}`
+                : "Intervalo cadastrado para o professor"}
             </p>
           </div>
 
@@ -221,68 +351,78 @@ const GoogleSheets = () => {
             onClick={carregarHorarios}
             disabled={carregando}
           >
-            <FaSyncAlt className={carregando ? "girando" : ""} />
+            <FaSyncAlt
+              className={carregando ? "girando" : ""}
+            />
             Atualizar
           </button>
         </div>
 
         {carregando ? (
-          <p className="google-sheets-empty">Carregando horários...</p>
+          <p className="google-sheets-empty">
+            Carregando planilha...
+          </p>
         ) : erroHorarios ? (
           <div className="google-sheets-message erro" role="alert">
             <FaExclamationCircle />
             <span>{erroHorarios}</span>
           </div>
-        ) : horarios.length === 0 ? (
-          <div className="google-sheets-empty">
-            <FaCalendarAlt />
-            <p>Nenhum horário encontrado para este professor.</p>
+        ) : grade?.erro ? (
+          <div className="google-sheets-message erro" role="alert">
+            <FaExclamationCircle />
+            <span>{grade.erro}</span>
+          </div>
+        ) : grade ? (
+          <div className="google-sheets-grid-wrapper">
+            <table className="google-sheets-grid">
+              <thead>
+                <tr>
+                  <th className="google-sheets-row-number">#</th>
+                  {grade.colunas.map((coluna) => (
+                    <th key={coluna} scope="col">
+                      {coluna}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {grade.linhas.map((linha) => (
+                  <tr key={linha.numero}>
+                    <th
+                      className="google-sheets-row-number"
+                      scope="row"
+                    >
+                      {linha.numero}
+                    </th>
+
+                    {linha.celulas.map((celula) => (
+                      <td key={celula.endereco}>
+                        <div
+                          className="google-sheets-cell-content"
+                          title={String(celula.conteudo)}
+                        >
+                          {String(celula.conteudo)}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : (
-          <div className="google-sheets-days">
-            {horariosPorDia.map(({ dia, itens }) => (
-              <div className="google-sheets-day" key={dia}>
-                <h3>{dia}</h3>
-
-                {itens.length === 0 ? (
-                  <p className="google-sheets-no-items">
-                    Nenhum horário registrado.
-                  </p>
-                ) : (
-                  <div className="google-sheets-schedule-list">
-                    {itens.map((item, index) => (
-                      <article
-                        className="google-sheets-schedule-item"
-                        key={`${item.celula || dia}-${index}`}
-                      >
-                        <div className="google-sheets-schedule-time">
-                          {item.horario || "Horário não informado"}
-                        </div>
-
-                        <div className="google-sheets-schedule-details">
-                          <strong>
-                            {item.nome || "Nome não informado"}
-                          </strong>
-                          <span>
-                            {item.instrumento_especifico ||
-                              item.instrumento ||
-                              "Instrumento não informado"}
-                          </span>
-                          {item.tipo && (
-                            <small>
-                              {String(item.tipo).replaceAll("_", " ")}
-                            </small>
-                          )}
-                        </div>
-
-                        <FaUser className="google-sheets-student-icon" />
-                      </article>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+          <div className="google-sheets-empty">
+            <SiGooglesheets />
+            <p>Nenhuma planilha configurada para este professor.</p>
           </div>
+        )}
+
+        {!carregando && !erroHorarios && grade && !grade.erro && (
+          <p className="google-sheets-grid-footer">
+            {celulas.length} célula(s) recebida(s) do banco de dados.
+            Células vazias são preservadas na visualização.
+          </p>
         )}
       </section>
     </main>

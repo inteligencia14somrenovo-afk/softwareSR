@@ -1930,139 +1930,94 @@ async function validarAcessoAoProprioHorario(req, res) {
 // BUSCAR HORÁRIOS BRUTOS
 // =====================================================
 
-async function buscarHorariosProfessor(
-  req,
-  res
-) {
-
+async function buscarHorariosProfessor(req, res) {
   try {
-
-    if (
-      !req.session.professorId
-    ) {
-
+    if (!req.session.professorId) {
       return res.status(401).json({
-
-        sucesso:
-          false,
-
-        mensagem:
-          "Usuário não autenticado.",
-
+        sucesso: false,
+        mensagem: "Usuário não autenticado.",
       });
-
     }
-
 
     const professorId =
-  await validarAcessoAoProprioHorario(req, res);
+      await validarAcessoAoProprioHorario(req, res);
 
-if (professorId === null) return;
+    if (professorId === null) return;
 
-
-    const professor =
-      await pool.query(
-        `
-        SELECT
-          pp.id,
-          pp.nome,
-          pp.email
-        FROM professores_planilha pp
-
-        INNER JOIN professores p
-          ON LOWER(TRIM(p.email))
-          =
-          LOWER(TRIM(pp.email))
-
-        WHERE p.id = $1
-          AND pp.ativo = TRUE
-
-        LIMIT 1
-        `,
-        [professorId]
-      );
-
-
-    if (
-      professor.rows.length === 0
-    ) {
-
-      return res.status(404).json({
-
-        sucesso:
-          false,
-
-        mensagem:
-          "Nenhuma planilha configurada para este professor.",
-
-      });
-
-    }
-
-
-    const professorPlanilha =
-      professor.rows[0];
-
-
-    const resultado =
-      await pool.query(
-        `
-        SELECT
-          id,
-          professor_id,
-          linha,
-          coluna,
-          celula,
-          conteudo,
-          created_at,
-          updated_at
-        FROM planilha_horarios
-        WHERE professor_id = $1
-        ORDER BY linha, coluna
-        `,
-        [professorPlanilha.id]
-      );
-
-
-    return res.json({
-
-      sucesso:
-        true,
-
-      professor_id:
-        professorId,
-
-      total:
-        resultado.rows.length,
-
-      dados:
-        resultado.rows,
-
-    });
-
-
-  } catch (error) {
-
-    console.error(
-      "❌ Erro ao buscar horários:",
-      error
+    // Busca o cadastro da planilha vinculado ao e-mail
+    // do professor autenticado ou autorizado.
+    const professor = await pool.query(
+      `
+      SELECT
+        pp.id,
+        pp.nome,
+        pp.email,
+        pp.aba,
+        pp.intervalo
+      FROM professores_planilha pp
+      INNER JOIN professores p
+        ON LOWER(TRIM(p.email)) = LOWER(TRIM(pp.email))
+      WHERE p.id = $1
+        AND pp.ativo = TRUE
+      LIMIT 1
+      `,
+      [professorId]
     );
 
+    if (professor.rows.length === 0) {
+      return res.status(404).json({
+        sucesso: false,
+        mensagem: "Nenhuma planilha configurada para este professor.",
+      });
+    }
+
+    const professorPlanilha = professor.rows[0];
+
+    // Busca as células que já foram sincronizadas para
+    // o cadastro de planilha desse professor.
+    const resultado = await pool.query(
+      `
+      SELECT
+        id,
+        professor_id,
+        linha,
+        coluna,
+        celula,
+        conteudo,
+        created_at,
+        updated_at
+      FROM planilha_horarios
+      WHERE professor_id = $1
+      ORDER BY linha, coluna
+      `,
+      [professorPlanilha.id]
+    );
+
+    return res.json({
+      sucesso: true,
+
+      professor_id: professorId,
+
+      professor_planilha: {
+        id: professorPlanilha.id,
+        nome: professorPlanilha.nome,
+        email: professorPlanilha.email,
+        aba: professorPlanilha.aba,
+        intervalo: professorPlanilha.intervalo,
+      },
+
+      total: resultado.rows.length,
+      dados: resultado.rows,
+    });
+  } catch (error) {
+    console.error("❌ Erro ao buscar horários:", error);
 
     return res.status(500).json({
-
-      sucesso:
-        false,
-
-      erro:
-        error.message,
-
+      sucesso: false,
+      erro: error.message,
     });
-
   }
-
 }
-
 
 // =====================================================
 // BUSCAR HORÁRIOS ORGANIZADOS
