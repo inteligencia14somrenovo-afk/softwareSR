@@ -770,3 +770,135 @@ nav {
     }
 
 }
+
+/* =========================================
+   GRUPO: CONEXÕES
+========================================= */
+
+.sidebar-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Botão principal */
+
+.sidebar-group-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.sidebar-group-button > svg:first-child {
+  flex-shrink: 0;
+  font-size: 20px;
+}
+
+.sidebar-group-button span {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.sidebar-group-button:hover {
+  background-color: rgba(196, 0, 0, 0.08);
+}
+
+/* Seta do submenu */
+
+.submenu-arrow {
+  flex-shrink: 0;
+  font-size: 20px;
+  transition: transform 0.2s ease;
+}
+
+.submenu-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Submenu */
+
+.sidebar-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  margin: 4px 0 8px 0;
+  padding-left: 16px;
+
+  animation: submenuEntrar 0.2s ease;
+}
+
+.sidebar-submenu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 8px;
+
+  color: inherit;
+  text-decoration: none;
+  font-size: 14px;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.sidebar-submenu a svg {
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.sidebar-submenu a:hover {
+  background-color: rgba(196, 0, 0, 0.08);
+}
+
+.sidebar-submenu a.active {
+  background-color: rgba(196, 0, 0, 0.12);
+  color: #c40000;
+  font-weight: 600;
+}
+
+/* Animação */
+
+@keyframes submenuEntrar {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Sidebar recolhida */
+
+.sidebar.collapsed .sidebar-group-button {
+  justify-content: center;
+  padding: 12px;
+}
+
+.sidebar.collapsed .sidebar-group-button span,
+.sidebar.collapsed .sidebar-group-button .submenu-arrow,
+.sidebar.collapsed .sidebar-submenu {
+  display: none;
+}
+

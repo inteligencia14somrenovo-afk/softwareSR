@@ -1848,6 +1848,83 @@ async function sincronizarPlanilha(
 
 }
 
+// =====================================================
+// FUNÇÃO AUXILIAR
+// =====================================================
+
+async function validarAcessoAoProprioHorario(req, res) {
+  if (!req.session?.professorId) {
+    res.status(401).json({
+      sucesso: false,
+      mensagem: "Usuário não autenticado.",
+    });
+    return null;
+  }
+
+  const professorIdSessao = Number(req.session.professorId);
+
+  const professorIdSolicitado =
+    req.params.professorId == null
+      ? professorIdSessao
+      : Number(req.params.professorId);
+
+  if (
+    !Number.isInteger(professorIdSolicitado) ||
+    professorIdSolicitado <= 0
+  ) {
+    res.status(400).json({
+      sucesso: false,
+      mensagem: "ID de professor inválido.",
+    });
+    return null;
+  }
+
+  try {
+    const resultado = await pool.query(
+      `SELECT role
+       FROM professores
+       WHERE id = $1`,
+      [professorIdSessao]
+    );
+
+    if (resultado.rows.length === 0) {
+      res.status(401).json({
+        sucesso: false,
+        mensagem: "Usuário não encontrado.",
+      });
+      return null;
+    }
+
+    const perfil = String(resultado.rows[0].role || "")
+      .trim()
+      .toLowerCase();
+
+    // Admin e dev podem consultar qualquer professor.
+    if (perfil === "admin" || perfil === "dev") {
+      return professorIdSolicitado;
+    }
+
+    // Professor comum só pode consultar o próprio horário.
+    if (professorIdSolicitado !== professorIdSessao) {
+      res.status(403).json({
+        sucesso: false,
+        mensagem: "Você não tem acesso a este horário.",
+      });
+      return null;
+    }
+
+    return professorIdSessao;
+  } catch (error) {
+    console.error("Erro ao validar acesso ao horário:", error);
+
+    res.status(500).json({
+      sucesso: false,
+      mensagem: "Erro ao validar permissão de acesso.",
+    });
+
+    return null;
+  }
+}
 
 // =====================================================
 // BUSCAR HORÁRIOS BRUTOS
@@ -1878,7 +1955,9 @@ async function buscarHorariosProfessor(
 
 
     const professorId =
-      req.session.professorId;
+  await validarAcessoAoProprioHorario(req, res);
+
+if (professorId === null) return;
 
 
     const professor =
@@ -1996,8 +2075,10 @@ async function buscarHorariosOrganizados(
 
   try {
 
-    const { professorId } =
-      req.params;
+    const professorId =
+  await validarAcessoAoProprioHorario(req, res);
+
+if (professorId === null) return;
 
 
     const professor =
@@ -2290,8 +2371,10 @@ async function buscarAlunosProfessor(
 
   try {
 
-    const { professorId } =
-      req.params;
+    const professorId =
+  await validarAcessoAoProprioHorario(req, res);
+
+if (professorId === null) return;
 
 
     const professor =

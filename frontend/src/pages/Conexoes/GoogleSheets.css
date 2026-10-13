@@ -1,53 +1,433 @@
 .google-sheets-page {
   width: 100%;
-  min-width: 0;
-  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px;
   box-sizing: border-box;
+  color: #252525;
 }
 
 .google-sheets-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   margin-bottom: 24px;
 }
 
 .google-sheets-header h1 {
   margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
 }
 
 .google-sheets-header p {
   margin: 0;
-  color: #6b7280;
+  color: #707070;
+  line-height: 1.6;
 }
 
-.google-sheets-content {
-  width: 100%;
-  min-width: 0;
+.google-sheets-card {
+  padding: 24px;
+  margin-bottom: 20px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.035);
+}
+
+.google-sheets-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.google-sheets-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: #e9f5ec;
+  color: #188038;
+  font-size: 28px;
+}
+
+.google-sheets-info h2,
+.google-sheets-next h2 {
+  margin: 0 0 6px;
+  font-size: 19px;
+}
+
+.google-sheets-info p,
+.google-sheets-next p {
+  margin: 0;
+  color: #707070;
+  line-height: 1.6;
+}
+
+.google-sheets-divider {
+  height: 1px;
+  margin: 22px 0;
+  background: #ededed;
 }
 
 .google-sheets-status {
-  padding: 24px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.google-sheets-status h2 {
-  margin-top: 0;
+.google-sheets-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #999;
 }
 
-.google-sheets-status p {
-  color: #4b5563;
-  overflow-wrap: anywhere;
+.google-sheets-description {
+  margin: 12px 0 20px;
+  color: #707070;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.google-sheets-sync-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 8px;
+  background: #c40000;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.google-sheets-sync-button:hover:not(:disabled) {
+  background: #a90000;
+}
+
+.google-sheets-sync-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.google-sheets-sync-button .girando {
+  animation: googleSheetsGirar 1s linear infinite;
+}
+
+.google-sheets-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.google-sheets-message.sucesso {
+  background: #edf7ef;
+  color: #216e39;
+}
+
+.google-sheets-message.erro {
+  background: #fff0f0;
+  color: #b42318;
+}
+
+.google-sheets-permission {
+  margin: 0;
+  color: #777;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.google-sheets-next {
+  border-left: 4px solid #188038;
+}
+
+@keyframes googleSheetsGirar {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {
   .google-sheets-page {
-    padding: 16px;
+    padding: 18px;
   }
 
-  .google-sheets-status {
-    padding: 16px;
+  .google-sheets-header h1 {
+    font-size: 24px;
+  }
+
+  .google-sheets-card {
+    padding: 18px;
+  }
+
+  .google-sheets-card-header {
+    align-items: flex-start;
+  }
+
+  .google-sheets-icon {
+    width: 46px;
+    height: 46px;
+    font-size: 24px;
+  }
+
+  .google-sheets-sync-button {
+    width: 100%;
+  }
+}
+
+/* =========================================
+   CABEÇALHO DA GRADE DE HORÁRIOS
+========================================= */
+
+.google-sheets-schedule-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.google-sheets-schedule-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 6px;
+  font-size: 19px;
+}
+
+.google-sheets-schedule-header h2 svg {
+  color: #188038;
+}
+
+.google-sheets-schedule-header p {
+  margin: 0;
+  color: #707070;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   BOTÃO ATUALIZAR
+========================================= */
+
+.google-sheets-refresh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #dedede;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.google-sheets-refresh-button:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #c5c5c5;
+}
+
+.google-sheets-refresh-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.google-sheets-refresh-button .girando {
+  animation: googleSheetsGirar 1s linear infinite;
+}
+
+/* =========================================
+   DIAS DA SEMANA
+========================================= */
+
+.google-sheets-days {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.google-sheets-day {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.google-sheets-day h3 {
+  margin: 0 0 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #ededed;
+  color: #252525;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.google-sheets-no-items {
+  margin: 0;
+  color: #888;
+  font-size: 13px;
+}
+
+/* =========================================
+   LISTA DE HORÁRIOS
+========================================= */
+
+.google-sheets-schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.google-sheets-schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #ededed;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.google-sheets-schedule-time {
+  flex-shrink: 0;
+  min-width: 82px;
+  color: #c40000;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.google-sheets-schedule-details {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.google-sheets-schedule-details strong {
+  overflow-wrap: anywhere;
+  color: #292929;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.google-sheets-schedule-details span {
+  overflow-wrap: anywhere;
+  color: #666;
+  font-size: 13px;
+}
+
+.google-sheets-schedule-details small {
+  align-self: flex-start;
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: #f0f0f0;
+  color: #666;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+.google-sheets-student-icon {
+  flex-shrink: 0;
+  color: #999;
+  font-size: 14px;
+}
+
+/* =========================================
+   CARREGAMENTO E ESTADO VAZIO
+========================================= */
+
+.google-sheets-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 120px;
+  padding: 24px;
+  color: #777;
+  text-align: center;
+  font-size: 14px;
+}
+
+.google-sheets-empty svg {
+  color: #999;
+  font-size: 24px;
+}
+
+.google-sheets-empty p {
+  margin: 0;
+}
+
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
+
+@media (max-width: 768px) {
+  .google-sheets-schedule-header {
+    align-items: flex-start;
+  }
+
+  .google-sheets-schedule-header h2 {
+    font-size: 17px;
+  }
+
+  .google-sheets-refresh-button {
+    flex-shrink: 0;
+    min-height: 38px;
+    padding: 0 10px;
+  }
+
+  .google-sheets-day {
+    padding: 14px;
+  }
+
+  .google-sheets-schedule-item {
+    gap: 10px;
+    padding: 11px 9px;
+  }
+
+  .google-sheets-schedule-time {
+    min-width: 68px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .google-sheets-schedule-header {
+    flex-direction: column;
+  }
+
+  .google-sheets-refresh-button {
+    width: 100%;
+  }
+
+  .google-sheets-schedule-item {
+    align-items: flex-start;
+  }
+
+  .google-sheets-schedule-time {
+    min-width: 62px;
+    padding-top: 2px;
   }
 }
