@@ -389,7 +389,7 @@ min-width: 0;
 color: #ffffff;
 
 white-space: nowrap;
-font-size: inherit;
+font-size: 13px;
 font-weight: 500;
 
 }
@@ -521,6 +521,7 @@ transition: color 0.2s ease;
 }
 
 /* Texto dos submenus */
+
 
 .sidebar .sidebar-submenu a > span {
 min-width: 0;
