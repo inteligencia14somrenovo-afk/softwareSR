@@ -77,7 +77,7 @@ return (
 {/* BOTÃO HAMBÚRGUER MOBILE */}
 <button
 type="button"
-className={"mobile-menu-button ${collapsed ? "visible" : ""}"}
+className={`mobile-menu-button ${collapsed ? "visible" : ""}`}
 onClick={() => setCollapsed(false)}
 aria-label="Abrir menu">
 <MdMenu />
