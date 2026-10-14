@@ -83,11 +83,11 @@ aria-label="Abrir menu">
 <MdMenu />
 </button>
 
-  {/* OVERLAY MOBILE */}
-  <div
-    className={`mobile-menu-button ${collapsed ? "visible" : ""}`}
-    onClick={() => setCollapsed(true)}
-  />
+ {/* OVERLAY MOBILE */}
+    <div
+      className={`sidebar-overlay ${collapsed ? "" : "active"}`}
+      onClick={() => setCollapsed(true)}
+    />
 
   {/* SIDEBAR */}
   <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
