@@ -9,7 +9,7 @@ import Relatorio from "./pages/Relatorio/Relatorio";
 import GoogleSheets from "./pages/Conexoes/GoogleSheets";
 
 import Instalar from "./pages/Instalar/Instalar";
-
+import PullToRefresh from "./components/PullToRefresh/PullToRefresh";
 
 import Professores from "./pages/Professores/Professores";
 import ProfessorDetalhes from "./pages/Professores/ProfessorDetalhes";
@@ -29,6 +29,7 @@ function App() {
 
   return (
     <BrowserRouter>
+    <PullToRefresh />
       <Routes>
 
         {/* LOGIN */}

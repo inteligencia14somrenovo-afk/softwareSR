@@ -473,7 +473,7 @@ const GoogleSheets = () => {
         <div className="google-sheets-schedule-header">
           <div>
             <h2>
-              <SiGooglesheets /> Grade de horários
+              <SiGooglesheets /> Grade de Horários
             </h2>
             <p>
               {planilha
