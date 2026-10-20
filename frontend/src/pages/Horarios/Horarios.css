@@ -1,0 +1,896 @@
+/* =========================================
+   PÁGINA GOOGLE SHEETS
+========================================= */
+
+.horarios-page {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px;
+  box-sizing: border-box;
+  color: #252525;
+}
+
+.horarios-header {
+  margin-bottom: 24px;
+}
+
+.horarios-header h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.horarios-header p {
+  margin: 0;
+  color: #707070;
+  line-height: 1.6;
+}
+
+/* =========================================
+   CARDS
+========================================= */
+
+.horarios-card {
+  min-width: 0;
+  padding: 24px;
+  margin-bottom: 20px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.035);
+  box-sizing: border-box;
+}
+
+.horarios-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.horarios-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: #e9f5ec;
+  color: #188038;
+  font-size: 28px;
+}
+
+.horarios-info {
+  min-width: 0;
+}
+
+.horarios-info h2,
+.horarios-next h2 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.horarios-info p,
+.horarios-next p {
+  margin: 0;
+  color: #707070;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.horarios-divider {
+  height: 1px;
+  margin: 22px 0;
+  background: #ededed;
+}
+
+/* =========================================
+   STATUS DA CONEXÃO
+========================================= */
+
+.horarios-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.horarios-status-dot {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #188038;
+  box-shadow: 0 0 0 3px #e9f5ec;
+}
+
+.horarios-description {
+  margin: 12px 0 20px;
+  color: #707070;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   BOTÃO SINCRONIZAR
+========================================= */
+
+.horarios-sync-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 8px;
+  background: #c40000;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.horarios-sync-button:hover:not(:disabled) {
+  background: #a90000;
+}
+
+.horarios-sync-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.horarios-sync-button .girando,
+.horarios-refresh-button .girando {
+  animation: googleSheetsGirar 1s linear infinite;
+}
+
+.horarios-permission {
+  margin: 0;
+  color: #777;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* =========================================
+   MENSAGENS DE SUCESSO E ERRO
+========================================= */
+
+.horarios-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.horarios-message svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.horarios-message.sucesso {
+  background: #edf7ef;
+  color: #216e39;
+}
+
+.horarios-message.erro {
+  background: #fff0f0;
+  color: #b42318;
+}
+
+/* =========================================
+   CARD DA GRADE
+========================================= */
+
+.horarios-next {
+  min-width: 0;
+  border-left: 4px solid #188038;
+}
+
+.horarios-schedule-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.horarios-schedule-header > div {
+  min-width: 0;
+}
+
+.horarios-schedule-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 6px;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.horarios-schedule-header h2 svg {
+  flex-shrink: 0;
+  color: #188038;
+}
+
+.horarios-schedule-header p {
+  margin: 0;
+  color: #707070;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   BOTÃO ATUALIZAR
+========================================= */
+
+.horarios-refresh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.horarios-refresh-button:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #c5c5c5;
+}
+
+.horarios-refresh-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* =========================================
+   GRADE SEMELHANTE AO GOOGLE SHEETS
+========================================= */
+
+.horarios-grid-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: auto;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  background: #fff;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f5f5f5;
+  -webkit-overflow-scrolling: touch;
+}
+
+.horarios-grid-wrapper::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.horarios-grid-wrapper::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.horarios-grid-wrapper::-webkit-scrollbar-thumb {
+  border: 2px solid #f5f5f5;
+  border-radius: 8px;
+  background: #c1c1c1;
+}
+
+.horarios-grid-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+.horarios-grid {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  background: #fff;
+  color: #202124;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+}
+
+/* Células e cabeçalhos */
+
+.horarios-grid th,
+.horarios-grid td {
+  height: 34px;
+  min-width: 76px;
+  padding: 0;
+  border-right: 1px solid #dadce0;
+  border-bottom: 1px solid #dadce0;
+  text-align: left;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+/* Letras das colunas */
+
+.horarios-grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 32px;
+  background: #f8f9fa;
+  color: #5f6368;
+  font-weight: 600;
+  text-align: center;
+  user-select: none;
+}
+
+/* Números das linhas */
+
+.horarios-grid .horarios-row-number {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  width: 48px;
+  min-width: 48px;
+  max-width: 48px;
+  padding: 0 4px;
+  background: #f8f9fa;
+  color: #5f6368;
+  font-size: 12px;
+  font-weight: 400;
+  text-align: center;
+  user-select: none;
+}
+
+/* Canto superior esquerdo da grade */
+
+.horarios-grid thead .horarios-row-number {
+  z-index: 3;
+  background: #f1f3f4;
+}
+
+/* Conteúdo das células */
+
+.horarios-grid td {
+  background: #fff;
+  transition: background 0.12s ease;
+}
+
+.horarios-cell-content {
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 8px;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  line-height: 1.4;
+  color: #202124;
+}
+
+/* Realce discreto ao passar o mouse */
+
+.horarios-grid tbody tr:hover td {
+  background: #f8fbff;
+}
+
+.horarios-grid tbody tr:hover .horarios-row-number {
+  background: #e8f0fe;
+  color: #1967d2;
+}
+
+/* Rodapé com a quantidade de células */
+
+.horarios-grid-footer {
+  margin: 12px 0 0;
+  color: #707070;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   CARREGAMENTO E ESTADO VAZIO
+========================================= */
+
+.horarios-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 140px;
+  padding: 24px;
+  color: #777;
+  text-align: center;
+  font-size: 14px;
+}
+
+.horarios-empty svg {
+  color: #999;
+  font-size: 26px;
+}
+
+.horarios-empty p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* =========================================
+   ANIMAÇÃO
+========================================= */
+
+@keyframes googleSheetsGirar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
+
+@media (max-width: 768px) {
+  .horarios-page {
+    padding: 18px;
+  }
+
+  .horarios-header h1 {
+    font-size: 24px;
+  }
+
+  .horarios-card {
+    padding: 18px;
+  }
+
+  .horarios-card-header {
+    align-items: flex-start;
+  }
+
+  .horarios-icon {
+    width: 46px;
+    height: 46px;
+    font-size: 24px;
+  }
+
+  .horarios-sync-button {
+    width: 100%;
+  }
+
+  .horarios-schedule-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .horarios-schedule-header h2 {
+    font-size: 17px;
+  }
+
+  .horarios-refresh-button {
+    width: 100%;
+    min-height: 40px;
+  }
+
+  .horarios-grid {
+    min-width: 560px;
+    font-size: 12px;
+  }
+
+  .horarios-grid th,
+  .horarios-grid td {
+    min-width: 68px;
+  }
+
+  .horarios-grid .horarios-row-number {
+    width: 42px;
+    min-width: 42px;
+    max-width: 42px;
+  }
+
+  .horarios-cell-content {
+    padding: 7px 6px;
+  }
+}
+
+@media (max-width: 420px) {
+  .horarios-page {
+    padding: 12px;
+  }
+
+  .horarios-card {
+    padding: 14px;
+    border-radius: 10px;
+  }
+
+  .horarios-header h1 {
+    font-size: 22px;
+  }
+
+  .horarios-info h2 {
+    font-size: 17px;
+  }
+
+  .horarios-description {
+    font-size: 13px;
+  }
+
+  .horarios-grid {
+    min-width: 520px;
+  }
+}
+
+/* =====================================================
+   ADMIN / DEV — SELETOR DE PROFESSOR E AÇÕES
+   Som Renovo Manager
+===================================================== */
+
+/* Área de seleção do professor */
+.horarios-professor-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 24px 0 20px;
+  padding: 20px;
+  background: linear-gradient(145deg, #fffafa, #f8f9fc);
+  border: 1px solid #eee1e3;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.horarios-professor-selector::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: #c40000;
+}
+
+.horarios-professor-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #27272a;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Ícone antes do título */
+.horarios-professor-label::before {
+  content: "♙";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #c40000;
+  background: #ffe7e7;
+  border-radius: 9px;
+  font-size: 17px;
+}
+
+/* Campo de seleção */
+.horarios-professor-select {
+  width: 100%;
+  min-height: 49px;
+  padding: 12px 42px 12px 14px;
+  border: 1px solid #d9dce3;
+  border-radius: 11px;
+  background-color: #fff;
+  color: #25252a;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.horarios-professor-select:hover {
+  border-color: #c40000;
+  background-color: #fffdfd;
+}
+
+.horarios-professor-select:focus {
+  border-color: #c40000;
+  box-shadow: 0 0 0 4px rgba(196, 0, 0, 0.11);
+}
+
+.horarios-professor-select:disabled {
+  opacity: 0.65;
+  cursor: wait;
+  background-color: #f1f2f5;
+}
+
+.horarios-professor-select option {
+  padding: 10px;
+  background: #fff;
+  color: #25252a;
+}
+
+/* Texto de orientação */
+.horarios-professor-selector
+  + .horarios-permission {
+  margin-top: -8px;
+}
+
+/* =====================================================
+   BOTÃO DE SINCRONIZAÇÃO
+===================================================== */
+
+.horarios-sync-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 1px solid #a90000;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #d50000, #b00000);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.93rem;
+  font-weight: 700;
+  box-shadow: 0 5px 13px rgba(196, 0, 0, 0.17);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.horarios-sync-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(196, 0, 0, 0.24);
+  background: linear-gradient(135deg, #e00000, #a90000);
+}
+
+.horarios-sync-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.horarios-sync-button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  box-shadow: none;
+}
+
+/* =====================================================
+   BOTÃO ATUALIZAR
+===================================================== */
+
+.horarios-refresh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 15px;
+  border: 1px solid #e0e2e8;
+  border-radius: 10px;
+  background: #fff;
+  color: #3f4149;
+  font-family: inherit;
+  font-size: 0.87rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.horarios-refresh-button:hover:not(:disabled) {
+  color: #c40000;
+  border-color: #e4aaaa;
+  background: #fff6f6;
+  transform: translateY(-1px);
+}
+
+.horarios-refresh-button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+/* =====================================================
+   CABEÇALHO DA GRADE
+===================================================== */
+
+.horarios-schedule-header {
+  gap: 16px;
+  align-items: center;
+}
+
+.horarios-schedule-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #202127;
+  font-size: 1.12rem;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+.horarios-schedule-header h2 svg {
+  color: #c40000;
+  flex-shrink: 0;
+}
+
+.horarios-schedule-header p {
+  margin-top: 6px;
+  color: #747783;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* =====================================================
+   MENSAGENS DE SUCESSO E ERRO
+===================================================== */
+
+.horarios-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px 16px;
+  margin-top: 16px;
+  border-radius: 11px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.horarios-message svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 17px;
+}
+
+.horarios-message.sucesso {
+  color: #176b43;
+  background: #effaf3;
+  border: 1px solid #ccebd7;
+}
+
+.horarios-message.erro {
+  color: #a51d25;
+  background: #fff2f2;
+  border: 1px solid #f2d0d0;
+}
+
+/* =====================================================
+   ESTADO VAZIO / CARREGAMENTO
+===================================================== */
+
+.horarios-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 155px;
+  padding: 28px 20px;
+  color: #777b86;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.horarios-empty > svg {
+  color: #c40000;
+  font-size: 31px;
+  opacity: 0.8;
+}
+
+.horarios-empty p {
+  margin: 0;
+}
+
+/* =====================================================
+   ACESSO E PERMISSÕES
+===================================================== */
+
+.horarios-permission {
+  margin-top: 14px;
+  color: #747783;
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+/* =====================================================
+   ANIMAÇÃO DE SINCRONIZAÇÃO
+===================================================== */
+
+.girando {
+  animation: horarios-rotacao 1s linear infinite;
+}
+
+@keyframes horarios-rotacao {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =====================================================
+   RESPONSIVIDADE — CELULARES
+===================================================== */
+
+@media (max-width: 640px) {
+  .horarios-professor-selector {
+    padding: 16px;
+    margin: 20px 0 16px;
+    border-radius: 13px;
+  }
+
+  .horarios-professor-select {
+    min-height: 47px;
+    font-size: 0.9rem;
+  }
+
+  .horarios-sync-button {
+    width: 100%;
+    min-height: 47px;
+  }
+
+  .horarios-schedule-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .horarios-schedule-header > div {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .horarios-schedule-header h2 {
+    font-size: 1.03rem;
+  }
+
+  .horarios-refresh-button {
+    width: 100%;
+  }
+
+  .horarios-message {
+    padding: 12px;
+    font-size: 0.86rem;
+  }
+}
+
+/* Respeita usuários que preferem menos animações */
+@media (prefers-reduced-motion: reduce) {
+  .horarios-sync-button,
+  .horarios-refresh-button,
+  .horarios-professor-select {
+    transition: none;
+  }
+
+  .girando {
+    animation-duration: 2s;
+  }
+}

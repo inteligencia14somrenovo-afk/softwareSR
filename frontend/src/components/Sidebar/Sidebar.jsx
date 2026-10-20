@@ -4,6 +4,7 @@ import { FaClipboardCheck } from "@react-icons/all-files/fa/FaClipboardCheck";
 import { FaChartBar } from "@react-icons/all-files/fa/FaChartBar";
 import { FaCog } from "@react-icons/all-files/fa/FaCog";
 import { FaUsers, FaPlug, FaChalkboardTeacher } from "react-icons/fa";
+import { GrSchedules } from "react-icons/gr";
 import { SiGooglesheets } from "react-icons/si";
 import { MdExpandMore, MdMenu, MdMenuOpen } from "react-icons/md";
 import { NavLink, useLocation } from "react-router-dom";
@@ -160,6 +161,11 @@ aria-label="Abrir menu">
             <NavLink to="/presenca" onClick={fecharMenuMobile}>
               <FaClipboardCheck />
               <span>Presença</span>
+            </NavLink>
+
+            <NavLink to="/horarios" onClick={fecharMenuMobile}>
+              <GrSchedules />
+              <span>Horarios</span>
             </NavLink>
           </div>
         )}

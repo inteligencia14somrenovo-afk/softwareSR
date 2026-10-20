@@ -5,6 +5,7 @@ import TelaInicial from "./pages/TelaInicial/TelaInicial";
 import Alunos from "./pages/Alunos/Alunos";
 import Turmas from "./pages/Turmas/Turmas";
 import Presenca from "./pages/Presenca/Presenca";
+import Horarios from "./pages/Horarios/Horarios";
 import Relatorio from "./pages/Relatorio/Relatorio";
 import GoogleSheets from "./pages/Conexoes/GoogleSheets";
 
@@ -62,6 +63,8 @@ function App() {
 
 
           <Route path="presenca" element={<Presenca />} />
+
+          <Route path="horarios" element={<Horarios />} />
 
           <Route
             path="relatorio"
