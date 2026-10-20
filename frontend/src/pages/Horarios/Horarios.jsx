@@ -4,6 +4,7 @@ import {
   FaCheckCircle,
   FaExclamationCircle,
 } from "react-icons/fa";
+import { GrSchedules } from "react-icons/gr";
 import { SiGooglesheets } from "react-icons/si";
 import API_URL from "../../config/api";
 import { useAuth } from "../../context/AuthContext";
@@ -391,8 +392,8 @@ const Horarios = () => {
 
         <p className="horarios-description">
           {podeSincronizar
-            ? "Selecione um professor para visualizar o intervalo de horários importado. A planilha original do Google não é aberta nem compartilhada."
-            : "Esta visualização mostra somente o intervalo autorizado para o professor conectado. A planilha original do Google não é aberta nem compartilhada."}
+            ? "Selecione um professor para visualizar o intervalo de horários importado."
+            : "Esta visualização mostra somente o intervalo autorizado para o professor conectado."}
         </p>
 
         {podeSincronizar && (
@@ -473,7 +474,7 @@ const Horarios = () => {
         <div className="horarios-schedule-header">
           <div>
             <h2>
-              <SiGooglesheets /> Grade de Horários
+              <GrSchedules /> Grade de Horários
             </h2>
             <p>
               {planilha
